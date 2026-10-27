@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-12** (Review trước khi chuyển G1). Task G0-11 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G1-01** (Nền tảng Xác thực: Session Cookies, CSRF, AuthModule) thuộc Milestone G1. Toàn bộ 13/13 tasks của Milestone G0 đã hoàn tất và được nghiệm thu đầy đủ.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -27,11 +27,40 @@ Task đề xuất tiếp theo: **G0-12** (Review trước khi chuyển G1). Task
 | G0-09 | API đọc xe và OpenAPI | DONE | GET /vehicles và /vehicle-options; bộ lọc, phân trang, sort, calendar conflict, bảo mật thông tin riêng tư; OpenAPI sinh tại packages/contracts/openapi.json; 49 tests pass |
 | G0-10 | Contract client và UI danh sách | DONE | packages/contracts sinh type từ OpenAPI thật; web API client gọi qua same-origin proxy; UI hiển thị danh sách xe, filter, pagination, loading skeleton, empty state, error state; 0 import Prisma |
 | G0-11 | CI và kiểm tra G0 | DONE | Root scripts (build, typecheck, test, test:smoke, format); 49 tests API/constraints pass; Playwright browser smoke test pass trên Chromium (8.3s); .github/workflows/ci.yml hoàn chỉnh |
-| G0-12 | Review và chuẩn bị G1 | TODO | Phụ thuộc G0 hoàn tất |
+| G0-12 | Review và chuẩn bị G1 | DONE | Đối chiếu 100% tài liệu & mã nguồn thực tế; bảo toàn báo cáo Word; 0 mock data giả lập; lập 6 task cards G1 tại docs/tasks/G1_TASKS.md |
 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-12 — Review trước khi chuyển G1
+Trạng thái: DONE
+Prerequisite: G0-11
+Files thay đổi:
+- docs/tasks/G1_TASKS.md (Khởi tạo tài liệu 6 task cards chi tiết cho Milestone G1: G1-01 Auth, G1-02 KYC, G1-03 S3 Media, G1-04 Owner Vehicles, G1-05 Web UI, G1-06 Integration & E2E)
+- docs/TECH_STACK.md (Cập nhật phiên bản thực tế đã kiểm chứng: pgsty/silo cho MinIO, @playwright/test 1.64.1 cho smoke test)
+- README.md (Cập nhật liên kết tài liệu G1_TASKS.md và bảng hướng dẫn vận hành hệ thống)
+- docs/PROGRESS.md (Ghi nhận hoàn thành Milestone G0 100%, sẵn sàng chuyển sang G1)
+Lệnh đã chạy và kết quả:
+- Đối chiếu toàn diện hiện trạng workspace:
+  + Không tồn tại module giả lập (mock stubs) đóng vai trò thay thế tính năng chưa viết.
+  + Dữ liệu seed 100% đi từ PostgreSQL 18 qua Prisma -> NestJS 12 -> Next.js 16.
+  + Cơ chế bảo mật dữ liệu: Tuyệt đối không lộ biển số xe (plateNormalized), địa chỉ chính xác (pickupAddress) hay giấy tờ cá nhân trên public API và web DOM.
+  + Không rò rỉ token/mật khẩu trong log lỗi hệ thống (HttpExceptionFilter đã kiểm chứng che giấu 500).
+  + Ranh giới phân tầng: Tuyệt đối không import Prisma vào frontend apps/web.
+  + Bảo toàn nguyên vẹn: Toàn bộ 3 file báo cáo Word và thư mục backups/2026-10-27-originals được giữ nguyên.
+- Kiểm tra chu trình fresh setup:
+  + pnpm run format:check -> Pass 100%.
+  + pnpm run typecheck -> Pass 100% trên cả 3 packages.
+  + pnpm run build -> Biên dịch thành công 100%.
+  + pnpm run test -> 49/49 tests backend pass 100%.
+  + pnpm run test:smoke -> Playwright browser smoke test pass 100% trên Chromium.
+Ca chưa chạy và lý do: Không có.
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Chỉ chuẩn bị task cards cho G1, không tự ý viết mã Auth/G1 trước khi có yêu cầu.
+Commit hoặc điểm lưu diff nếu có: Sẽ commit sau khi lưu log tiến độ.
+```
 
 ```text
 Ngày: 27/10/2026

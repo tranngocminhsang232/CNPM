@@ -10,6 +10,7 @@ Dự án Nhóm 7 theo Topic 18. Trạng thái hiện tại: Đã hoàn thành ba
 - [Nhật ký sửa tài liệu](docs/CHANGELOG_REVIEW.md)
 - [Bàn giao cho Gemini và prompt khởi động](docs/GEMINI_HANDOFF.md)
 - [Task cards triển khai G0](docs/tasks/G0_TASKS.md)
+- [Task cards triển khai G1 (Xác thực, KYC & Xe)](docs/tasks/G1_TASKS.md)
 - [Tiến độ theo từng task](docs/PROGRESS.md)
 
 Ba báo cáo Word ở thư mục gốc được cập nhật theo cùng quyết định. Bản gốc trước sửa nằm trong backups/2026-10-27-originals.

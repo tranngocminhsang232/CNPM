@@ -69,9 +69,9 @@ Dựa trên tài liệu chính thức của từng công nghệ và các quyết
 | **ORM / Data Access** | **Prisma `6.19.3`** | `prisma@6.19.3` & `@prisma/client@6.19.3`. Bản phát hành ổn định trưởng thành dòng 6.x theo đúng trích dẫn kỹ thuật tại `docs/DECISIONS.md#ADR-09` (Prisma v6 transaction & exclusion constraints). | [Prisma v6 Documentation](https://www.prisma.io/docs/orm/v6) |
 | **Database Engine** | **PostgreSQL `18-alpine`** | PostgreSQL 18 (tương thích hoàn toàn với bản 18.6 native trên host). Hỗ trợ range types `tsrange` và exclusion constraint (`GIST`) chống trùng lịch xe. | [PostgreSQL 18 Docs](https://www.postgresql.org/docs/18/rangetypes.html) |
 | **PostgreSQL Extension**| **`btree_gist`** | Bắt buộc để thiết lập `EXCLUDE USING gist (vehicle_id WITH =, period WITH &&)`. Đã kiểm tra sẵn có trong PostgreSQL 18. | `docs/DECISIONS.md#ADR-10`, `docs/DATABASE_DESIGN.md` |
-| **Object Storage** | **MinIO (Quay.io)** | Image: `quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z` (do MinIO đã gỡ repo khỏi Docker Hub). S3-compatible, quản lý bucket private, cấp presigned URL upload/view. | [MinIO Quay Repository](https://quay.io/repository/minio/minio) |
-| **Storage SDK** | **`@aws-sdk/client-s3@^3.700.0`** | `@aws-sdk/s3-request-presigner@^3.700.0`. Giao diện S3 tiêu chuẩn cho cả MinIO local và AWS S3 production. | [AWS SDK for JS v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/) |
-| **Testing** | **Vitest / Jest & Playwright** | Unit/integration test cho NestJS; integration test với PostgreSQL thật cho constraint lịch; Playwright cho smoke test UI. | `docs/tasks/G0_TASKS.md#G0-11` |
+| **Object Storage** | **Silo / MinIO (`pgsty/silo:latest`)** | Image: `pgsty/silo:latest` (drop-in replacement mã nguồn mở cho MinIO official image đã bị hạn chế trên Docker Hub/Quay). S3-compatible, quản lý bucket private, cấp presigned URL upload/view. | [Silo Repository](https://github.com/pgsty/silo) |
+| **Storage SDK** | **`@aws-sdk/client-s3@^3.700.0`** | `@aws-sdk/s3-request-presigner@^3.700.0`. Giao diện S3 tiêu chuẩn cho cả MinIO/Silo local và AWS S3 production. | [AWS SDK for JS v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/) |
+| **Testing** | **Node.js Test Runner & Playwright** | Node.js built-in test runner (`node --test`) cho NestJS unit, integration và e2e; Playwright (`@playwright/test@^1.64.1`) cho smoke test trình duyệt Chromium. | `docs/tasks/G0_TASKS.md#G0-11` |
 
 ---
 
