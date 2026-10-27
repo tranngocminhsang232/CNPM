@@ -1,11 +1,12 @@
 import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiExtraModels, getSchemaPath } from '@nestjs/swagger';
 import { VehiclesService } from './vehicles.service';
 import { QueryVehiclesDto } from './dto/query-vehicles.dto';
 import { VehicleOptionsDto } from './dto/vehicle-options.dto';
 import { VehicleSummaryDto, PaginationMetaDto } from './dto/vehicle-summary.dto';
 
 @ApiTags('Vehicles')
+@ApiExtraModels(VehicleSummaryDto, PaginationMetaDto)
 @Controller()
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
@@ -34,9 +35,9 @@ export class VehiclesController {
       properties: {
         data: {
           type: 'array',
-          items: { $ref: '#/components/schemas/VehicleSummaryDto' },
+          items: { $ref: getSchemaPath(VehicleSummaryDto) },
         },
-        meta: { $ref: '#/components/schemas/PaginationMetaDto' },
+        meta: { $ref: getSchemaPath(PaginationMetaDto) },
       },
     },
   })

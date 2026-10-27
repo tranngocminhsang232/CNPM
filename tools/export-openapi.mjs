@@ -7,7 +7,12 @@ const require = createRequire(import.meta.url);
 async function run() {
   const { NestFactory } = require('../apps/api/node_modules/@nestjs/core');
   const { SwaggerModule, DocumentBuilder } = require('../apps/api/node_modules/@nestjs/swagger');
-  const { AppModule } = require('../apps/api/dist/src/app.module.js');
+
+  const appModulePath = fs.existsSync(path.resolve('apps/api/dist/app.module.js'))
+    ? path.resolve('apps/api/dist/app.module.js')
+    : path.resolve('apps/api/dist/src/app.module.js');
+
+  const { AppModule } = require(appModulePath);
 
   const app = await NestFactory.create(AppModule, { logger: false });
   app.setGlobalPrefix('api/v1');

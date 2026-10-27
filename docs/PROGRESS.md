@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). Task G0-04 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G0-11** (Kiểm tra xuyên suốt và CI baseline). Task G0-10 đã hoàn tất và được ghi nhận.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -25,13 +25,45 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-07 | Migration/constraints | DONE | Migration áp dụng dev/test DB; 18 integration tests pass: GiST exclusion, touching, partial indexes, business checks |
 | G0-08 | Seed/database provider | DONE | prisma/seed.ts idempotent (4 users, 13 vehicles, 4 bookings, calendar); PrismaService/Module tích hợp; health readiness phản ánh DB thật |
 | G0-09 | API đọc xe và OpenAPI | DONE | GET /vehicles và /vehicle-options; bộ lọc, phân trang, sort, calendar conflict, bảo mật thông tin riêng tư; OpenAPI sinh tại packages/contracts/openapi.json; 49 tests pass |
-| G0-10 | Contract client và UI danh sách | TODO | Chưa có luồng dữ liệu thật |
+| G0-10 | Contract client và UI danh sách | DONE | packages/contracts sinh type từ OpenAPI thật; web API client gọi qua same-origin proxy; UI hiển thị danh sách xe, filter, pagination, loading skeleton, empty state, error state; 0 import Prisma |
 | G0-11 | CI và kiểm tra G0 | TODO | Chưa chạy app build/test |
 | G0-12 | Review và chuẩn bị G1 | TODO | Phụ thuộc G0 hoàn tất |
 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-10 — Contract client và danh sách xe trên web
+Trạng thái: DONE
+Prerequisite: G0-04, G0-09
+Files thay đổi:
+- packages/contracts/package.json & tsconfig.json (Khởi tạo package @carsharing/contracts trong monorepo)
+- packages/contracts/src/schema.ts (Sinh TypeScript types tự động từ OpenAPI thật bằng openapi-typescript)
+- packages/contracts/src/index.ts (Xuất các type nghiệp vụ: VehicleSummary, PaginationMeta, VehicleOptions, GetVehiclesResponse)
+- apps/web/package.json (Thêm dependency @carsharing/contracts workspace:*)
+- apps/web/src/lib/api.ts (Client API gọi backend qua cùng origin rewrite /api/v1/vehicles và /api/v1/vehicle-options)
+- apps/web/src/components/VehicleCard.tsx (Component hiển thị xe: ảnh cover, badge Keyless, hãng/model/năm, số chỗ, hộp số, tiện nghi, đơn giá ₫/ngày)
+- apps/web/src/components/FilterBar.tsx (Thanh bộ lọc: chọn thành phố, loại xe, checkbox tự nhận xe Keyless, đếm kết quả, nút đặt lại)
+- apps/web/src/app/page.tsx (Trang chủ: tích hợp filter, gọi API thật, phân trang, loading skeleton, empty state, error state kèm nút retry)
+- apps/api/src/vehicles/vehicles.controller.ts (Bổ sung @ApiExtraModels và getSchemaPath để OpenAPI sinh đầy đủ component schemas)
+- tools/export-openapi.mjs (Cập nhật đường dẫn linh hoạt hỗ trợ xuất schema trực tiếp)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-10)
+Lệnh đã chạy và kết quả:
+- pnpm --filter @carsharing/contracts run build: Biên dịch thành công packages/contracts/dist định nghĩa type chuẩn.
+- pnpm --filter @carsharing/web run typecheck: Kiểm tra kiểu tĩnh TypeScript trên Next.js 16 đạt 0 lỗi.
+- pnpm --filter @carsharing/web run build: Next.js build Turbopack sản sinh bản build tối ưu tĩnh thành công 100%.
+- Kiểm tra luồng dữ liệu end-to-end:
+  + Chạy NestJS API (cổng 4000) và Next.js (cổng 3000).
+  + Truy vấn GET http://localhost:3000/api/v1/vehicles qua Next.js rewrite: nhận đúng 12 xe PUBLISHED từ PostgreSQL.
+  + Kiểm tra an toàn: Tuyệt đối không import Prisma vào apps/web (grep search trả về 0 kết quả).
+  + Kiểm tra trạng thái: UI hỗ trợ loading skeleton, empty state khi không tìm thấy xe, và error alert với nút retry khi API ngắt kết nối.
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa thực hiện đặt xe hoặc tính quote chi tiết (thuộc G2 và G3).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Định nghĩa types được chia sẻ qua package @carsharing/contracts sinh trực tiếp từ OpenAPI schema thật.
+Commit hoặc điểm lưu diff nếu có: Sẽ commit sau khi lưu log tiến độ.
+```
 
 ```text
 Ngày: 27/10/2026

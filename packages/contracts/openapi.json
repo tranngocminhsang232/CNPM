@@ -208,6 +208,117 @@
   "servers": [],
   "components": {
     "schemas": {
+      "VehicleSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "brand": {
+            "type": "string",
+            "example": "VinFast"
+          },
+          "model": {
+            "type": "string",
+            "example": "VF8 Plus"
+          },
+          "year": {
+            "type": "number",
+            "example": 2024
+          },
+          "city": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "carType": {
+            "type": "string",
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
+            "example": "SUV"
+          },
+          "transmission": {
+            "type": "string",
+            "enum": ["AUTO", "MANUAL"],
+            "example": "AUTO"
+          },
+          "seats": {
+            "type": "number",
+            "example": 5
+          },
+          "amenities": {
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "example": true
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000,
+            "description": "Giá thuê một ngày (VND, số nguyên an toàn)"
+          },
+          "coverImageUrl": {
+            "type": "object",
+            "example": "http://localhost:4000/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/cover.jpg",
+            "nullable": true
+          },
+          "ratingAverage": {
+            "type": "number",
+            "example": 5,
+            "description": "Điểm đánh giá trung bình"
+          },
+          "reviewCount": {
+            "type": "number",
+            "example": 0,
+            "description": "Tổng số lượt đánh giá"
+          },
+          "quote": {
+            "type": "object",
+            "description": "Báo giá tính nhanh (nếu có yêu cầu khoảng ngày)"
+          }
+        },
+        "required": [
+          "id",
+          "brand",
+          "model",
+          "year",
+          "city",
+          "carType",
+          "transmission",
+          "seats",
+          "amenities",
+          "keylessSupported",
+          "pricePerDayVnd",
+          "ratingAverage",
+          "reviewCount"
+        ]
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "pageSize": {
+            "type": "number",
+            "example": 10
+          },
+          "total": {
+            "type": "number",
+            "example": 12
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 2
+          }
+        },
+        "required": ["page", "pageSize", "total", "totalPages"]
+      },
       "AmenityOptionDto": {
         "type": "object",
         "properties": {
