@@ -58,7 +58,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
 Ca chưa chạy và lý do: Chưa tạo auth giả để đi tiếp các module bảo vệ (theo đúng yêu cầu G0-03).
 Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Cấu trúc response tuân thủ tuyệt đối API_CONTRACT.md: thành công { data, meta? }, lỗi { error: { code, message, details? }, requestId }.
-Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-03
+Commit hoặc điểm lưu diff nếu có: Commit `d02e069` ("feat(api): implement request-id, response envelope, and exception filter (G0-03)")
 Task đề xuất tiếp theo: G0-04 — Khởi tạo Next.js và kết nối cùng origin
 ```
 
