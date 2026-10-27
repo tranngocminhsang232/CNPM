@@ -11,9 +11,18 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G2-05** (Kiểm Tra Tích Hợp Toàn Diện & Đóng Gói Milestone G2). Task G2-04 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G3-01** (Động Cơ Đặt Xe & Quản Lý Vòng Đời Trạng Thái - Booking Lifecycle & State Machine). Milestone G2 đã hoàn tất 100%.
 
-### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
+### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Booking & Payment)
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G3-01 | Động cơ đặt xe & quản lý vòng đời | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-03 | Web UI đặt xe & quản lý chuyến đi | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-04 | Kiểm tra tích hợp & đóng gói G3 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+
+### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá - Hoàn tất 100%)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -21,7 +30,7 @@ Task đề xuất tiếp theo: **G2-05** (Kiểm Tra Tích Hợp Toàn Diện & 
 | G2-02 | Động cơ tính giá & snapshot chi phí | DONE | PricingModule, PricingService, PricingController (POST /pricing/quote, POST /pricing/calculate, GET /vehicles/:id/pricing-preview); logic tính số ngày làm tròn 24h, phụ phí cuối tuần T7/CN 10%, gói bảo hiểm BASIC/STANDARD/PREMIUM, phí dịch vụ sàn 10%, tiền cọc lũy tiến 5M/10M/15M VND; bảo đảm đẳng thức toán học total = subtotal + serviceFee + deposit khớp 100% check constraint PostgreSQL; kiểm tra xung đột lịch xe; 146 tests backend pass (53 unit, 18 constraints, 75 e2e); OpenAPI và contracts tái sinh; Playwright smoke pass |
 | G2-03 | Hệ thống mã khuyến mãi & giảm giá | DONE | Migration 20261027080137_add_promotions; check constraints PostgreSQL (discount > 0, % <= 100, min order >= 0, max discount > 0, valid dates, usages >= 0); seed 5 promotions thực tế; PromotionsModule, Service, Controller (POST /promotions/validate); tích hợp PricingService tính toán voucher discount trừ subtotal trước khi tính phí dịch vụ; 166 tests backend pass (63 unit, 18 constraints, 85 e2e); OpenAPI & contracts cập nhật; Playwright smoke pass |
 | G2-04 | Web UI chi tiết xe & dự toán giá | DONE | VehicleGallery (ảnh hero, thumbnails tương tác, badges Keyless & CarType); PricingCalculator (bộ chọn ngày giờ, 3 gói bảo hiểm BASIC/STANDARD/PREMIUM, nhập voucher mã WELCOME2026 giảm 200k thời gian thực, bóc tách biểu phí rentalDays, baseRent, peakSurcharge, insuranceFee, discountVnd, subtotal, serviceFee, deposit, total); trang /vehicles/[id] đầy đủ thông số kỹ thuật, tiện nghi, hồ sơ chủ xe, cảnh báo KYC; VehicleCard liên kết Next Link trực tiếp; Next.js 16 Turbopack build 100% clean; 3/3 Playwright browser tests pass (10.1s) |
-| G2-05 | Kiểm tra tích hợp & đóng gói G2 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-05 | Kiểm tra tích hợp & đóng gói G2 | DONE | Pipeline kiểm thử toàn diện xanh 100%: pnpm run typecheck (0 lỗi TypeScript), pnpm run build (Next.js Turbopack & NestJS build clean), pnpm run test (166/166 tests pass trong 28.3s gồm 63 unit, 18 constraints, 85 e2e), pnpm run test:smoke (3/3 Playwright browser tests pass trong 11.6s trên Chromium), pnpm run format:check (100% chuẩn Prettier); lập bộ task cards Milestone G3 chi tiết tại docs/tasks/G3_TASKS.md |
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe - Hoàn tất 100%)
 
@@ -55,6 +64,24 @@ Task đề xuất tiếp theo: **G2-05** (Kiểm Tra Tích Hợp Toàn Diện & 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G2-05 — Đóng Gói, Kiểm Thử Tích Hợp Toàn Diện & Kế Hoạch Milestone G3 (Booking & Payment)
+Trạng thái: DONE
+Prerequisite: G2-01 đến G2-04
+Files thay đổi:
+- docs/PROGRESS.md (Cập nhật bảng tiến độ Milestone G2 đạt 100% DONE, bổ sung bảng theo dõi Milestone G3, ghi nhận nhật ký G2-05)
+- docs/tasks/G3_TASKS.md (Biên soạn 4 task cards chi tiết cho Milestone G3: G3-01 Động cơ đặt xe & state machine, G3-02 Đặt cọc & cổng thanh toán sandbox, G3-03 Web UI đặt xe & quản lý chuyến đi, G3-04 Đóng gói Milestone G3)
+- apps/web/next-env.d.ts (Chuẩn hóa code style theo Prettier)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> apps/api nest build và apps/web Next.js Turbopack build thành công (6 routes static/dynamic tối ưu)
+- pnpm run test -> 166/166 backend tests pass 100% trong 28.3s (63 unit, 18 constraints, 85 e2e)
+- pnpm run test:smoke -> 3/3 Playwright browser tests pass 100% trong 11.6s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Milestone G2 (100% DONE). Toàn bộ hệ thống tìm kiếm xe, lọc đa tiêu chí, tính giá theo ngày/phụ phí/bảo hiểm/cọc, voucher khuyến mãi và giao diện web chi tiết xe vận hành hoàn hảo, sẵn sàng triển khai Milestone G3.
+```
 
 ```text
 Ngày: 27/10/2026
