@@ -1,0 +1,20 @@
+{
+  "name": "car-sharing",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Nền tảng chia sẻ xe tự lái (Car Sharing) - MVP",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=24.15.0",
+    "pnpm": ">=12.0.0"
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prettier": "^3.5.0",
+    "typescript": "~5.8.2"
+  }
+}

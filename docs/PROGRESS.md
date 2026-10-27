@@ -1,0 +1,83 @@
+# Tiến độ triển khai Car Sharing
+
+Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/kết quả thực tế, không chỉ đánh dấu checklist.
+
+## Đã có trước khi code
+
+- SRS 1.1, quyết định nghiệp vụ, API contract, thiết kế dữ liệu và kế hoạch G0–G5.
+- Ba báo cáo Word đã chỉnh sửa và bản gốc được sao lưu.
+- Handoff cho Gemini và task cards G0.
+- Kiểm tra tài liệu/ví dụ calculator ghi ở VERIFICATION.md; chưa có test ứng dụng.
+
+## Task hiện tại
+
+Task đề xuất tiếp theo: **G0-02** (Khởi tạo NestJS và health check). Task G0-01 đã hoàn tất và được ghi nhận.
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G0-00 | Môi trường và phiên bản | DONE | Đã kiểm tra thực tế máy host & ghim bộ phiên bản tại docs/TECH_STACK.md |
+| G0-01 | Workspace và baseline | DONE | package.json, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig.base.json, .env.example, git baseline |
+| G0-02 | NestJS và health | TODO | Chưa có API |
+| G0-03 | Request và error contract | TODO | Chưa có implementation |
+| G0-04 | Next.js và cùng origin | TODO | Chưa có web |
+| G0-05 | PostgreSQL/storage local | TODO | Chưa có compose/config đã chạy |
+| G0-06 | Prisma schema | TODO | Chưa có schema |
+| G0-07 | Migration/constraints | TODO | Chưa chạy PostgreSQL tests |
+| G0-08 | Seed/database provider | TODO | Chưa có seed/provider |
+| G0-09 | API đọc xe và OpenAPI | TODO | Chưa có endpoint/type sinh |
+| G0-10 | Contract client và UI danh sách | TODO | Chưa có luồng dữ liệu thật |
+| G0-11 | CI và kiểm tra G0 | TODO | Chưa chạy app build/test |
+| G0-12 | Review và chuẩn bị G1 | TODO | Phụ thuộc G0 hoàn tất |
+
+TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
+
+## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-01 — Khởi tạo workspace và baseline
+Trạng thái: DONE
+Prerequisite: G0-00
+Files thay đổi:
+- package.json (root configuration, scripts format/format:check, devDependencies: prettier, typescript, @types/node)
+- pnpm-workspace.yaml (apps/*, packages/*)
+- pnpm-lock.yaml (lockfile tái lập)
+- tsconfig.base.json (strict TypeScript: ES2022, NodeNext, noImplicitAny, strictNullChecks, noUncheckedIndexedAccess,...)
+- .env.example (nhóm biến môi trường: Server, PostgreSQL, S3/MinIO, JWT/Cookie, Google OIDC, Keyless Simulator)
+- .gitignore (cập nhật monorepo, node_modules, .pnpm-store, builds, env, logs)
+- .prettierrc & .prettierignore (cấu hình format mã nguồn, bảo vệ lockfile và tài liệu docs)
+- apps/.gitkeep & packages/.gitkeep (cấu trúc thư mục)
+- docs/PROGRESS.md (cập nhật tiến độ)
+Lệnh đã chạy và kết quả:
+- npm install -g pnpm@12.15.0: Đã cài pnpm v12.15.0 vào AppData\Roaming\npm
+- git init: Khởi tạo Git repository local baseline
+- pnpm install: Cài đặt thành công 4 packages (prettier@3.9.10, typescript@5.8.3, @types/node@24.19.2), sinh pnpm-lock.yaml
+- pnpm run format: Định dạng kiểm tra qua Prettier thành công (exit 0)
+- pnpm run format:check: Xác nhận toàn bộ file tuân thủ format (exit 0)
+Ca chưa chạy và lý do: Chưa scaffold apps/api và apps/web (thuộc G0-02 và G0-04)
+Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Định nghĩa chuẩn biến môi trường trong .env.example theo các ADR đã chốt.
+Commit hoặc điểm lưu diff nếu có: Git repo đã khởi tạo, sẵn sàng cho initial commit baseline
+Task đề xuất tiếp theo: G0-02 — Khởi tạo NestJS và health check
+```
+
+```text
+Ngày: 27/10/2026
+Task: G0-00 — Kiểm tra môi trường và chọn phiên bản
+Trạng thái: DONE
+Prerequisite: Không có
+Files thay đổi: docs/TECH_STACK.md (tạo mới), docs/PROGRESS.md (cập nhật)
+Lệnh đã chạy và kết quả:
+- Hệ điều hành & Shell: Windows 10 Pro 64-bit (10.0.19045), PowerShell 5.1.19041.6456 (Đạt)
+- Git: git version 2.56.0.windows.1 (Đạt, chưa init .git)
+- Node.js: v24.21.0 (Đạt, Maintenance LTS, đáp ứng NestJS 12 CLI)
+- Package Managers: npm 11.19.0, corepack 0.36.0 (pnpm chưa có trong PATH, sẽ kích hoạt ở G0-01)
+- Docker: Docker 29.8.0, Docker Compose v5.5.1 (Docker Desktop chưa khởi động, WSL docker-desktop Stopped)
+- PostgreSQL host: Service postgresql-x64-18 (v18.6) đang chạy tại PID 5544, chiếm port 5432. Extension btree_gist đã có sẵn tại C:\Program Files\PostgreSQL\18\share\extension
+- Kiểm tra cổng: 3000, 3001, 4000, 5433, 9000, 9001 trống; 5432 đang bận
+- npm view registry: Pin chính thức pnpm@12.15.0, @nestjs/core@12.2.0, @nestjs/cli@12.0.10, next@16.4.3, react@19.3.1, prisma@6.19.3
+Ca chưa chạy và lý do: Chưa scaffold source code, chưa chạy migration/seed (thuộc G0-01 đến G0-12)
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Ghim Prisma 6.19.3 theo DECISIONS.md (ADR-09). Đề xuất ánh xạ cổng Docker Compose ở 5433:5432 để tránh xung đột cổng 5432 với PostgreSQL native. Dùng MinIO từ quay.io do Docker Hub đã gỡ bỏ repo community.
+Commit hoặc điểm lưu diff nếu có: Chưa có Git repo (sẽ khởi tạo ở G0-01)
+Task đề xuất tiếp theo: G0-01 — Khởi tạo workspace và baseline
+```
+

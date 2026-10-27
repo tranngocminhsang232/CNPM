@@ -1,0 +1,15 @@
+node_modules/
+.pnpm-store/
+.next/
+dist/
+build/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+*.docx
+*.png
+.git/
+.document-review/
+backups/
+docs/
