@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-04** (Đăng Ký và Quản Lý Xe Dành Cho Chủ Xe - Owner Vehicle CRUD). Task G1-03 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G1-05** (Tích Hợp Giao Diện Web Cho Auth, KYC & Quản Lý Xe). Task G1-04 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
 
@@ -20,7 +20,7 @@ Task đề xuất tiếp theo: **G1-04** (Đăng Ký và Quản Lý Xe Dành Cho
 | G1-01 | Nền tảng Xác thực (Cookies, CSRF, Auth) | DONE | AuthModule, cookie HttpOnly (access 15m, refresh 7d), Double Submit CSRF token (X-CSRF-Token), SessionGuard, CsrfGuard, CurrentUser decorator, Google OIDC callback, capability model (RENTER + OWNER); 68 tests pass (19 unit, 18 constraints, 31 e2e); Playwright smoke pass |
 | G1-02 | Xác thực Bằng lái xe (KYC) | DONE | UsersModule, migration 20261027064407_add_driver_licenses_kyc áp dụng dev/test DB; check constraints PostgreSQL (đúng 12 số GPLX, tuổi >= 18, hạn >= 30 ngày, status PENDING -> VERIFIED/REJECTED, chặn nộp lại khi VERIFIED 409); KycVerifiedGuard; 81 tests pass; Playwright smoke pass |
 | G1-03 | Dịch vụ S3 Presigned URL | DONE | MediaModule, tích hợp @aws-sdk/client-s3 & @aws-sdk/s3-request-presigner, POST /media/upload-intents (presigned PUT, TTL 15m, giới hạn 5MB, JPEG/PNG), upload trực tiếp lên MinIO private bucket, POST /media/:id/verify (S3 HeadObject probe, move staging sang finalized, state VERIFIED), GET /media/:id/read-url (presigned GET URL, chặn tài liệu nhạy cảm GPLX 403, mở ảnh xe công khai); 98 tests pass (33 unit, 18 constraints, 47 e2e) |
-| G1-04 | Đăng ký & quản lý xe chủ xe | TODO | Chưa triển khai |
+| G1-04 | Đăng ký & quản lý xe chủ xe | DONE | OwnerVehiclesController & Service, POST /owner/vehicles (trạng thái DRAFT, chuẩn hóa biển số plateNormalized, chặn trùng biển số 409, kiểm tra khoảng giá 100k-100M VND, liên kết tiện nghi và ảnh xe VERIFIED), GET /owner/vehicles (danh sách xe cá nhân kèm biển số và địa chỉ đón trả), GET /owner/vehicles/:id (bảo mật 403 nếu không phải chủ xe), PATCH /owner/vehicles/:id (cập nhật thông tin và tăng version concurrency), POST /owner/vehicles/:id/publish (yêu cầu tối thiểu 1 ảnh xe 422 PUBLISH_REQUIREMENTS_NOT_MET, chuyển PUBLISHED và xuất hiện trên public GET /vehicles không lộ biển số); 115 tests pass (40 unit, 18 constraints, 57 e2e) |
 | G1-05 | Web UI Auth, KYC & Quản lý xe | TODO | Chưa triển khai |
 | G1-06 | Kiểm tra tích hợp & đóng gói G1 | TODO | Chưa triển khai |
 
@@ -45,6 +45,31 @@ Task đề xuất tiếp theo: **G1-04** (Đăng Ký và Quản Lý Xe Dành Cho
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-04 — Đăng Ký và Quản Lý Xe Dành Cho Chủ Xe (Owner Vehicle CRUD)
+Trạng thái: DONE
+Prerequisite: G1-01, G1-03
+Files thay đổi:
+- apps/api/src/vehicles/dto/owner-vehicle.dto.ts (CreateVehicleDto, UpdateVehicleDto, OwnerVehicleDto, chuẩn hóa biển số xe normalizePlate)
+- apps/api/src/vehicles/owner-vehicles.service.ts (Service CRUD xe của chủ xe: tạo xe DRAFT, kiểm tra trùng biển số 409, validate ảnh xe VERIFIED, cập nhật xe, kiểm tra quyền sở hữu 403, kiểm tra điều kiện publish có ít nhất 1 ảnh 422 PUBLISH_REQUIREMENTS_NOT_MET)
+- apps/api/src/vehicles/owner-vehicles.controller.ts (POST /owner/vehicles, GET /owner/vehicles, GET /owner/vehicles/:id, PATCH /owner/vehicles/:id, POST /owner/vehicles/:id/publish)
+- apps/api/src/vehicles/vehicles.module.ts (Đăng ký OwnerVehiclesController, OwnerVehiclesService, liên kết AuthModule)
+- apps/api/src/vehicles/owner-vehicles.service.spec.ts (7 ca unit tests kiểm tra normalize plate, duplicate conflict, unverified photo check, ownership check, publish photo requirement)
+- apps/api/test/owner-vehicles.e2e-spec.ts (10 ca e2e tests toàn bộ vòng đời tạo xe DRAFT, quản lý danh sách, bảo mật quyền xem 403, gắn ảnh và publish thành công sang danh mục công khai)
+- packages/contracts/openapi.json (Tái xuất OpenAPI chứa toàn bộ owner vehicle endpoints)
+Lệnh kiểm tra thực tế:
+- pnpm --filter @carsharing/api run test (40 unit tests pass)
+- pnpm --filter @carsharing/api run test:e2e (57 e2e tests pass)
+- pnpm --filter @carsharing/api run test:all (115 tests pass: 40 unit, 18 constraints, 57 e2e)
+- node tools/export-openapi.mjs (Xuất OpenAPI thành công)
+- pnpm --filter @carsharing/contracts run build (Build contracts thành công)
+- pnpm run format (Prettier format toàn workspace)
+Ghi chú bảo mật & nghiệp vụ:
+- Concurrency versioning: Mỗi lần PATCH hoặc Publish xe, trường version được tăng tự động.
+- Biển số xe plateNormalized và địa chỉ đón trả pickupAddress chỉ trả về cho chính chủ xe qua /owner/vehicles; public GET /vehicles che giấu 100%.
+```
 
 ```text
 Ngày: 27/10/2026

@@ -630,6 +630,222 @@
         "summary": "Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED)",
         "tags": ["Vehicles"]
       }
+    },
+    "/api/v1/owner/vehicles": {
+      "post": {
+        "operationId": "OwnerVehiclesController_createVehicle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo xe mới thành công với trạng thái DRAFT",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerVehicleDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu đầu vào không hợp lệ"
+          },
+          "409": {
+            "description": "Biển số xe đã được đăng ký trên hệ thống"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Chủ xe đăng ký tạo xe mới (trạng thái DRAFT)",
+        "tags": ["owner-vehicles"]
+      },
+      "get": {
+        "operationId": "OwnerVehiclesController_getOwnerVehicles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh sách xe cá nhân của chủ xe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OwnerVehicleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Lấy danh sách toàn bộ xe thuộc sở hữu của chủ xe hiện tại",
+        "tags": ["owner-vehicles"]
+      }
+    },
+    "/api/v1/owner/vehicles/{id}": {
+      "get": {
+        "operationId": "OwnerVehiclesController_getOwnerVehicleById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết thông tin xe (bao gồm biển số và địa chỉ đón trả)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerVehicleDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền truy cập xe của chủ khác"
+          },
+          "404": {
+            "description": "Không tìm thấy xe"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Xem chi tiết quản lý một xe của chủ xe",
+        "tags": ["owner-vehicles"]
+      },
+      "patch": {
+        "operationId": "OwnerVehiclesController_updateVehicle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật xe thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerVehicleDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu cập nhật không hợp lệ"
+          },
+          "403": {
+            "description": "Không có quyền cập nhật xe của chủ khác"
+          },
+          "404": {
+            "description": "Không tìm thấy xe"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Chủ xe cập nhật thông tin xe",
+        "tags": ["owner-vehicles"]
+      }
+    },
+    "/api/v1/owner/vehicles/{id}/publish": {
+      "post": {
+        "operationId": "OwnerVehiclesController_publishVehicle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xe được đăng công khai thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OwnerVehicleDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền publish xe của chủ khác"
+          },
+          "404": {
+            "description": "Không tìm thấy xe"
+          },
+          "422": {
+            "description": "Xe chưa đủ điều kiện publish (thiếu ảnh hoặc giấy tờ)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai",
+        "tags": ["owner-vehicles"]
+      }
     }
   },
   "info": {
@@ -1152,6 +1368,303 @@
           }
         },
         "required": ["cities", "carTypes", "transmissions", "amenities"]
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "description": "Hãng xe",
+            "example": "Toyota"
+          },
+          "model": {
+            "type": "string",
+            "description": "Dòng xe / Model",
+            "example": "Corolla Cross"
+          },
+          "year": {
+            "type": "number",
+            "description": "Năm sản xuất",
+            "example": 2023
+          },
+          "licensePlate": {
+            "type": "string",
+            "description": "Biển số xe",
+            "example": "51K-123.45"
+          },
+          "city": {
+            "type": "string",
+            "description": "Thành phố hoạt động",
+            "example": "TP. Hồ Chí Minh",
+            "enum": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"]
+          },
+          "pickupAddress": {
+            "type": "string",
+            "description": "Địa chỉ đón/trả xe chính xác",
+            "example": "123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh"
+          },
+          "carType": {
+            "type": "string",
+            "description": "Phân khúc xe",
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
+            "example": "SUV"
+          },
+          "transmission": {
+            "type": "string",
+            "description": "Hộp số",
+            "enum": ["AUTO", "MANUAL"],
+            "example": "AUTO"
+          },
+          "seats": {
+            "type": "number",
+            "description": "Số chỗ ngồi",
+            "example": 5
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả chi tiết về xe",
+            "example": "Xe gia đình giữ gìn sạch sẽ, bảo dưỡng định kỳ."
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "description": "Giá thuê một ngày (VND)",
+            "example": 1200000
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "description": "Hỗ trợ nhận xe tự động không chìa (Keyless)",
+            "default": false
+          },
+          "amenities": {
+            "description": "Danh sách mã tiện nghi",
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photoMediaIds": {
+            "description": "Danh sách ID media ảnh xe đã upload và verify",
+            "example": ["50000000-0000-0000-0000-000000000001"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "brand",
+          "model",
+          "year",
+          "licensePlate",
+          "city",
+          "pickupAddress",
+          "carType",
+          "transmission",
+          "seats",
+          "description",
+          "pricePerDayVnd"
+        ]
+      },
+      "VehiclePhotoDto": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string",
+            "description": "ID media"
+          },
+          "position": {
+            "type": "number",
+            "description": "Thứ tự hiển thị (0 là ảnh bìa)"
+          }
+        },
+        "required": ["mediaId", "position"]
+      },
+      "OwnerVehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID định danh xe (UUID)"
+          },
+          "ownerId": {
+            "type": "string",
+            "description": "ID chủ xe (UUID)"
+          },
+          "brand": {
+            "type": "string",
+            "description": "Hãng xe"
+          },
+          "model": {
+            "type": "string",
+            "description": "Dòng xe"
+          },
+          "year": {
+            "type": "number",
+            "description": "Năm sản xuất"
+          },
+          "plateNormalized": {
+            "type": "string",
+            "description": "Biển số xe đã chuẩn hóa"
+          },
+          "city": {
+            "type": "string",
+            "description": "Thành phố"
+          },
+          "pickupAddress": {
+            "type": "string",
+            "description": "Địa chỉ đón/trả xe chính xác"
+          },
+          "carType": {
+            "type": "string",
+            "description": "Loại xe",
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
+          },
+          "transmission": {
+            "type": "string",
+            "description": "Hộp số",
+            "enum": ["AUTO", "MANUAL"]
+          },
+          "seats": {
+            "type": "number",
+            "description": "Số chỗ ngồi"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả xe"
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "description": "Giá thuê ngày (VND)"
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "description": "Hỗ trợ Keyless"
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái xe",
+            "enum": ["DRAFT", "PUBLISHED", "ARCHIVED"]
+          },
+          "version": {
+            "type": "number",
+            "description": "Phiên bản concurrency"
+          },
+          "amenities": {
+            "description": "Danh sách tiện nghi",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photos": {
+            "description": "Danh sách ảnh xe",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VehiclePhotoDto"
+            }
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm tạo xe"
+          },
+          "updatedAt": {
+            "type": "string",
+            "description": "Thời điểm cập nhật xe"
+          }
+        },
+        "required": [
+          "id",
+          "ownerId",
+          "brand",
+          "model",
+          "year",
+          "plateNormalized",
+          "city",
+          "pickupAddress",
+          "carType",
+          "transmission",
+          "seats",
+          "description",
+          "pricePerDayVnd",
+          "keylessSupported",
+          "status",
+          "version",
+          "amenities",
+          "photos",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "brand": {
+            "type": "string",
+            "description": "Hãng xe",
+            "example": "Toyota"
+          },
+          "model": {
+            "type": "string",
+            "description": "Dòng xe / Model",
+            "example": "Corolla Cross"
+          },
+          "year": {
+            "type": "number",
+            "description": "Năm sản xuất",
+            "example": 2023
+          },
+          "city": {
+            "type": "string",
+            "description": "Thành phố hoạt động",
+            "enum": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"]
+          },
+          "pickupAddress": {
+            "type": "string",
+            "description": "Địa chỉ đón/trả xe"
+          },
+          "carType": {
+            "type": "string",
+            "description": "Phân khúc xe",
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
+          },
+          "transmission": {
+            "type": "string",
+            "description": "Hộp số",
+            "enum": ["AUTO", "MANUAL"]
+          },
+          "seats": {
+            "type": "number",
+            "description": "Số chỗ ngồi"
+          },
+          "description": {
+            "type": "string",
+            "description": "Mô tả chi tiết"
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "description": "Giá thuê ngày VND",
+            "example": 1200000
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "description": "Hỗ trợ Keyless"
+          },
+          "amenities": {
+            "description": "Danh sách mã tiện nghi",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photoMediaIds": {
+            "description": "Danh sách ID media ảnh xe",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
       }
     }
   }
