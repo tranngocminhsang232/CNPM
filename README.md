@@ -1,6 +1,6 @@
 # Car Sharing và Keyless Rental
 
-Dự án Nhóm 7 theo Topic 18. Trạng thái hiện tại: chuẩn bị đặc tả và kế hoạch; chưa có source ứng dụng chạy được.
+Dự án Nhóm 7 theo Topic 18. Trạng thái hiện tại: Đã hoàn thành baseline G0 (PostgreSQL 18, MinIO/Silo, NestJS 12, Next.js 16, OpenAPI contracts, seed idempotent, suite test kiểm tra toàn diện và Playwright browser smoke test).
 
 - [Kế hoạch xây dựng web](docs/IMPLEMENTATION_PLAN.md)
 - [SRS phiên bản 1.1](docs/SRS.md)
@@ -14,7 +14,36 @@ Dự án Nhóm 7 theo Topic 18. Trạng thái hiện tại: chuẩn bị đặc 
 
 Ba báo cáo Word ở thư mục gốc được cập nhật theo cùng quyết định. Bản gốc trước sửa nằm trong backups/2026-10-27-originals.
 
-Bước triển khai tiếp theo là G0: tạo Next.js/NestJS workspace, môi trường PostgreSQL/object storage, migration, seed và vertical slice danh sách xe.
+## Lệnh Vận Hành và Kiểm Tra Workspace
+
+```bash
+# 1. Cài đặt dependencies (yêu cầu Node.js >= 24 và pnpm >= 12)
+pnpm install
+
+# 2. Sinh Prisma Client & triển khai migration CSDL
+pnpm exec prisma migrate deploy
+pnpm db:seed
+
+# 3. Kiểm tra kiểu tĩnh toàn bộ workspace
+pnpm run typecheck
+
+# 4. Kiểm tra quy tắc định dạng code (Prettier)
+pnpm run format:check
+pnpm run format
+
+# 5. Biên dịch toàn bộ packages (contracts, api, web)
+pnpm run build
+
+# 6. Chạy toàn bộ test suites backend (49 tests: unit, integration constraints, e2e)
+pnpm run test
+
+# 7. Chạy Playwright browser smoke test (khởi chạy tự động API và Web qua Chromium)
+pnpm run test:smoke
+
+# 8. Khởi chạy môi trường phát triển local
+pnpm --filter @carsharing/api run start:dev  # Backend API tại http://localhost:4000
+pnpm --filter @carsharing/web run dev        # Web Frontend tại http://localhost:3000
+```
 
 ## Hướng dẫn Khởi chạy Môi trường Hạ tầng Local (Docker Compose)
 

@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-11** (Kiểm tra xuyên suốt và CI baseline). Task G0-10 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G0-12** (Review trước khi chuyển G1). Task G0-11 đã hoàn tất và được ghi nhận.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -26,12 +26,36 @@ Task đề xuất tiếp theo: **G0-11** (Kiểm tra xuyên suốt và CI baseli
 | G0-08 | Seed/database provider | DONE | prisma/seed.ts idempotent (4 users, 13 vehicles, 4 bookings, calendar); PrismaService/Module tích hợp; health readiness phản ánh DB thật |
 | G0-09 | API đọc xe và OpenAPI | DONE | GET /vehicles và /vehicle-options; bộ lọc, phân trang, sort, calendar conflict, bảo mật thông tin riêng tư; OpenAPI sinh tại packages/contracts/openapi.json; 49 tests pass |
 | G0-10 | Contract client và UI danh sách | DONE | packages/contracts sinh type từ OpenAPI thật; web API client gọi qua same-origin proxy; UI hiển thị danh sách xe, filter, pagination, loading skeleton, empty state, error state; 0 import Prisma |
-| G0-11 | CI và kiểm tra G0 | TODO | Chưa chạy app build/test |
+| G0-11 | CI và kiểm tra G0 | DONE | Root scripts (build, typecheck, test, test:smoke, format); 49 tests API/constraints pass; Playwright browser smoke test pass trên Chromium (8.3s); .github/workflows/ci.yml hoàn chỉnh |
 | G0-12 | Review và chuẩn bị G1 | TODO | Phụ thuộc G0 hoàn tất |
 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-11 — Kiểm tra xuyên suốt và CI baseline
+Trạng thái: DONE
+Prerequisite: G0-07, G0-10
+Files thay đổi:
+- package.json (Định nghĩa các script toàn diện cho workspace: build, typecheck, test, test:smoke, format, format:check)
+- apps/web/package.json (Thêm @playwright/test và script test:smoke)
+- apps/web/playwright.config.ts (Cấu hình Playwright tự động quản lý vòng đời khởi chạy NestJS backend tại port 4000 và Next.js web tại port 3000)
+- apps/web/test/smoke.spec.ts (Bộ test Playwright trình duyệt: xác nhận tải trang, nhận danh sách xe thật từ DB, kiểm tra ẩn dữ liệu riêng tư, bộ lọc thành phố, checkbox Keyless, nút reset bộ lọc)
+- .github/workflows/ci.yml (Workflow CI GitHub Actions hoàn chỉnh: chạy trên ubuntu-latest với services Postgres 18 & MinIO/Silo, btree_gist extension, Prisma migration deploy, seed, format:check, typecheck, build, test và Playwright smoke test)
+- README.md (Cập nhật hướng dẫn vận hành workspace, các lệnh kiểm tra và trạng thái hoàn thành G0)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-11)
+Lệnh đã chạy và kết quả:
+- pnpm run typecheck: Chạy kiểm tra kiểu tĩnh song song cả 3 packages (contracts, api, web) đạt 0 lỗi (exit 0).
+- pnpm run build: Biên dịch tuần tự theo đồ thị phụ thuộc monorepo (contracts -> api -> web) thành công với bản build tĩnh tối ưu của Next.js Turbopack (exit 0).
+- pnpm run test: Toàn bộ 49/49 tests backend (12 unit, 18 DB constraints, 19 e2e) pass 100% trong 7.2 giây (exit 0).
+- pnpm run test:smoke: Playwright tự động bật 2 server, mở Chromium và kiểm tra giao diện danh sách xe thật từ PostgreSQL thành công trong 8.3 giây (exit 0).
+- pnpm run format:check: Toàn bộ file trong workspace đều tuân thủ đúng định dạng Prettier (exit 0).
+Ca chưa chạy và lý do: Không có. Tất cả các suite kiểm tra của G0 đều chạy thật với bằng chứng log thực tế.
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Giữ nguyên ranh giới không import Prisma vào frontend và giữ đầy đủ bộ constraint tests của G0-07.
+Commit hoặc điểm lưu diff nếu có: Sẽ commit sau khi lưu log tiến độ.
+```
 
 ```text
 Ngày: 27/10/2026
