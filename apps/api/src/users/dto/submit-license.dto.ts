@@ -128,9 +128,9 @@ export class DriverLicenseDto {
   })
   status!: string;
 
-  @ApiPropertyOptional({ description: 'Thời điểm duyệt xác minh', nullable: true })
+  @ApiPropertyOptional({ description: 'Thời điểm duyệt xác minh', type: String, nullable: true })
   verifiedAt?: string | null;
 
-  @ApiPropertyOptional({ description: 'Lý do từ chối xác thực', nullable: true })
+  @ApiPropertyOptional({ description: 'Lý do từ chối xác thực', type: String, nullable: true })
   rejectionReason?: string | null;
 }

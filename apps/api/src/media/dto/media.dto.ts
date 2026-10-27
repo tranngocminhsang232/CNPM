@@ -115,6 +115,6 @@ export class MediaObjectDto {
   })
   state!: string;
 
-  @ApiPropertyOptional({ description: 'Thời điểm xác minh file', nullable: true })
+  @ApiPropertyOptional({ description: 'Thời điểm xác minh file', type: String, nullable: true })
   verifiedAt?: string | null;
 }

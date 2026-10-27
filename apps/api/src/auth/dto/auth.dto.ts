@@ -77,6 +77,13 @@ export class UserDto {
   phone!: string;
 
   @ApiProperty({
+    description: 'Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED',
+    example: 'VERIFIED',
+    enum: ['NONE', 'PENDING', 'VERIFIED', 'REJECTED'],
+  })
+  kycStatus!: string;
+
+  @ApiProperty({
     description: 'Danh sách năng lực (Capability Model): RENTER, OWNER',
     example: ['RENTER', 'OWNER'],
     isArray: true,

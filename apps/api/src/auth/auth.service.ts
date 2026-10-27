@@ -263,12 +263,14 @@ export class AuthService {
     name: string;
     emailNormalized: string;
     phone: string;
+    kycStatus?: any;
   }): UserDto {
     return {
       id: user.id,
       name: user.name,
       email: user.emailNormalized,
       phone: user.phone,
+      kycStatus: user.kycStatus || 'NONE',
       // Capability Model (ADR-04): Mọi user đều có năng lực cả RENTER lẫn OWNER
       capabilities: ['RENTER', 'OWNER'],
     };

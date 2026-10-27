@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { fetchVehicles, VehicleSummary, PaginationMeta } from '../lib/api';
 import { VehicleCard } from '../components/VehicleCard';
 import { FilterBar } from '../components/FilterBar';
+import { UserNav } from '../components/UserNav';
 
 export default function HomePage() {
   const [vehicles, setVehicles] = useState<VehicleSummary[]>([]);
@@ -98,10 +99,11 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-800">
+            <div className="hidden sm:flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-800">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>Hệ thống trực tuyến</span>
             </div>
+            <UserNav />
           </div>
         </div>
       </header>

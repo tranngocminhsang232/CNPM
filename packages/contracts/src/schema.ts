@@ -175,6 +175,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/media/upload-intents': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Tạo upload intent và sinh Presigned PUT URL để upload trực tiếp lên S3/MinIO */
+    post: operations['MediaController_createUploadIntent'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/media/{id}/verify': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Xác thực file đã tải lên storage thành công (probe S3) và chuyển trạng thái sang VERIFIED */
+    post: operations['MediaController_verifyMedia'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/media/{id}/read-url': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy Presigned GET URL để xem file media (kiểm tra phân quyền tài liệu nhạy cảm) */
+    get: operations['MediaController_getReadUrl'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/v1/health': {
     parameters: {
       query?: never;
@@ -225,6 +276,59 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/owner/vehicles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy danh sách toàn bộ xe thuộc sở hữu của chủ xe hiện tại */
+    get: operations['OwnerVehiclesController_getOwnerVehicles'];
+    put?: never;
+    /** Chủ xe đăng ký tạo xe mới (trạng thái DRAFT) */
+    post: operations['OwnerVehiclesController_createVehicle'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/owner/vehicles/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Xem chi tiết quản lý một xe của chủ xe */
+    get: operations['OwnerVehiclesController_getOwnerVehicleById'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    /** Chủ xe cập nhật thông tin xe */
+    patch: operations['OwnerVehiclesController_updateVehicle'];
+    trace?: never;
+  };
+  '/api/v1/owner/vehicles/{id}/publish': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai */
+    post: operations['OwnerVehiclesController_publishVehicle'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -250,6 +354,12 @@ export interface components {
        * @example 0901111111
        */
       phone: string;
+      /**
+       * @description Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED
+       * @example VERIFIED
+       * @enum {string}
+       */
+      kycStatus: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
       /**
        * @description Danh sách năng lực (Capability Model): RENTER, OWNER
        * @example [
@@ -397,6 +507,94 @@ export interface components {
        */
       rejectionReason?: string;
     };
+    CreateUploadIntentDto: {
+      /**
+       * @description Mục đích sử dụng media (VEHICLE_PHOTO, INSPECTION_PHOTO, IDENTITY_DOCUMENT)
+       * @example IDENTITY_DOCUMENT
+       * @enum {string}
+       */
+      purpose: 'VEHICLE_PHOTO' | 'INSPECTION_PHOTO' | 'IDENTITY_DOCUMENT';
+      /**
+       * @description Định dạng MIME hợp lệ (chỉ hỗ trợ image/jpeg hoặc image/png)
+       * @example image/jpeg
+       * @enum {string}
+       */
+      mimeType: 'image/jpeg' | 'image/png';
+      /**
+       * @description Dung lượng file tính bằng bytes (tối đa 5.242.880 bytes ~ 5 MiB)
+       * @example 1048576
+       */
+      sizeBytes: number;
+      /**
+       * @description ID xe liên quan (nếu là VEHICLE_PHOTO)
+       * @example 10000000-0000-0000-0000-000000000001
+       */
+      vehicleId?: string;
+      /**
+       * @description ID booking liên quan (nếu là INSPECTION_PHOTO)
+       * @example 20000000-0000-0000-0000-000000000001
+       */
+      bookingId?: string;
+    };
+    UploadIntentResponseDto: {
+      /**
+       * @description ID định danh duy nhất của media (UUID)
+       * @example 50000000-0000-0000-0000-000000000001
+       */
+      mediaId: string;
+      /** @description Presigned URL để thực hiện PUT upload trực tiếp lên S3/MinIO */
+      uploadUrl: string;
+      /**
+       * @description Headers bắt buộc phải gửi kèm khi PUT lên S3
+       * @example {
+       *       "Content-Type": "image/jpeg"
+       *     }
+       */
+      headers: Record<string, never>;
+      /** @description Thời điểm hết hạn của presigned URL upload (ISO 8601 UTC) */
+      expiresAt: string;
+    };
+    MediaObjectDto: {
+      /**
+       * @description ID media (UUID)
+       * @example 50000000-0000-0000-0000-000000000001
+       */
+      id: string;
+      /**
+       * @description ID người tải lên (UUID)
+       * @example 00000000-0000-0000-0000-000000000001
+       */
+      uploaderId: string;
+      /**
+       * @description Mục đích sử dụng media
+       * @example IDENTITY_DOCUMENT
+       */
+      purpose: string;
+      /**
+       * @description Định dạng MIME
+       * @example image/jpeg
+       */
+      mimeType: string;
+      /**
+       * @description Dung lượng bytes
+       * @example 1048576
+       */
+      sizeBytes: number;
+      /**
+       * @description Trạng thái media
+       * @example VERIFIED
+       * @enum {string}
+       */
+      state: 'STAGING' | 'VERIFIED' | 'REJECTED';
+      /** @description Thời điểm xác minh file */
+      verifiedAt?: Record<string, never> | null;
+    };
+    MediaReadUrlResponseDto: {
+      /** @description Presigned URL để tải hoặc xem ảnh từ private S3 bucket */
+      url: string;
+      /** @description Thời điểm hết hạn của presigned URL xem file (ISO 8601 UTC) */
+      expiresAt: string;
+    };
     VehicleSummaryDto: {
       /** @example 10000000-0000-0000-0000-000000000001 */
       id: string;
@@ -493,6 +691,193 @@ export interface components {
        */
       transmissions: string[];
       amenities: components['schemas']['AmenityOptionDto'][];
+    };
+    CreateVehicleDto: {
+      /**
+       * @description Hãng xe
+       * @example Toyota
+       */
+      brand: string;
+      /**
+       * @description Dòng xe / Model
+       * @example Corolla Cross
+       */
+      model: string;
+      /**
+       * @description Năm sản xuất
+       * @example 2023
+       */
+      year: number;
+      /**
+       * @description Biển số xe
+       * @example 51K-123.45
+       */
+      licensePlate: string;
+      /**
+       * @description Thành phố hoạt động
+       * @example TP. Hồ Chí Minh
+       * @enum {string}
+       */
+      city: 'TP. Hồ Chí Minh' | 'Hà Nội' | 'Đà Nẵng';
+      /**
+       * @description Địa chỉ đón/trả xe chính xác
+       * @example 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh
+       */
+      pickupAddress: string;
+      /**
+       * @description Phân khúc xe
+       * @example SUV
+       * @enum {string}
+       */
+      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
+      /**
+       * @description Hộp số
+       * @example AUTO
+       * @enum {string}
+       */
+      transmission: 'AUTO' | 'MANUAL';
+      /**
+       * @description Số chỗ ngồi
+       * @example 5
+       */
+      seats: number;
+      /**
+       * @description Mô tả chi tiết về xe
+       * @example Xe gia đình giữ gìn sạch sẽ, bảo dưỡng định kỳ.
+       */
+      description: string;
+      /**
+       * @description Giá thuê một ngày (VND)
+       * @example 1200000
+       */
+      pricePerDayVnd: number;
+      /**
+       * @description Hỗ trợ nhận xe tự động không chìa (Keyless)
+       * @default false
+       */
+      keylessSupported: boolean;
+      /**
+       * @description Danh sách mã tiện nghi
+       * @example [
+       *       "GPS",
+       *       "BLUETOOTH",
+       *       "BACKUP_CAMERA"
+       *     ]
+       */
+      amenities?: string[];
+      /**
+       * @description Danh sách ID media ảnh xe đã upload và verify
+       * @example [
+       *       "50000000-0000-0000-0000-000000000001"
+       *     ]
+       */
+      photoMediaIds?: string[];
+    };
+    VehiclePhotoDto: {
+      /** @description ID media */
+      mediaId: string;
+      /** @description Thứ tự hiển thị (0 là ảnh bìa) */
+      position: number;
+    };
+    OwnerVehicleDto: {
+      /** @description ID định danh xe (UUID) */
+      id: string;
+      /** @description ID chủ xe (UUID) */
+      ownerId: string;
+      /** @description Hãng xe */
+      brand: string;
+      /** @description Dòng xe */
+      model: string;
+      /** @description Năm sản xuất */
+      year: number;
+      /** @description Biển số xe đã chuẩn hóa */
+      plateNormalized: string;
+      /** @description Thành phố */
+      city: string;
+      /** @description Địa chỉ đón/trả xe chính xác */
+      pickupAddress: string;
+      /**
+       * @description Loại xe
+       * @enum {string}
+       */
+      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
+      /**
+       * @description Hộp số
+       * @enum {string}
+       */
+      transmission: 'AUTO' | 'MANUAL';
+      /** @description Số chỗ ngồi */
+      seats: number;
+      /** @description Mô tả xe */
+      description: string;
+      /** @description Giá thuê ngày (VND) */
+      pricePerDayVnd: number;
+      /** @description Hỗ trợ Keyless */
+      keylessSupported: boolean;
+      /**
+       * @description Trạng thái xe
+       * @enum {string}
+       */
+      status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
+      /** @description Phiên bản concurrency */
+      version: number;
+      /** @description Danh sách tiện nghi */
+      amenities: string[];
+      /** @description Danh sách ảnh xe */
+      photos: components['schemas']['VehiclePhotoDto'][];
+      /** @description Thời điểm tạo xe */
+      createdAt: string;
+      /** @description Thời điểm cập nhật xe */
+      updatedAt: string;
+    };
+    UpdateVehicleDto: {
+      /**
+       * @description Hãng xe
+       * @example Toyota
+       */
+      brand?: string;
+      /**
+       * @description Dòng xe / Model
+       * @example Corolla Cross
+       */
+      model?: string;
+      /**
+       * @description Năm sản xuất
+       * @example 2023
+       */
+      year?: number;
+      /**
+       * @description Thành phố hoạt động
+       * @enum {string}
+       */
+      city?: 'TP. Hồ Chí Minh' | 'Hà Nội' | 'Đà Nẵng';
+      /** @description Địa chỉ đón/trả xe */
+      pickupAddress?: string;
+      /**
+       * @description Phân khúc xe
+       * @enum {string}
+       */
+      carType?: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
+      /**
+       * @description Hộp số
+       * @enum {string}
+       */
+      transmission?: 'AUTO' | 'MANUAL';
+      /** @description Số chỗ ngồi */
+      seats?: number;
+      /** @description Mô tả chi tiết */
+      description?: string;
+      /**
+       * @description Giá thuê ngày VND
+       * @example 1200000
+       */
+      pricePerDayVnd?: number;
+      /** @description Hỗ trợ Keyless */
+      keylessSupported?: boolean;
+      /** @description Danh sách mã tiện nghi */
+      amenities?: string[];
+      /** @description Danh sách ID media ảnh xe */
+      photoMediaIds?: string[];
     };
   };
   responses: never;
@@ -803,6 +1188,123 @@ export interface operations {
       };
     };
   };
+  MediaController_createUploadIntent: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateUploadIntentDto'];
+      };
+    };
+    responses: {
+      /** @description Sinh presigned URL thành công */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UploadIntentResponseDto'];
+        };
+      };
+      /** @description Dữ liệu không hợp lệ (MIME hoặc dung lượng sai quy định) */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MediaController_verifyMedia: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Xác thực file thành công, file được chuyển từ staging sang finalized */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MediaObjectDto'];
+        };
+      };
+      /** @description File chưa được tải lên storage thành công */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không có quyền xác thực media của người khác */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy media object */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  MediaController_getReadUrl: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Sinh URL xem file thành công (TTL 15 phút) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['MediaReadUrlResponseDto'];
+        };
+      };
+      /** @description Media chưa hoàn tất xác thực */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không có quyền truy cập tài liệu định danh này */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy media object */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   HealthController_check: {
     parameters: {
       query?: never;
@@ -888,6 +1390,190 @@ export interface operations {
       };
       /** @description Tham số tìm kiếm hoặc khoảng ngày không hợp lệ */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  OwnerVehiclesController_getOwnerVehicles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Danh sách xe cá nhân của chủ xe */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OwnerVehicleDto'][];
+        };
+      };
+    };
+  };
+  OwnerVehiclesController_createVehicle: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateVehicleDto'];
+      };
+    };
+    responses: {
+      /** @description Tạo xe mới thành công với trạng thái DRAFT */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OwnerVehicleDto'];
+        };
+      };
+      /** @description Dữ liệu đầu vào không hợp lệ */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Biển số xe đã được đăng ký trên hệ thống */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  OwnerVehiclesController_getOwnerVehicleById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chi tiết thông tin xe (bao gồm biển số và địa chỉ đón trả) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OwnerVehicleDto'];
+        };
+      };
+      /** @description Không có quyền truy cập xe của chủ khác */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy xe */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  OwnerVehiclesController_updateVehicle: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateVehicleDto'];
+      };
+    };
+    responses: {
+      /** @description Cập nhật xe thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OwnerVehicleDto'];
+        };
+      };
+      /** @description Dữ liệu cập nhật không hợp lệ */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không có quyền cập nhật xe của chủ khác */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy xe */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  OwnerVehiclesController_publishVehicle: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Xe được đăng công khai thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['OwnerVehicleDto'];
+        };
+      };
+      /** @description Không có quyền publish xe của chủ khác */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy xe */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Xe chưa đủ điều kiện publish (thiếu ảnh hoặc giấy tờ) */
+      422: {
         headers: {
           [name: string]: unknown;
         };

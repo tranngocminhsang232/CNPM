@@ -898,6 +898,12 @@
             "description": "Số điện thoại",
             "example": "0901111111"
           },
+          "kycStatus": {
+            "type": "string",
+            "description": "Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED",
+            "example": "VERIFIED",
+            "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"]
+          },
           "capabilities": {
             "description": "Danh sách năng lực (Capability Model): RENTER, OWNER",
             "example": ["RENTER", "OWNER"],
@@ -907,7 +913,7 @@
             }
           }
         },
-        "required": ["id", "name", "email", "phone", "capabilities"]
+        "required": ["id", "name", "email", "phone", "kycStatus", "capabilities"]
       },
       "AuthResponseDto": {
         "type": "object",

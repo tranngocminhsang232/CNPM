@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-05** (Tích Hợp Giao Diện Web Cho Auth, KYC & Quản Lý Xe). Task G1-04 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G1-06** (Kiểm Tra Tích Hợp Toàn Diện & Đóng Gói Milestone G1). Task G1-05 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
 
@@ -21,7 +21,7 @@ Task đề xuất tiếp theo: **G1-05** (Tích Hợp Giao Diện Web Cho Auth, 
 | G1-02 | Xác thực Bằng lái xe (KYC) | DONE | UsersModule, migration 20261027064407_add_driver_licenses_kyc áp dụng dev/test DB; check constraints PostgreSQL (đúng 12 số GPLX, tuổi >= 18, hạn >= 30 ngày, status PENDING -> VERIFIED/REJECTED, chặn nộp lại khi VERIFIED 409); KycVerifiedGuard; 81 tests pass; Playwright smoke pass |
 | G1-03 | Dịch vụ S3 Presigned URL | DONE | MediaModule, tích hợp @aws-sdk/client-s3 & @aws-sdk/s3-request-presigner, POST /media/upload-intents (presigned PUT, TTL 15m, giới hạn 5MB, JPEG/PNG), upload trực tiếp lên MinIO private bucket, POST /media/:id/verify (S3 HeadObject probe, move staging sang finalized, state VERIFIED), GET /media/:id/read-url (presigned GET URL, chặn tài liệu nhạy cảm GPLX 403, mở ảnh xe công khai); 98 tests pass (33 unit, 18 constraints, 47 e2e) |
 | G1-04 | Đăng ký & quản lý xe chủ xe | DONE | OwnerVehiclesController & Service, POST /owner/vehicles (trạng thái DRAFT, chuẩn hóa biển số plateNormalized, chặn trùng biển số 409, kiểm tra khoảng giá 100k-100M VND, liên kết tiện nghi và ảnh xe VERIFIED), GET /owner/vehicles (danh sách xe cá nhân kèm biển số và địa chỉ đón trả), GET /owner/vehicles/:id (bảo mật 403 nếu không phải chủ xe), PATCH /owner/vehicles/:id (cập nhật thông tin và tăng version concurrency), POST /owner/vehicles/:id/publish (yêu cầu tối thiểu 1 ảnh xe 422 PUBLISH_REQUIREMENTS_NOT_MET, chuyển PUBLISHED và xuất hiện trên public GET /vehicles không lộ biển số); 115 tests pass (40 unit, 18 constraints, 57 e2e) |
-| G1-05 | Web UI Auth, KYC & Quản lý xe | TODO | Chưa triển khai |
+| G1-05 | Web UI Auth, KYC & Quản lý xe | DONE | AuthProvider context, AuthModal (1-click quick login demo & standard form), UserNav (avatar, tên, badge KYC, menu dropdown), /profile/kyc (form nộp GPLX, upload ảnh trực tiếp lên MinIO qua S3 presigned URL, hiển thị thẻ hồ sơ GPLX), /owner/vehicles (bảng điều khiển xe cá nhân, gắn thẻ trạng thái DRAFT/PUBLISHED, nút publish xe), /owner/vehicles/new (form đăng ký xe mới, chọn tiện nghi, upload nhiều ảnh lên S3); 0 import Prisma; Next.js Turbopack build 100% không lỗi; Playwright smoke pass |
 | G1-06 | Kiểm tra tích hợp & đóng gói G1 | TODO | Chưa triển khai |
 
 ### Bảng tiến độ Milestone G0 (Baseline Kiến Trúc & Dữ Liệu - Hoàn tất 100%)
@@ -45,6 +45,33 @@ Task đề xuất tiếp theo: **G1-05** (Tích Hợp Giao Diện Web Cho Auth, 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-05 — Tích Hợp Giao Diện Web Cho Auth, KYC & Quản Lý Xe
+Trạng thái: DONE
+Prerequisite: G1-01, G1-02, G1-03, G1-04
+Files thay đổi:
+- packages/contracts/openapi.json & schema.ts (Tái sinh types toàn bộ endpoints Auth, KYC, Media, Owner Vehicles)
+- packages/contracts/src/index.ts (Xuất types alias typed client cho Web)
+- apps/web/src/lib/api.ts (Mở rộng client: fetchCsrfToken, loginApi, logoutApi, fetchCurrentUser, fetchDriverLicense, submitDriverLicense, createUploadIntent, uploadToPresignedUrl, verifyMedia, fetchOwnerVehicles, createVehicle, publishVehicle)
+- apps/web/src/lib/auth-context.tsx (AuthProvider quản lý phiên, cookie HttpOnly, x-csrf-token, kycStatus)
+- apps/web/src/components/AuthModal.tsx (Modal đăng nhập 1-click tài khoản demo renter1/owner1/owner2 và đăng nhập thủ công)
+- apps/web/src/components/UserNav.tsx (Header user avatar, badge KYC đa trạng thái, menu chuyển nhanh trang hồ sơ & đăng xe)
+- apps/web/src/app/layout.tsx (Bao bọc AuthProvider toàn ứng dụng)
+- apps/web/src/app/page.tsx (Gắn UserNav lên header trang chủ cạnh liveness status)
+- apps/web/src/app/profile/kyc/page.tsx (Trang hồ sơ bằng lái xe: upload ảnh GPLX trực tiếp lên MinIO qua S3 presigned URL, gửi thông tin và hiển thị trạng thái duyệt PENDING/VERIFIED/REJECTED)
+- apps/web/src/app/owner/vehicles/page.tsx (Trang quản lý xe của chủ xe: danh sách xe cá nhân, biển số, địa chỉ, trạng thái DRAFT/PUBLISHED, nút publish xe)
+- apps/web/src/app/owner/vehicles/new/page.tsx (Form đăng ký xe mới: đầy đủ thông số kỹ thuật, checkbox Keyless, tiện nghi, upload nhiều ảnh lên S3)
+Lệnh kiểm tra thực tế:
+- pnpm --filter @carsharing/web run typecheck (0 lỗi TypeScript)
+- pnpm --filter @carsharing/web run build (Next.js 16 Turbopack build thành công 5 routes tĩnh)
+- pnpm --filter @carsharing/web run test:smoke (Playwright smoke test pass trên Chromium 7.9s)
+- pnpm run format (Prettier format toàn workspace)
+Ghi chú kiến trúc & an toàn:
+- Không import bất kỳ file nào từ @prisma/client hay apps/api vào web frontend.
+- Tải file ảnh thực hiện trực tiếp giữa Browser và MinIO S3 qua Presigned PUT URL, không tải qua API backend giúp tiết kiệm băng thông và tối ưu hiệu năng.
+```
 
 ```text
 Ngày: 27/10/2026
