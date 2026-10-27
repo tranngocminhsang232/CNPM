@@ -8,6 +8,7 @@ import { MediaModule } from './media/media.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { PricingModule } from './pricing/pricing.module';
+import { PromotionsModule } from './promotions/promotions.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -24,6 +25,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     HealthModule,
     VehiclesModule,
     PricingModule,
+    PromotionsModule,
   ],
 })
 export class AppModule implements NestModule {

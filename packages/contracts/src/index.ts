@@ -72,3 +72,9 @@ export type CalculatePricingPayload = components['schemas']['CalculatePricingDto
 export type QuoteResponse = {
   data: Quote;
 };
+
+export type ValidatedPromotion = components['schemas']['ValidatedPromotionDto'];
+export type ValidatePromotionPayload = components['schemas']['ValidatePromotionDto'];
+export type ValidatePromotionResponse = {
+  data: ValidatedPromotion;
+};

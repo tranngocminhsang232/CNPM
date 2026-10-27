@@ -397,6 +397,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/promotions/validate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Kiểm tra tính hợp lệ và mức giảm giá của voucher khuyến mãi
+     * @description Kiểm tra mã khuyến mãi theo giá trị đơn hàng, hạn sử dụng, số lượt dùng và tính mức chiết khấu VND chính xác.
+     */
+    post: operations['PromotionsController_validatePromotion'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1127,6 +1147,72 @@ export interface components {
        * @example SUMMER2026
        */
       voucherCode?: string;
+    };
+    ValidatePromotionDto: {
+      /**
+       * @description Mã khuyến mãi cần kiểm tra (không phân biệt hoa thường)
+       * @example WELCOME2026
+       */
+      code: string;
+      /**
+       * @description Tổng tiền thuê xe trước giảm giá (VND) để kiểm tra điều kiện áp dụng
+       * @example 2000000
+       */
+      subtotalVnd: number;
+      /**
+       * @description Mã định danh xe (nếu có context xe cụ thể)
+       * @example 10000000-0000-0000-0000-000000000001
+       */
+      vehicleId?: string;
+    };
+    ValidatedPromotionDto: {
+      /**
+       * @description Mã khuyến mãi chuẩn hóa viết hoa
+       * @example WELCOME2026
+       */
+      code: string;
+      /** @example Chào mừng thành viên mới: Giảm 10% tối đa 200.000 VND */
+      description: string;
+      /**
+       * @example PERCENTAGE
+       * @enum {string}
+       */
+      discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
+      /**
+       * @description Giá trị giảm (% hoặc số tiền VND)
+       * @example 10
+       */
+      discountValue: number;
+      /**
+       * @description Mức giảm tối đa (VND) cho loại %
+       * @example 200000
+       */
+      maxDiscountVnd?: Record<string, never>;
+      /**
+       * @description Giá trị đơn hàng tối thiểu (VND)
+       * @example 500000
+       */
+      minOrderValueVnd: number;
+      /**
+       * @description Số tiền giảm giá thực tế tính ra (VND)
+       * @example 200000
+       */
+      discountVnd: number;
+      /**
+       * @description Tổng tiền trước khi giảm giá (VND)
+       * @example 2000000
+       */
+      subtotalBeforeDiscountVnd: number;
+      /**
+       * @description Tổng phụ sau khi trừ số tiền giảm giá (VND)
+       * @example 1800000
+       */
+      subtotalAfterDiscountVnd: number;
+      /**
+       * @description Mã khuyến mãi hợp lệ
+       * @example true
+       */
+      valid: boolean;
     };
   };
   responses: never;
@@ -1969,6 +2055,44 @@ export interface operations {
         content?: never;
       };
       /** @description Không tìm thấy xe */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  PromotionsController_validatePromotion: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ValidatePromotionDto'];
+      };
+    };
+    responses: {
+      /** @description Mã khuyến mãi hợp lệ, trả về số tiền được giảm */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ValidatedPromotionDto'];
+        };
+      };
+      /** @description Mã khuyến mãi không hợp lệ, hết hạn, hết lượt dùng hoặc chưa đạt đơn hàng tối thiểu */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Mã khuyến mãi không tồn tại */
       404: {
         headers: {
           [name: string]: unknown;

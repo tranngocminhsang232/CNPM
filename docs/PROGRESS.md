@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G2-03** (Hệ Thống Mã Khuyến Mãi & Giảm Giá Voucher). Task G2-02 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G2-04** (Giao Diện Web Chi Tiết Xe & Bảng Dự Toán Chi Phí Tương Tác). Task G2-03 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
 
@@ -19,7 +19,7 @@ Task đề xuất tiếp theo: **G2-03** (Hệ Thống Mã Khuyến Mãi & Giả
 | --- | --- | --- | --- |
 | G2-01 | Bộ lọc & tìm kiếm xe nâng cao | DONE | Mở rộng QueryVehiclesDto (q, brand, amenities, sort: price_asc, price_desc, popularity_desc, rating_desc); VehiclesService hỗ trợ lọc keyword, brand, mảng tiện nghi bắt buộc, sorting quan hệ đếm bookings; GET /vehicles/:id trả về chi tiết xe công khai (bảo mật tuyệt đối: không lộ biển số plateNormalized và địa chỉ pickupAddress); 132 tests backend pass (46 unit, 18 constraints, 68 e2e); OpenAPI và contracts tái sinh và build thành công |
 | G2-02 | Động cơ tính giá & snapshot chi phí | DONE | PricingModule, PricingService, PricingController (POST /pricing/quote, POST /pricing/calculate, GET /vehicles/:id/pricing-preview); logic tính số ngày làm tròn 24h, phụ phí cuối tuần T7/CN 10%, gói bảo hiểm BASIC/STANDARD/PREMIUM, phí dịch vụ sàn 10%, tiền cọc lũy tiến 5M/10M/15M VND; bảo đảm đẳng thức toán học total = subtotal + serviceFee + deposit khớp 100% check constraint PostgreSQL; kiểm tra xung đột lịch xe; 146 tests backend pass (53 unit, 18 constraints, 75 e2e); OpenAPI và contracts tái sinh; Playwright smoke pass |
-| G2-03 | Hệ thống mã khuyến mãi & giảm giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-03 | Hệ thống mã khuyến mãi & giảm giá | DONE | Migration 20261027080137_add_promotions; check constraints PostgreSQL (discount > 0, % <= 100, min order >= 0, max discount > 0, valid dates, usages >= 0); seed 5 promotions thực tế; PromotionsModule, Service, Controller (POST /promotions/validate); tích hợp PricingService tính toán voucher discount trừ subtotal trước khi tính phí dịch vụ; 166 tests backend pass (63 unit, 18 constraints, 85 e2e); OpenAPI & contracts cập nhật; Playwright smoke pass |
 | G2-04 | Web UI chi tiết xe & dự toán giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 | G2-05 | Kiểm tra tích hợp & đóng gói G2 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 
@@ -55,6 +55,36 @@ Task đề xuất tiếp theo: **G2-03** (Hệ Thống Mã Khuyến Mãi & Giả
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G2-03 — Hệ Thống Mã Khuyến Mãi & Giảm Giá (Promotion & Voucher Engine)
+Trạng thái: DONE
+Prerequisite: G2-02
+Files thay đổi:
+- prisma/schema.prisma (Bổ sung enum DiscountType: PERCENTAGE, FIXED_AMOUNT; model Promotion và PromotionUsage kèm quan hệ User, Booking)
+- prisma/migrations/20261027080137_add_promotions/migration.sql (Migration PostgreSQL kèm 7 business check constraints: discount > 0, % <= 100, min order >= 0, max discount > 0, valid dates, usages >= 0)
+- prisma/seed.ts (Seed 5 mã khuyến mãi đại diện: WELCOME2026, CARSHARE50K, VIPSUMMER, SOLDOUT, INACTIVE)
+- apps/api/src/promotions/dto/validate-promotion.dto.ts (ValidatePromotionDto, ValidatedPromotionDto)
+- apps/api/src/promotions/promotions.service.ts (Logic kiểm tra mã tồn tại 404, kiểm tra trạng thái hoạt động 400, hạn dùng 400, lượt dùng 400, đơn hàng tối thiểu 400, tính số tiền giảm chính xác theo % hoặc số tiền cố định VND, chặn giảm quá subtotal)
+- apps/api/src/promotions/promotions.controller.ts (POST /promotions/validate trả về @HttpCode 200)
+- apps/api/src/promotions/promotions.module.ts (Đăng ký PromotionsModule vào AppModule và xuất sang PricingModule)
+- apps/api/src/pricing/pricing.service.ts (Tích hợp PromotionsService: tự động tính voucher discount khi có voucherCode trong CalculatePricingDto, trừ vào subtotal trước khi tính phí dịch vụ)
+- apps/api/src/promotions/promotions.service.spec.ts (9 unit tests kiểm tra % discount, cap maxDiscount, fixed amount, 404 not found, inactive, expired, limit exceeded, min order not met, không giảm âm)
+- apps/api/src/pricing/pricing.service.spec.ts (Cập nhật 8 unit tests kiểm tra tính giá khi có voucher discount)
+- apps/api/test/promotions.e2e-spec.ts (10 e2e tests kiểm tra toàn diện API validate mã khuyến mãi và tích hợp với /pricing/quote)
+- apps/api/test/constraints.integration-spec.ts (Cập nhật dọn dẹp bảng quan hệ mới khi chạy kiểm thử PostgreSQL)
+- tools/export-openapi.mjs & packages/contracts (Tái sinh openapi.json, sinh schema.ts và export ValidatedPromotion, ValidatePromotionPayload, ValidatePromotionResponse)
+- apps/web/src/lib/api.ts (Thêm validatePromotionApi có type contract an toàn)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/api test -> 63/63 unit tests pass
+- pnpm --filter @carsharing/api test:constraints -> 18/18 PostgreSQL integration tests pass
+- pnpm --filter @carsharing/api test:e2e -> 85/85 e2e tests pass (166 tests backend pass 100%)
+- pnpm --filter @carsharing/web test:smoke -> 2/2 browser tests pass (9.6s)
+- pnpm run typecheck -> 0 lỗi TypeScript trên 3 packages
+- pnpm run format -> All matched files formatted cleanly
+Kết quả: Hoàn thành toàn diện Task G2-03. Động cơ voucher khuyến mãi hoạt động chuẩn xác, tích hợp liền mạch với động cơ tính giá.
+```
 
 ```text
 Ngày: 27/10/2026

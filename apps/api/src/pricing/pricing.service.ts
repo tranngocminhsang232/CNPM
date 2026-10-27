@@ -5,6 +5,7 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PromotionsService } from '../promotions/promotions.service';
 import { CalculatePricingDto, InsurancePackageTier } from './dto/calculate-pricing.dto';
 import { QuoteDto } from './dto/quote.dto';
 
@@ -15,7 +16,10 @@ const DAY_MS = 24 * HOUR_MS;
 
 @Injectable()
 export class PricingService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly promotionsService: PromotionsService,
+  ) {}
 
   async calculateQuote(dto: CalculatePricingDto): Promise<QuoteDto> {
     const start = new Date(dto.startAt);
@@ -81,11 +85,19 @@ export class PricingService {
     }
     const insuranceFeeVnd = insuranceDaily * rentalDays;
 
-    // 5. Discount (Default 0 in baseline G2-02; connected in G2-03)
-    const discountVnd = 0;
+    // 5. Discount Calculation (G2-03 Promotion Engine)
+    let discountVnd = 0;
+    const subtotalBeforeDiscountVnd = baseRentVnd + peakSurchargeVnd + insuranceFeeVnd;
+    if (dto.voucherCode && dto.voucherCode.trim().length > 0) {
+      const promotionResult = await this.promotionsService.validatePromotion(
+        dto.voucherCode,
+        subtotalBeforeDiscountVnd,
+      );
+      discountVnd = promotionResult.discountVnd;
+    }
 
     // 6. Subtotal
-    const subtotalVnd = Math.max(0, baseRentVnd + peakSurchargeVnd + insuranceFeeVnd - discountVnd);
+    const subtotalVnd = Math.max(0, subtotalBeforeDiscountVnd - discountVnd);
 
     // 7. Platform Service Fee (10% of baseRent + peakSurcharge)
     const serviceFeeVnd = Math.round((baseRentVnd + peakSurchargeVnd) * 0.1);

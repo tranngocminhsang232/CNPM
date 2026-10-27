@@ -2,14 +2,31 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { PricingService } from './pricing.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { PromotionsService } from '../promotions/promotions.service';
 import { InsurancePackageTier } from './dto/calculate-pricing.dto';
 
-describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', () => {
+describe('PricingService (Unit) - G2-02 & G2-03 Pricing & Voucher Engine', () => {
   const mockVehicle = {
     id: '10000000-0000-0000-0000-000000000001',
     pricePerDayVnd: 1000000n, // 1.000.000 VND / day
     status: 'PUBLISHED',
   };
+
+  const defaultMockPromotions = {
+    validatePromotion: async (code: string, subtotalVnd: number) => {
+      if (code.toUpperCase() === 'WELCOME2026') {
+        const discount = Math.min(Math.round(subtotalVnd * 0.1), 200000);
+        return {
+          code: 'WELCOME2026',
+          discountVnd: discount,
+          subtotalBeforeDiscountVnd: subtotalVnd,
+          subtotalAfterDiscountVnd: subtotalVnd - discount,
+          valid: true,
+        };
+      }
+      throw new Error('Not found');
+    },
+  } as unknown as PromotionsService;
 
   it('1. calculates standard quote for 1 day weekday with BASIC insurance', async () => {
     const mockPrisma = {
@@ -21,7 +38,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
       },
     } as unknown as PrismaService;
 
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     // Monday to Tuesday (24h)
     const quote = await service.calculateQuote({
@@ -55,7 +72,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
       },
     } as unknown as PrismaService;
 
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     // Friday 08:00 to Sunday 08:00 (48h: 2 days, includes Saturday)
     const quote = await service.calculateQuote({
@@ -82,7 +99,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
       },
     } as unknown as PrismaService;
 
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     // 2 days Monday to Wednesday
     const quote = await service.calculateQuote({
@@ -115,7 +132,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
       },
     } as unknown as PrismaService;
 
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     const quote = await service.calculateQuote({
       vehicleId: mockVehicle.id,
@@ -129,7 +146,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
 
   it('5. rejects invalid date order (endAt <= startAt) with 400 VALIDATION_ERROR', async () => {
     const mockPrisma = {} as unknown as PrismaService;
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     await assert.rejects(
       async () =>
@@ -144,7 +161,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
 
   it('6. rejects rental duration under 1 hour with 422 INVALID_RENTAL_PERIOD', async () => {
     const mockPrisma = {} as unknown as PrismaService;
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     await assert.rejects(
       async () =>
@@ -164,7 +181,7 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
       },
     } as unknown as PrismaService;
 
-    const service = new PricingService(mockPrisma);
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
 
     await assert.rejects(
       async () =>
@@ -175,5 +192,35 @@ describe('PricingService (Unit) - G2-02 Pricing Engine & Snapshot Calculation', 
         }),
       (err: any) => err.status === 404 && err.response.code === 'NOT_FOUND',
     );
+  });
+
+  it('8. applies voucher discount and recalculates subtotal and total accurately', async () => {
+    const mockPrisma = {
+      vehicle: {
+        findUnique: async () => mockVehicle,
+      },
+      vehicleCalendar: {
+        findFirst: async () => null,
+      },
+    } as unknown as PrismaService;
+
+    const service = new PricingService(mockPrisma, defaultMockPromotions);
+
+    const quote = await service.calculateQuote({
+      vehicleId: mockVehicle.id,
+      startAt: '2026-11-02T08:00:00.000Z',
+      endAt: '2026-11-04T08:00:00.000Z', // 2 days = 2M base
+      insurancePackage: InsurancePackageTier.BASIC,
+      voucherCode: 'WELCOME2026', // 10% capped at 200k -> 200k discount
+    });
+
+    assert.equal(quote.rentalDays, 2);
+    assert.equal(quote.breakdown.baseRentVnd, 2000000);
+    assert.equal(quote.breakdown.discountVnd, 200000);
+    assert.equal(quote.breakdown.subtotalVnd, 1800000); // 2M - 200k = 1.8M
+    assert.equal(quote.breakdown.serviceFeeVnd, 200000); // 10% of 2M
+    assert.equal(quote.breakdown.depositVnd, 5000000);
+    assert.equal(quote.breakdown.totalVnd, 7000000); // 1.8M + 200k + 5M = 7M
+    assert.equal(quote.totalVnd, quote.subtotalVnd + quote.serviceFeeVnd + quote.depositVnd);
   });
 });

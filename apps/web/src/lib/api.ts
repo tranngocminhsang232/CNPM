@@ -19,6 +19,9 @@ import type {
   Quote,
   QuoteResponse,
   CalculatePricingPayload,
+  ValidatedPromotion,
+  ValidatePromotionPayload,
+  ValidatePromotionResponse,
   SubmitDriverLicensePayload,
   UploadIntentResponse,
   UploadIntentResponseWrapper,
@@ -40,6 +43,8 @@ export type {
   Quote,
   UploadIntentResponse,
   User,
+  ValidatedPromotion,
+  ValidatePromotionPayload,
   VehicleDetail,
   VehicleOptions,
   VehicleSummary,
@@ -361,5 +366,24 @@ export async function publishVehicle(id: string, csrfToken: string): Promise<Own
     },
   });
   const json = await handleResponse<OwnerVehicleResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Promotion & Voucher APIs
+// -----------------------------------------------------------------------------
+
+export async function validatePromotionApi(
+  payload: ValidatePromotionPayload,
+): Promise<ValidatedPromotion> {
+  const res = await fetch('/api/v1/promotions/validate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<ValidatePromotionResponse>(res);
   return json.data;
 }

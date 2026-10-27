@@ -91,6 +91,11 @@ enum KycStatus {
   REJECTED
 }
 
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
 // -----------------------------------------------------------------------------
 // Models
 // -----------------------------------------------------------------------------
@@ -116,6 +121,7 @@ model User {
   inspections     Inspection[]
   bookingEvents   BookingEvent[]
   notifications   Notification[]
+  promotionUsages PromotionUsage[]
 
   @@map("users")
 }
@@ -273,6 +279,7 @@ model Booking {
   events             BookingEvent[]
   notifications      Notification[]
   mediaObjects       MediaObject[]
+  promotionUsages    PromotionUsage[]
 
   @@index([renterId, createdAt])
   @@index([ownerId, status])
@@ -452,4 +459,41 @@ model Notification {
 
   @@unique([userId, eventId, type])
   @@map("notifications")
+}
+
+model Promotion {
+  id               String       @id @default(uuid()) @db.Uuid
+  code             String       @unique
+  description      String
+  discountType     DiscountType @map("discount_type")
+  discountValue    BigInt       @map("discount_value")
+  maxDiscountVnd   BigInt?      @map("max_discount_vnd")
+  minOrderValueVnd BigInt       @default(0) @map("min_order_value_vnd")
+  validFrom        DateTime     @map("valid_from") @db.Timestamptz(6)
+  validUntil       DateTime     @map("valid_until") @db.Timestamptz(6)
+  maxUsage         Int          @default(100) @map("max_usage")
+  usedCount        Int          @default(0) @map("used_count")
+  isActive         Boolean      @default(true) @map("is_active")
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  usages PromotionUsage[]
+
+  @@map("promotions")
+}
+
+model PromotionUsage {
+  id          String   @id @default(uuid()) @db.Uuid
+  promotionId String   @map("promotion_id") @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  bookingId   String?  @map("booking_id") @db.Uuid
+  discountVnd BigInt   @map("discount_vnd")
+  usedAt      DateTime @default(now()) @map("used_at") @db.Timestamptz(6)
+
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+  booking   Booking?  @relation(fields: [bookingId], references: [id], onDelete: SetNull)
+
+  @@index([promotionId, userId])
+  @@map("promotion_usages")
 }

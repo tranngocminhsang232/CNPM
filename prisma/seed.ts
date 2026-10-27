@@ -7,6 +7,7 @@ import {
   CalendarKind,
   MediaPurpose,
   MediaState,
+  DiscountType,
 } from '@prisma/client';
 
 const prisma = new PrismaClient();
@@ -51,6 +52,13 @@ export const DEMO_IDS = {
     IN_PROGRESS: '30000000-0000-0000-0000-000000000002',
     APPROVED: '30000000-0000-0000-0000-000000000003',
     OWNER_BLOCK: '30000000-0000-0000-0000-000000000004',
+  },
+  PROMOTIONS: {
+    WELCOME2026: '70000000-0000-0000-0000-000000000001',
+    CARSHARE50K: '70000000-0000-0000-0000-000000000002',
+    VIPSUMMER: '70000000-0000-0000-0000-000000000003',
+    SOLDOUT: '70000000-0000-0000-0000-000000000004',
+    INACTIVE: '70000000-0000-0000-0000-000000000005',
   },
 };
 
@@ -657,6 +665,91 @@ async function main() {
   });
 
   console.log('✓ Seeded representative bookings, pricing snapshots, and calendar entries.');
+
+  // 6. Seed Representative Promotions / Vouchers
+  const promotionsData = [
+    {
+      id: DEMO_IDS.PROMOTIONS.WELCOME2026,
+      code: 'WELCOME2026',
+      description: 'Chào mừng thành viên mới: Giảm 10% tối đa 200.000 VND cho đơn từ 500.000 VND',
+      discountType: DiscountType.PERCENTAGE,
+      discountValue: BigInt(10),
+      maxDiscountVnd: BigInt(200000),
+      minOrderValueVnd: BigInt(500000),
+      validFrom: new Date('2026-01-01T00:00:00.000Z'),
+      validUntil: new Date('2026-12-31T23:59:59.000Z'),
+      maxUsage: 1000,
+      usedCount: 5,
+      isActive: true,
+    },
+    {
+      id: DEMO_IDS.PROMOTIONS.CARSHARE50K,
+      code: 'CARSHARE50K',
+      description: 'Giảm ngay 50.000 VND cho đơn thuê từ 300.000 VND',
+      discountType: DiscountType.FIXED_AMOUNT,
+      discountValue: BigInt(50000),
+      maxDiscountVnd: null,
+      minOrderValueVnd: BigInt(300000),
+      validFrom: new Date('2026-01-01T00:00:00.000Z'),
+      validUntil: new Date('2026-12-31T23:59:59.000Z'),
+      maxUsage: 500,
+      usedCount: 12,
+      isActive: true,
+    },
+    {
+      id: DEMO_IDS.PROMOTIONS.VIPSUMMER,
+      code: 'VIPSUMMER',
+      description:
+        'Ưu đãi hè rực rỡ: Giảm 20% tối đa 500.000 VND cho đơn từ 2.000.000 VND (Đã hết hạn)',
+      discountType: DiscountType.PERCENTAGE,
+      discountValue: BigInt(20),
+      maxDiscountVnd: BigInt(500000),
+      minOrderValueVnd: BigInt(2000000),
+      validFrom: new Date('2026-06-01T00:00:00.000Z'),
+      validUntil: new Date('2026-08-31T23:59:59.000Z'),
+      maxUsage: 100,
+      usedCount: 88,
+      isActive: true,
+    },
+    {
+      id: DEMO_IDS.PROMOTIONS.SOLDOUT,
+      code: 'SOLDOUT',
+      description: 'Mã khuyến mãi đã hết lượt sử dụng',
+      discountType: DiscountType.PERCENTAGE,
+      discountValue: BigInt(15),
+      maxDiscountVnd: BigInt(300000),
+      minOrderValueVnd: BigInt(500000),
+      validFrom: new Date('2026-01-01T00:00:00.000Z'),
+      validUntil: new Date('2026-12-31T23:59:59.000Z'),
+      maxUsage: 10,
+      usedCount: 10,
+      isActive: true,
+    },
+    {
+      id: DEMO_IDS.PROMOTIONS.INACTIVE,
+      code: 'INACTIVE',
+      description: 'Mã khuyến mãi tạm dừng hoạt động',
+      discountType: DiscountType.FIXED_AMOUNT,
+      discountValue: BigInt(100000),
+      maxDiscountVnd: null,
+      minOrderValueVnd: BigInt(500000),
+      validFrom: new Date('2026-01-01T00:00:00.000Z'),
+      validUntil: new Date('2026-12-31T23:59:59.000Z'),
+      maxUsage: 50,
+      usedCount: 0,
+      isActive: false,
+    },
+  ];
+
+  for (const promo of promotionsData) {
+    await prisma.promotion.upsert({
+      where: { code: promo.code },
+      update: promo,
+      create: promo,
+    });
+  }
+
+  console.log(`✓ Seeded ${promotionsData.length} representative promotions.`);
   console.log('--- Seed Finished Successfully ---');
 }
 
