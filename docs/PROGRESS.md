@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G4-03** (Web UI Bàn Giao Xe, Chụp Ảnh Checklist & Điều Khiển Khóa Xe - Web UI Handover, Inspection & Keyless Control). Task G4-02 đã hoàn tất 100% và được kiểm thử toàn diện.
+Task đề xuất tiếp theo: **G4-04** (Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G4 - Milestone G4 Integration & Packaging). Task G4-03 đã hoàn tất 100% và được kiểm thử toàn diện.
 
 ### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi)
 
@@ -19,7 +19,7 @@ Task đề xuất tiếp theo: **G4-03** (Web UI Bàn Giao Xe, Chụp Ảnh Chec
 | --- | --- | --- | --- |
 | G4-01 | Quy trình bàn giao & checklist 4 góc xe | DONE | InspectionsModule, InspectionsService, InspectionsController; PUT /bookings/:id/inspections (lưu bản nháp CHECK_IN / CHECK_OUT, odometer >= 0, fuel 0-100%, optimistic locking version); POST /bookings/:id/inspections/:type/finalize (kiểm tra bắt buộc đủ 4 góc FRONT, REAR, LEFT, RIGHT từ ảnh VERIFIED, chốt acknowledged, ghi nhận BookingEvent INSPECTION_{type}_FINALIZED & Notification, replay idempotent); GET /bookings/:id/inspections & GET /bookings/:id/inspections/:type; bảo mật 401 unauth, 403 CSRF & stranger; 253 tests backend pass 100% (108 unit, 18 constraints, 127 e2e); OpenAPI & contracts cập nhật; web api client (saveInspectionApi, finalizeInspectionApi, fetchInspectionsApi, fetchInspectionByTypeApi) |
 | G4-02 | Bộ điều khiển khóa ảo Keyless & simulator | DONE | KeylessModule, KeylessService, KeylessController, KeylessSimulatorAdapter; POST /bookings/:id/keyless-operations (Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409, xác thực nghiêm ngặt BR-09: chỉ Renter 403, keylessSupported 422, APPROVED/IN_PROGRESS 409, khung giờ thuê kèm 15m buffer 422, bắt buộc chốt CHECK_IN inspection 422, partial unique index keyless_one_unresolved_per_booking chặn lệnh PENDING/UNKNOWN song song 409, tự động chuyển APPROVED -> IN_PROGRESS khi mở khóa thành công, ghi BookingEvent TRIP_STARTED & Notification cho chủ xe); GET /bookings/:id/keyless-operations/:opId; POST /bookings/:id/keyless-operations/:opId/reconcile đối soát viễn thông; 280 tests backend pass 100% (122 unit, 18 constraints, 140 e2e); OpenAPI & contracts cập nhật; web client (triggerKeylessOperationApi, fetchKeylessOperationApi, reconcileKeylessOperationApi) |
-| G4-03 | Web UI bàn giao, chụp checklist & khóa xe | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-03 | Web UI bàn giao, chụp checklist & khóa xe | DONE | InspectionChecklistModal (chụp & upload 4 góc FRONT, REAR, LEFT, RIGHT trực tiếp lên MinIO S3 qua Presigned PUT URL, xác thực media, nhập odo & mức pin/xăng, lưu nháp, ký chốt biên bản); KeylessRemoteWidget (giao diện remote chìa khóa số cao cấp automotive dark-mode, hiển thị trạng thái viễn thông IoT, banner quy định an toàn bắt buộc checklist, nút MỞ KHÓA / KHÓA CỬA kèm Idempotency-Key, tự động cập nhật trạng thái cửa và chuyển booking sang IN_PROGRESS không cần reload trang); tích hợp trang chi tiết /bookings/[id]; Playwright browser E2E test inspection-keyless.spec.ts pass 100% trên Chromium; 5/5 Playwright suites pass xanh toàn diện (25.5s); typecheck & build sạch 100% |
 | G4-04 | Kiểm tra tích hợp & đóng gói G4 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
 
 ### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Hoàn tất 100%)
@@ -73,6 +73,69 @@ Task đề xuất tiếp theo: **G4-03** (Web UI Bàn Giao Xe, Chụp Ảnh Chec
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G4-03 — Web UI Bàn Giao Xe, Chụp Ảnh Checklist & Điều Khiển Khóa Xe (Web UI Handover, Inspection & Keyless Control)
+Trạng thái: DONE
+Prerequisite: G4-01, G4-02
+Files thay đổi:
+- apps/web/src/components/InspectionChecklistModal.tsx (Modal chụp & upload trực tiếp 4 góc xe FRONT/REAR/LEFT/RIGHT lên MinIO S3 qua Presigned PUT URL, xác thực media, nhập ODO & mức pin/nhiên liệu %, lưu nháp, chốt biên bản kiểm tra nhận xe)
+- apps/web/src/components/KeylessRemoteWidget.tsx (Widget chìa khóa thông minh kỹ thuật số phong cách automotive hiện đại, chỉ báo sóng GSM IoT, cảnh báo quy định an toàn checklist bắt buộc, nút MỞ KHÓA / KHÓA CỬA kèm Idempotency-Key chống trùng lặp, chuyển trạng thái chuyến đi sang IN_PROGRESS không cần reload trang)
+- apps/web/src/app/bookings/[id]/page.tsx (Tích hợp thẻ Biên bản bàn giao xe và Widget chìa khóa thông minh, hỗ trợ loadBooking silent refresh tránh unmount giao diện khi thực hiện lệnh khóa ảo)
+- apps/api/src/media/dto/media.dto.ts (Chấp nhận tất cả UUID hợp lệ cho vehicleId và bookingId trong CreateUploadIntentDto)
+- apps/web/test/inspection-keyless.spec.ts (Playwright browser E2E test kiểm chứng toàn bộ luồng nhận xe: chặn mở khóa khi chưa checklist, upload 4 ảnh xe thật lên MinIO S3, ký chốt biên bản bàn giao, mở khóa ảo khởi động chuyến đi sang IN_PROGRESS, khóa an toàn)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> apps/api nest build và apps/web Next.js Turbopack build thành công 100%
+- pnpm --filter @carsharing/web exec playwright test test/inspection-keyless.spec.ts -> PASS 100% (4.2s)
+- pnpm run test:smoke -> 5/5 Playwright browser test suites pass 100% trong 25.5s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G4-03. Toàn bộ luồng bàn giao nhận xe 4 góc, lưu trữ ảnh MinIO S3, khóa ảo Keyless telematics và kiểm thử tự động trình duyệt Playwright hoạt động chuẩn xác, không có mock stub.
+```
+
+```text
+Ngày: 27/10/2026
+Task: G4-02 — Bộ Điều Khiển Khóa Ảo Keyless & Adapter Simulator (Virtual Keyless Control & Hardware Simulator)
+Trạng thái: DONE
+Prerequisite: G4-01
+Files thay đổi:
+- apps/api/src/keyless/dto/trigger-keyless.dto.ts (TriggerKeylessDto, KeylessAction enum LOCK/UNLOCK, simulateResult tùy chọn)
+- apps/api/src/keyless/dto/keyless-operation-response.dto.ts (KeylessOperationResponseDto)
+- apps/api/src/keyless/adapters/keyless-simulator.adapter.ts (KeylessSimulatorAdapter mô phỏng telematics IoT, độ trễ mạng, dung lượng pin, GPS, trạng thái cửa xe và đối soát)
+- apps/api/src/keyless/keyless.service.ts (KeylessService hiện thực quy tắc BR-09: chỉ renter, xe keylessSupported, APPROVED/IN_PROGRESS, time window + 15m buffer, bắt buộc chốt CHECK_IN inspection, partial unique index keyless_one_unresolved_per_booking, tự động chuyển APPROVED -> IN_PROGRESS khi mở khóa thành công, ghi BookingEvent TRIP_STARTED & Notification cho chủ xe, canonical sha256 hash Header Idempotency-Key)
+- apps/api/src/keyless/keyless.controller.ts (POST /bookings/:id/keyless-operations, GET /bookings/:id/keyless-operations/:opId, POST /bookings/:id/keyless-operations/:opId/reconcile)
+- apps/api/src/keyless/keyless.module.ts, apps/api/src/app.module.ts
+- apps/api/src/keyless/keyless.service.spec.ts (14 unit tests pass 100%)
+- apps/api/test/keyless.e2e-spec.ts (13 e2e tests pass 100%)
+- tools/export-openapi.mjs, packages/contracts (tái sinh OpenAPI và TypeScript client)
+- apps/web/src/lib/api.ts (triggerKeylessOperationApi, fetchKeylessOperationApi, reconcileKeylessOperationApi)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/api test -> 14/14 unit tests pass, 13/13 e2e tests pass
+- pnpm run test -> 280/280 backend tests pass 100% (122 unit, 18 constraints, 140 e2e)
+Kết quả: Hoàn thành Task G4-02 với đầy đủ quy tắc viễn thông IoT, khóa ảo Keyless an toàn, bảo đảm tính bất biến và chuẩn mực tài liệu SRS.
+```
+
+```text
+Ngày: 27/10/2026
+Task: G4-01 — Quy Trình Bàn Giao & Checklist 4 Góc Xe (Handover & Inspection Engine)
+Trạng thái: DONE
+Prerequisite: G3-04
+Files thay đổi:
+- apps/api/src/inspections/dto/save-inspection.dto.ts (SaveInspectionDto: type CHECK_IN/CHECK_OUT, odometer >= 0, fuel 0-100%, 4 photos với mediaId)
+- apps/api/src/inspections/dto/finalize-inspection.dto.ts (FinalizeInspectionDto)
+- apps/api/src/inspections/dto/inspection-response.dto.ts (InspectionResponseDto, InspectionPhotoDto)
+- apps/api/src/inspections/inspections.service.ts (InspectionsService: upsert bản nháp inspection, optimistic locking version, kiểm tra 4 góc xe bắt buộc từ ảnh VERIFIED S3, ký chốt biên bản, ghi BookingEvent INSPECTION_{type}_FINALIZED & Notification)
+- apps/api/src/inspections/inspections.controller.ts (PUT /bookings/:id/inspections, POST /bookings/:id/inspections/:type/finalize, GET /bookings/:id/inspections, GET /bookings/:id/inspections/:type)
+- apps/api/src/inspections/inspections.module.ts
+- apps/api/src/inspections/inspections.service.spec.ts (10 unit tests pass 100%)
+- apps/api/test/inspections.e2e-spec.ts (12 e2e tests pass 100%)
+- apps/web/src/lib/api.ts (saveInspectionApi, finalizeInspectionApi, fetchInspectionsApi, fetchInspectionByTypeApi)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/api test -> 10/10 unit tests pass, 12/12 e2e tests pass
+- pnpm run test -> 253/253 backend tests pass 100%
+Kết quả: Hoàn thành Task G4-01 với đầy đủ quy trình kiểm tra xe kỹ thuật số trước khi nhận và sau khi trả.
+```
 
 ```text
 Ngày: 27/10/2026

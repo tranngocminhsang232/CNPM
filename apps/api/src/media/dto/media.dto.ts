@@ -49,7 +49,7 @@ export class CreateUploadIntentDto {
     example: '10000000-0000-0000-0000-000000000001',
   })
   @IsOptional()
-  @IsUUID('4', { message: 'vehicleId phải là UUID v4' })
+  @IsUUID('all', { message: 'vehicleId phải là UUID hợp lệ' })
   vehicleId?: string;
 
   @ApiPropertyOptional({
@@ -57,7 +57,7 @@ export class CreateUploadIntentDto {
     example: '20000000-0000-0000-0000-000000000001',
   })
   @IsOptional()
-  @IsUUID('4', { message: 'bookingId phải là UUID v4' })
+  @IsUUID('all', { message: 'bookingId phải là UUID hợp lệ' })
   bookingId?: string;
 }
 

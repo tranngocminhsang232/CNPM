@@ -3,11 +3,20 @@
 import React, { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../lib/auth-context';
-import { fetchBookingDetailApi, cancelBookingApi, createPaymentIntentApi } from '../../../lib/api';
-import type { Booking, Payment } from '../../../lib/api';
+import {
+  fetchBookingDetailApi,
+  cancelBookingApi,
+  createPaymentIntentApi,
+  fetchInspectionsApi,
+  type Booking,
+  type Payment,
+  type Inspection,
+} from '../../../lib/api';
 import { BookingStatusBadge } from '../../../components/BookingStatusBadge';
 import { PaymentModal } from '../../../components/PaymentModal';
 import { UserNav } from '../../../components/UserNav';
+import { InspectionChecklistModal } from '../../../components/InspectionChecklistModal';
+import { KeylessRemoteWidget } from '../../../components/KeylessRemoteWidget';
 
 interface BookingDetailPageProps {
   params: Promise<{ id: string }>;
@@ -19,6 +28,8 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
   const { user, csrfToken, isLoading: isAuthLoading } = useAuth();
 
   const [booking, setBooking] = useState<Booking | null>(null);
+  const [inspections, setInspections] = useState<Inspection[]>([]);
+  const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -50,18 +61,25 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
     });
   };
 
-  const loadBooking = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await fetchBookingDetailApi(bookingId);
-      setBooking(data);
-    } catch (err: any) {
-      setError(err.message || 'Không thể tải thông tin chi tiết đơn đặt xe.');
-    } finally {
-      setIsLoading(false);
-    }
-  }, [bookingId]);
+  const loadBooking = useCallback(
+    async (silent = false) => {
+      if (!silent) setIsLoading(true);
+      setError(null);
+      try {
+        const [data, inspList] = await Promise.all([
+          fetchBookingDetailApi(bookingId),
+          fetchInspectionsApi(bookingId).catch(() => []),
+        ]);
+        setBooking(data);
+        setInspections(inspList);
+      } catch (err: any) {
+        setError(err.message || 'Không thể tải thông tin chi tiết đơn đặt xe.');
+      } finally {
+        if (!silent) setIsLoading(false);
+      }
+    },
+    [bookingId],
+  );
 
   useEffect(() => {
     loadBooking();
@@ -149,6 +167,13 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
   const isRenter = user?.id === booking.renterId;
   const isOwner = user?.id === booking.ownerId;
+  const checkInInspection = inspections.find((i) => i.type === 'CHECK_IN');
+  const isInspectionFinalized = Boolean(
+    checkInInspection?.acknowledged && checkInInspection?.finalizedAt,
+  );
+  const isKeylessSupported = Boolean(booking.vehicle?.keylessSupported);
+  const showKeylessWidget =
+    isKeylessSupported && (booking.status === 'APPROVED' || booking.status === 'IN_PROGRESS');
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
@@ -367,10 +392,71 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Handover & Inspection Checklist Card */}
+            {(booking.status === 'APPROVED' ||
+              booking.status === 'IN_PROGRESS' ||
+              booking.status === 'COMPLETED') && (
+              <div
+                id="booking-inspection-card"
+                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Biên bản bàn giao xe (Checklist 4 góc)
+                      </h3>
+                      <span
+                        id="inspection-status-pill"
+                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          isInspectionFinalized
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                            : 'bg-amber-100 text-amber-700 border border-amber-300'
+                        }`}
+                      >
+                        {isInspectionFinalized ? '✓ Đã chốt biên bản' : '• Chưa hoàn tất'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      {isInspectionFinalized
+                        ? `Biên bản bàn giao nhận xe đã được chốt (Odo: ${checkInInspection?.odometerKm} km, Xăng/Pin: ${checkInInspection?.fuelPercent}%).`
+                        : 'Vui lòng chụp ảnh 4 góc xe và ghi nhận số km trước khi nhận xe.'}
+                    </p>
+                  </div>
+
+                  <button
+                    id="btn-open-inspection-modal"
+                    type="button"
+                    onClick={() => setIsInspectionModalOpen(true)}
+                    className={`flex-shrink-0 rounded-xl px-4 py-2.5 text-xs font-bold shadow-sm transition active:scale-95 ${
+                      isInspectionFinalized
+                        ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20'
+                    }`}
+                  >
+                    {isInspectionFinalized ? 'Xem biên bản đã ký' : '📷 Bắt đầu kiểm tra xe'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Right Column: Pricing Snapshot */}
-          <div className="md:col-span-5">
+          {/* Right Column: Keyless & Pricing Snapshot */}
+          <div className="md:col-span-5 space-y-6">
+            {/* Keyless Smart Key Fob Widget */}
+            {showKeylessWidget && (
+              <KeylessRemoteWidget
+                booking={booking}
+                inspectionFinalized={isInspectionFinalized}
+                onOpenInspection={() => setIsInspectionModalOpen(true)}
+                onKeylessSuccess={async (newStatus) => {
+                  setBooking((prev) => (prev ? { ...prev, status: newStatus as any } : prev));
+                  await loadBooking(true);
+                }}
+              />
+            )}
+
             <div
               id="booking-pricing-snapshot"
               className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg space-y-4"
@@ -496,6 +582,19 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
           onClose={() => setIsPaymentModalOpen(false)}
           payment={paymentIntent}
           onPaymentSuccess={handlePaymentSuccess}
+        />
+
+        {/* Inspection Checklist Modal */}
+        <InspectionChecklistModal
+          isOpen={isInspectionModalOpen}
+          onClose={() => setIsInspectionModalOpen(false)}
+          bookingId={bookingId}
+          initialInspection={checkInInspection}
+          onFinalized={async () => {
+            setIsInspectionModalOpen(false);
+            await loadBooking(true);
+          }}
+          readOnly={isOwner}
         />
       </main>
     </div>
