@@ -12,9 +12,9 @@
     "start:prod": "node dist/main",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\"",
-    "test:e2e": "tsc -p tsconfig.json && node --test \"dist/test/**/*.e2e-spec.js\"",
+    "test:e2e": "tsc -p tsconfig.json && node --test --test-concurrency=1 \"dist/test/**/*.e2e-spec.js\"",
     "test:constraints": "tsc -p tsconfig.json && node --test \"dist/test/constraints.integration-spec.js\"",
-    "test:all": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\" \"dist/test/**/*.e2e-spec.js\" \"dist/test/constraints.integration-spec.js\""
+    "test:all": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\" \"dist/test/constraints.integration-spec.js\" && node --test --test-concurrency=1 \"dist/test/**/*.e2e-spec.js\""
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1156.0",

@@ -90,3 +90,11 @@ export type BookingsListResponse = {
   data: Booking[];
   meta: PaginationMeta;
 };
+
+export type Payment = components['schemas']['PaymentResponseDto'];
+export type CreatePaymentIntentPayload = components['schemas']['CreatePaymentIntentDto'];
+export type PaymentWebhookPayload = components['schemas']['PaymentWebhookDto'];
+export type SimulatePaymentPayload = components['schemas']['SimulatePaymentDto'];
+export type PaymentResponse = {
+  data: Payment;
+};

@@ -130,6 +130,7 @@ describe('Bookings API (e2e) - G3-01 Booking Lifecycle & State Machine', () => {
     const oldIds = oldBookings.map((b) => b.id);
     if (oldIds.length > 0) {
       await prisma.notification.deleteMany({ where: { bookingId: { in: oldIds } } });
+      await prisma.payment.deleteMany({ where: { bookingId: { in: oldIds } } });
       await prisma.bookingEvent.deleteMany({ where: { bookingId: { in: oldIds } } });
       await prisma.idempotencyRecord.deleteMany({ where: { bookingId: { in: oldIds } } });
       await prisma.vehicleCalendar.deleteMany({ where: { bookingId: { in: oldIds } } });

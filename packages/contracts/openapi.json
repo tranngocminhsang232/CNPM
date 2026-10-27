@@ -1382,6 +1382,138 @@
         "summary": "Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)",
         "tags": ["Bookings"]
       }
+    },
+    "/api/v1/payments/create-intent": {
+      "post": {
+        "description": "Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.",
+        "operationId": "PaymentsController_createPaymentIntent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentIntentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tạo ý định thanh toán thành công, trả về redirect URL",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Tạo ý định thanh toán (tiền cọc giữ chỗ hoặc toàn bộ)",
+        "tags": ["Payments"]
+      }
+    },
+    "/api/v1/payments/webhook": {
+      "post": {
+        "description": "Nhận thông báo trạng thái giao dịch từ đối tác thanh toán, đối soát chữ ký số và cập nhật sự kiện cho chuyến đi.",
+        "operationId": "PaymentsController_processWebhook",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PaymentWebhookDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Xử lý webhook thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "IPN / Webhook từ cổng thanh toán (Xác thực chữ ký HMAC-SHA512)",
+        "tags": ["Payments"]
+      }
+    },
+    "/api/v1/payments/simulate": {
+      "post": {
+        "description": "Tự động sinh chữ ký HMAC-SHA512 hợp lệ để giả lập giao dịch thành công hoặc thất bại trong môi trường phát triển.",
+        "operationId": "PaymentsController_simulatePayment",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulatePaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Giả lập thanh toán thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Giả lập thanh toán sandbox (Hỗ trợ demo & testing)",
+        "tags": ["Payments"]
+      }
+    },
+    "/api/v1/payments/{ref}": {
+      "get": {
+        "operationId": "PaymentsController_getPaymentByRef",
+        "parameters": [
+          {
+            "name": "ref",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết thông tin giao dịch thanh toán",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaymentResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Tra cứu trạng thái giao dịch theo transactionRef",
+        "tags": ["Payments"]
+      }
     }
   },
   "info": {
@@ -1418,6 +1550,10 @@
     {
       "name": "Bookings",
       "description": "Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi"
+    },
+    {
+      "name": "Payments",
+      "description": "Cổng thanh toán sandbox, ký số HMAC-SHA512 và ký quỹ chuyến đi"
     }
   ],
   "servers": [],
@@ -2866,6 +3002,145 @@
           }
         },
         "required": ["reason"]
+      },
+      "CreatePaymentIntentDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "example": "20000000-0000-0000-0000-000000000001",
+            "description": "Mã định danh đơn đặt xe (UUID)"
+          },
+          "paymentType": {
+            "type": "string",
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT"],
+            "default": "DEPOSIT",
+            "description": "Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)"
+          },
+          "returnUrl": {
+            "type": "string",
+            "example": "http://localhost:3000/bookings/20000000-0000-0000-0000-000000000001",
+            "description": "URL chuyển hướng sau khi hoàn tất thanh toán"
+          }
+        },
+        "required": ["bookingId"]
+      },
+      "PaymentResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "50000000-0000-0000-0000-000000000001"
+          },
+          "bookingId": {
+            "type": "string",
+            "example": "20000000-0000-0000-0000-000000000001"
+          },
+          "renterId": {
+            "type": "string",
+            "example": "00000000-0000-0000-0000-000000000003"
+          },
+          "amountVnd": {
+            "type": "number",
+            "example": 10000000,
+            "description": "Số tiền thanh toán (VND)"
+          },
+          "paymentType": {
+            "type": "string",
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT"],
+            "example": "DEPOSIT"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
+            "example": "PENDING"
+          },
+          "provider": {
+            "type": "string",
+            "example": "SANDBOX_GATEWAY"
+          },
+          "transactionRef": {
+            "type": "string",
+            "example": "TX-1730000000-a1b2c3d4"
+          },
+          "paymentUrl": {
+            "type": "object",
+            "example": "/checkout/payment-gateway?ref=TX-1730000000-a1b2c3d4"
+          },
+          "gatewayTxnId": {
+            "type": "object",
+            "example": "VNP-20261027-998877",
+            "nullable": true
+          },
+          "paidAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-27T10:00:00.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "bookingId",
+          "renterId",
+          "amountVnd",
+          "paymentType",
+          "status",
+          "provider",
+          "transactionRef",
+          "createdAt"
+        ]
+      },
+      "PaymentWebhookDto": {
+        "type": "object",
+        "properties": {
+          "transactionRef": {
+            "type": "string",
+            "example": "TX-1730000000-a1b2c3d4",
+            "description": "Mã đối soát giao dịch"
+          },
+          "gatewayTxnId": {
+            "type": "string",
+            "example": "VNP-20261027-998877",
+            "description": "Mã giao dịch từ cổng thanh toán đối tác"
+          },
+          "amountVnd": {
+            "type": "number",
+            "example": 10000000,
+            "description": "Số tiền giao dịch thực tế (VND)"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
+            "example": "SUCCESS",
+            "description": "Trạng thái kết quả từ cổng thanh toán"
+          },
+          "signature": {
+            "type": "string",
+            "example": "a5d89f...",
+            "description": "Chữ ký số HMAC-SHA512 để xác thực tính toàn vẹn"
+          }
+        },
+        "required": ["transactionRef", "amountVnd", "status", "signature"]
+      },
+      "SimulatePaymentDto": {
+        "type": "object",
+        "properties": {
+          "transactionRef": {
+            "type": "string",
+            "example": "TX-1730000000-a1b2c3d4",
+            "description": "Mã tham chiếu giao dịch cần giả lập"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
+            "example": "SUCCESS",
+            "description": "Trạng thái muốn giả lập"
+          }
+        },
+        "required": ["transactionRef", "status"]
       }
     }
   }

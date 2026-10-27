@@ -28,6 +28,7 @@ async function run() {
     .addTag('Pricing', 'Động cơ tính toán biểu phí thuê xe')
     .addTag('Promotions', 'Quản lý và áp dụng mã khuyến mãi')
     .addTag('Bookings', 'Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi')
+    .addTag('Payments', 'Cổng thanh toán sandbox, ký số HMAC-SHA512 và ký quỹ chuyến đi')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -30,6 +30,7 @@ describe('PostgreSQL Constraints Integration Test (G0-07)', () => {
     await prisma.$executeRawUnsafe('DELETE FROM notifications;');
     await prisma.$executeRawUnsafe('DELETE FROM booking_events;');
     await prisma.$executeRawUnsafe('DELETE FROM idempotency_records;');
+    await prisma.$executeRawUnsafe('DELETE FROM payments;');
     await prisma.$executeRawUnsafe('DELETE FROM bookings;');
     await prisma.$executeRawUnsafe('DELETE FROM vehicle_photos;');
     await prisma.$executeRawUnsafe('DELETE FROM vehicle_amenities;');

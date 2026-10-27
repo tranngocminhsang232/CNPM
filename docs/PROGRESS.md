@@ -11,14 +11,14 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G3-02** (Đặt Cọc Giữ Chỗ & Cổng Thanh Toán Sandbox - Payment Gateway, Escrow & Webhook). Task G3-01 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G3-03** (Giao Diện Web Đặt Xe, Thanh Toán Giữ Chỗ & Quản Lý Chuyến Đi - Web UI Booking Checkout, Payment & Trip Management). Task G3-02 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Booking & Payment)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G3-01 | Động cơ đặt xe & quản lý vòng đời | DONE | BookingsModule, BookingsService, BookingsController (POST /bookings, GET /bookings, GET /bookings/:id, POST /bookings/:id/approve, POST /bookings/:id/reject, POST /bookings/:id/cancel); Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409; KYC verification check (403); chặn tự thuê xe chính mình (403); kiểm tra trượt giá (409); Prisma transaction nguyên tử (Booking REQUESTED, PricingSnapshot bất biến, VehicleCalendar BOOKING GiST exclusion, IdempotencyRecord, BookingEvent, Notification, PromotionUsage); che giấu biển số và địa chỉ đón xe cho đến khi APPROVED; 204 tests backend pass 100% (85 unit, 18 constraints, 101 e2e); OpenAPI & contracts cập nhật; web api client đồng bộ |
-| G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | DONE | Model Payment, enum PaymentType (DEPOSIT, RENTAL_FEE, FULL_PAYMENT), PaymentStatus (PENDING, SUCCESS, FAILED, CANCELLED); Migration 20261027091500_add_payments; check constraint PostgreSQL payments_amount_positive (amount_vnd > 0); PaymentsService (HMAC-SHA512 checksum canonical, createPaymentIntent, processWebhook, simulatePayment, getPaymentByRef); PaymentsController (POST /payments/create-intent, POST /payments/webhook @PublicCsrf, POST /payments/simulate @PublicCsrf, GET /payments/:ref); xử lý webhook idempotency replay; ghi nhận sự kiện PAYMENT_RECEIVED và notification; 231 tests backend pass 100% (98 unit, 18 constraints, 115 e2e); OpenAPI & contracts cập nhật; web client (createPaymentIntentApi, simulatePaymentApi, fetchPaymentByRefApi) |
 | G3-03 | Web UI đặt xe & quản lý chuyến đi | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
 | G3-04 | Kiểm tra tích hợp & đóng gói G3 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
 
@@ -64,6 +64,34 @@ Task đề xuất tiếp theo: **G3-02** (Đặt Cọc Giữ Chỗ & Cổng Than
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G3-02 — Đặt Cọc Giữ Chỗ & Cổng Thanh Toán Sandbox (Payment Gateway, Escrow & Webhook)
+Trạng thái: DONE
+Prerequisite: G3-01
+Files thay đổi:
+- prisma/schema.prisma (Bổ sung enum PaymentType: DEPOSIT, RENTAL_FEE, FULL_PAYMENT; enum PaymentStatus: PENDING, SUCCESS, FAILED, CANCELLED; model Payment với quan hệ User và Booking, BigInt amountVnd, provider, transactionRef, gatewayTxnId, signature, paidAt, paymentUrl)
+- prisma/migrations/20261027091500_add_payments/migration.sql (Tạo bảng payments, index transactionRef, bookingId, check constraint payments_amount_positive: amount_vnd > 0; áp dụng cho cả carsharing_dev và carsharing_test)
+- apps/api/src/payments/dto/create-payment-intent.dto.ts (CreatePaymentIntentDto với bookingId UUID regex, enum PaymentType)
+- apps/api/src/payments/dto/payment-response.dto.ts (PaymentResponseDto chi tiết kết quả thanh toán)
+- apps/api/src/payments/dto/payment-webhook.dto.ts (PaymentWebhookDto và SimulatePaymentDto)
+- apps/api/src/payments/payments.service.ts (computePaymentSignature HMAC-SHA512 canonical `transactionRef|amountVnd|status`, createPaymentIntent xác thực quyền khách thuê, bóc tách tiền cọc từ snapshot, sinh transactionRef và paymentUrl; processWebhook đối soát chữ ký số, idempotent replay, cập nhật SUCCESS, ghi nhận event PAYMENT_RECEIVED và notification; simulatePayment hỗ trợ testing & demo; getPaymentByRef bảo mật cho khách thuê và chủ xe)
+- apps/api/src/payments/payments.controller.ts (POST /payments/create-intent SessionGuard/CsrfGuard, POST /payments/webhook @PublicCsrf @HttpCode 200, POST /payments/simulate @PublicCsrf @HttpCode 200, GET /payments/:ref SessionGuard)
+- apps/api/src/payments/payments.module.ts (Đăng ký PaymentsModule vào AppModule)
+- apps/api/src/payments/payments.service.spec.ts (11 unit tests kiểm tra HMAC signature, intent creation, webhook processing, idempotency, simulate, authorization)
+- apps/api/test/payments.e2e-spec.ts (14 e2e tests kiểm tra toàn diện API: 401 unauthenticated, 403 non-renter, 404 missing booking, 201 DEPOSIT intent, 201 FULL_PAYMENT intent, 401/403/200 GET payment by ref, 403 forged HMAC, 404 missing ref, 200 SUCCESS webhook & payment event, 200 idempotent replay, 200 simulate payment)
+- apps/api/test/constraints.integration-spec.ts & bookings.e2e-spec.ts (Cập nhật dọn dẹp bảng payments tránh vi phạm RESTRICT foreign key)
+- apps/api/package.json (Thêm cờ --test-concurrency=1 cho test:e2e và test:all chống xung đột session đồng thời)
+- tools/export-openapi.mjs & packages/contracts (Đăng ký tag Payments, tái sinh openapi.json, sinh schema.ts và export Payment, CreatePaymentIntentPayload, SimulatePaymentPayload, PaymentResponse)
+- apps/web/src/lib/api.ts (Cung cấp createPaymentIntentApi, simulatePaymentApi, fetchPaymentByRefApi)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> apps/api nest build và @carsharing/contracts build thành công
+- pnpm run test -> 231/231 backend tests pass 100% trong 53s (98 unit, 18 constraints, 115 e2e)
+- pnpm run format -> All files formatted cleanly with Prettier (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G3-02. Cổng thanh toán sandbox với cơ chế ký số HMAC-SHA512, ký quỹ chuyến đi (escrow), tạo intent và xử lý webhook idempotent vận hành chuẩn xác, bảo mật và đồng bộ từ backend tới contracts và web client.
+```
 
 ```text
 Ngày: 27/10/2026

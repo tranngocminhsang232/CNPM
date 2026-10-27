@@ -10,6 +10,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
 import { PricingModule } from './pricing/pricing.module';
 import { PromotionsModule } from './promotions/promotions.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { PaymentsModule } from './payments/payments.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -28,6 +29,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     PricingModule,
     PromotionsModule,
     BookingsModule,
+    PaymentsModule,
   ],
 })
 export class AppModule implements NestModule {

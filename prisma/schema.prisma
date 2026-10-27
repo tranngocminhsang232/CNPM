@@ -96,6 +96,19 @@ enum DiscountType {
   FIXED_AMOUNT
 }
 
+enum PaymentType {
+  DEPOSIT
+  RENTAL_FEE
+  FULL_PAYMENT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  CANCELLED
+}
+
 // -----------------------------------------------------------------------------
 // Models
 // -----------------------------------------------------------------------------
@@ -122,6 +135,7 @@ model User {
   bookingEvents   BookingEvent[]
   notifications   Notification[]
   promotionUsages PromotionUsage[]
+  payments        Payment[]
 
   @@map("users")
 }
@@ -280,6 +294,7 @@ model Booking {
   notifications      Notification[]
   mediaObjects       MediaObject[]
   promotionUsages    PromotionUsage[]
+  payments           Payment[]
 
   @@index([renterId, createdAt])
   @@index([ownerId, status])
@@ -497,3 +512,28 @@ model PromotionUsage {
   @@index([promotionId, userId])
   @@map("promotion_usages")
 }
+
+model Payment {
+  id             String        @id @default(uuid()) @db.Uuid
+  bookingId      String        @map("booking_id") @db.Uuid
+  renterId       String        @map("renter_id") @db.Uuid
+  amountVnd      BigInt        @map("amount_vnd")
+  paymentType    PaymentType   @map("payment_type")
+  status         PaymentStatus @default(PENDING)
+  provider       String        @default("SANDBOX_GATEWAY")
+  transactionRef String        @unique @map("transaction_ref")
+  paymentUrl     String?       @map("payment_url")
+  gatewayTxnId   String?       @map("gateway_txn_id")
+  signature      String?
+  paidAt         DateTime?     @map("paid_at") @db.Timestamptz(6)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  renter  User    @relation(fields: [renterId], references: [id], onDelete: Restrict)
+
+  @@index([bookingId, status])
+  @@index([renterId, createdAt])
+  @@map("payments")
+}
+

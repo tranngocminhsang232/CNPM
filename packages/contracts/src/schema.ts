@@ -521,6 +521,83 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/payments/create-intent': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Tạo ý định thanh toán (tiền cọc giữ chỗ hoặc toàn bộ)
+     * @description Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.
+     */
+    post: operations['PaymentsController_createPaymentIntent'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/payments/webhook': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * IPN / Webhook từ cổng thanh toán (Xác thực chữ ký HMAC-SHA512)
+     * @description Nhận thông báo trạng thái giao dịch từ đối tác thanh toán, đối soát chữ ký số và cập nhật sự kiện cho chuyến đi.
+     */
+    post: operations['PaymentsController_processWebhook'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/payments/simulate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Giả lập thanh toán sandbox (Hỗ trợ demo & testing)
+     * @description Tự động sinh chữ ký HMAC-SHA512 hợp lệ để giả lập giao dịch thành công hoặc thất bại trong môi trường phát triển.
+     */
+    post: operations['PaymentsController_simulatePayment'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/payments/{ref}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Tra cứu trạng thái giao dịch theo transactionRef */
+    get: operations['PaymentsController_getPaymentByRef'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1455,6 +1532,99 @@ export interface components {
        * @example Khách đổi lịch công tác nên cần hủy chuyến
        */
       reason: string;
+    };
+    CreatePaymentIntentDto: {
+      /**
+       * @description Mã định danh đơn đặt xe (UUID)
+       * @example 20000000-0000-0000-0000-000000000001
+       */
+      bookingId: string;
+      /**
+       * @description Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)
+       * @default DEPOSIT
+       * @enum {string}
+       */
+      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT';
+      /**
+       * @description URL chuyển hướng sau khi hoàn tất thanh toán
+       * @example http://localhost:3000/bookings/20000000-0000-0000-0000-000000000001
+       */
+      returnUrl?: string;
+    };
+    PaymentResponseDto: {
+      /** @example 50000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example 20000000-0000-0000-0000-000000000001 */
+      bookingId: string;
+      /** @example 00000000-0000-0000-0000-000000000003 */
+      renterId: string;
+      /**
+       * @description Số tiền thanh toán (VND)
+       * @example 10000000
+       */
+      amountVnd: number;
+      /**
+       * @example DEPOSIT
+       * @enum {string}
+       */
+      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT';
+      /**
+       * @example PENDING
+       * @enum {string}
+       */
+      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+      /** @example SANDBOX_GATEWAY */
+      provider: string;
+      /** @example TX-1730000000-a1b2c3d4 */
+      transactionRef: string;
+      /** @example /checkout/payment-gateway?ref=TX-1730000000-a1b2c3d4 */
+      paymentUrl?: Record<string, never>;
+      /** @example VNP-20261027-998877 */
+      gatewayTxnId?: Record<string, never> | null;
+      paidAt?: Record<string, never> | null;
+      /** @example 2026-10-27T10:00:00.000Z */
+      createdAt: string;
+    };
+    PaymentWebhookDto: {
+      /**
+       * @description Mã đối soát giao dịch
+       * @example TX-1730000000-a1b2c3d4
+       */
+      transactionRef: string;
+      /**
+       * @description Mã giao dịch từ cổng thanh toán đối tác
+       * @example VNP-20261027-998877
+       */
+      gatewayTxnId?: string;
+      /**
+       * @description Số tiền giao dịch thực tế (VND)
+       * @example 10000000
+       */
+      amountVnd: number;
+      /**
+       * @description Trạng thái kết quả từ cổng thanh toán
+       * @example SUCCESS
+       * @enum {string}
+       */
+      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+      /**
+       * @description Chữ ký số HMAC-SHA512 để xác thực tính toàn vẹn
+       * @example a5d89f...
+       */
+      signature: string;
+    };
+    SimulatePaymentDto: {
+      /**
+       * @description Mã tham chiếu giao dịch cần giả lập
+       * @example TX-1730000000-a1b2c3d4
+       */
+      transactionRef: string;
+      /**
+       * @description Trạng thái muốn giả lập
+       * @example SUCCESS
+       * @enum {string}
+       */
+      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
     };
   };
   responses: never;
@@ -2506,6 +2676,100 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  PaymentsController_createPaymentIntent: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreatePaymentIntentDto'];
+      };
+    };
+    responses: {
+      /** @description Tạo ý định thanh toán thành công, trả về redirect URL */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PaymentResponseDto'];
+        };
+      };
+    };
+  };
+  PaymentsController_processWebhook: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['PaymentWebhookDto'];
+      };
+    };
+    responses: {
+      /** @description Xử lý webhook thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PaymentResponseDto'];
+        };
+      };
+    };
+  };
+  PaymentsController_simulatePayment: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SimulatePaymentDto'];
+      };
+    };
+    responses: {
+      /** @description Giả lập thanh toán thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PaymentResponseDto'];
+        };
+      };
+    };
+  };
+  PaymentsController_getPaymentByRef: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        ref: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chi tiết thông tin giao dịch thanh toán */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['PaymentResponseDto'];
         };
       };
     };

@@ -36,6 +36,10 @@ import type {
   CreateBookingPayload,
   RejectBookingPayload,
   CancelBookingPayload,
+  Payment,
+  PaymentResponse,
+  CreatePaymentIntentPayload,
+  SimulatePaymentPayload,
 } from '@carsharing/contracts';
 
 export type {
@@ -58,6 +62,9 @@ export type {
   VehicleDetail,
   VehicleOptions,
   VehicleSummary,
+  Payment,
+  CreatePaymentIntentPayload,
+  SimulatePaymentPayload,
 };
 
 export interface VehicleSearchParams {
@@ -501,5 +508,46 @@ export async function cancelBookingApi(
     body: JSON.stringify({ reason }),
   });
   const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
+export async function createPaymentIntentApi(
+  payload: CreatePaymentIntentPayload,
+  csrfToken: string,
+): Promise<Payment> {
+  const res = await fetch('/api/v1/payments/create-intent', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<PaymentResponse>(res);
+  return json.data;
+}
+
+export async function simulatePaymentApi(payload: SimulatePaymentPayload): Promise<Payment> {
+  const res = await fetch('/api/v1/payments/simulate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<PaymentResponse>(res);
+  return json.data;
+}
+
+export async function fetchPaymentByRefApi(ref: string): Promise<Payment> {
+  const res = await fetch(`/api/v1/payments/${encodeURIComponent(ref)}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<PaymentResponse>(res);
   return json.data;
 }
