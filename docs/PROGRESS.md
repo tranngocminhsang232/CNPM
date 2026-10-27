@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G5-04** (Web UI Trả xe, Quyết toán, Đánh giá & Dashboard - Return, Settlement, Review UI & Host Dashboard). Task G5-03 đã hoàn tất 100% với 334 tests backend pass.
+Task đề xuất tiếp theo: **G5-05** (Kiểm thử Toàn diện, Audit An ninh & Đóng gói Toàn bộ Dự án - Final Integration, Security Audit & Project Release). Toàn bộ tính năng từ G0 đến G5-04 đã hoàn tất 100%.
 
 ### Bảng tiến độ Milestone G5 (Trả Xe, Quyết Toán Ký Quỹ, Đánh Giá Hai Chiều & Dashboard Chủ Xe)
 
@@ -20,7 +20,7 @@ Task đề xuất tiếp theo: **G5-04** (Web UI Trả xe, Quyết toán, Đánh
 | G5-01 | Quy trình Trả xe & Checklist hoàn trả | DONE | POST /bookings/:id/complete (Renter only 403, IN_PROGRESS required 409, no unresolved Keyless ops 409, CHECK_OUT inspection acknowledged & finalized 422, ODO check-out >= check-in 400/422 BR-10, releases vehicle calendar, emits TRIP_COMPLETED event & notifications, idempotent replay 200); 300 tests backend pass (132 unit, 18 constraints, 150 e2e); trip-completion.e2e-spec.ts 10/10 pass; OpenAPI & contracts cập nhật; completeBookingApi |
 | G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc | DONE | Migration enum PaymentType thêm REFUND; POST /bookings/:id/settle-deposit (Owner only 403, COMPLETED required 409, tính hao hụt xăng 30k/1% + phí vệ sinh, tạo giao dịch hoàn tiền REFUND SUCCESS, ghi BookingEvent DEPOSIT_SETTLED & notification 2 bên, idempotent replay 200); GET /bookings/:id/settlement (xem trước hoặc chi tiết cọc); 315 tests backend pass (139 unit, 18 constraints, 158 e2e); deposit-settlement.e2e-spec.ts 8/8 pass; contracts & web client cập nhật |
 | G5-03 | Động cơ Đánh giá Hai chiều (Khách & Chủ) | DONE | ReviewsModule, ReviewsService, ReviewsController; POST /bookings/:id/reviews (SessionGuard + CsrfGuard, chỉ người tham gia chuyến đi 403, COMPLETED required 409, tự động xác định targetUserId, chống trùng lặp đánh giá 409 ALREADY_REVIEWED, ghi nhận review 1-5 sao kèm comment tối đa 2000 ký tự trong Prisma transaction nguyên tử, phát BookingEvent REVIEW_SUBMITTED & gửi Notification REVIEW_RECEIVED); GET /bookings/:id/reviews (xem các đánh giá trong chuyến); GET /vehicles/:id/reviews (Public endpoint, lọc đánh giá từ renter theo BR-12, tính tổng số review & điểm đánh giá trung bình làm tròn 1 chữ số thập phân); 334 tests backend pass 100% (149 unit, 18 constraints, 167 e2e); reviews.e2e-spec.ts 9/9 pass; OpenAPI & contracts cập nhật; web api client (createReviewApi, fetchBookingReviewsApi, fetchVehicleReviewsApi) |
-| G5-04 | Web UI Trả xe, Quyết toán, Đánh giá & Dashboard | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-04 | Web UI Trả xe, Quyết toán, Đánh giá & Dashboard | DONE | ReturnChecklistModal (chụp 4 góc hậu mãi tải trực tiếp MinIO S3, xác thực ODO >= check-in ODO chuẩn BR-10, ký chốt biên bản trả và nút hoàn tất chuyến đi); DepositSettlementCard (bảng quyết toán cọc minh bạch, tính toán hao hụt nhiên liệu 30k/1%, khấu trừ phí vệ sinh, giải ngân hoàn tiền, hóa đơn điện tử); ReviewModal (chọn 1-5 sao tương tác, nhận xét tối đa 2000 ký tự); /owner/dashboard (bảng điều khiển chủ xe BR-13: doanh thu hoàn tất, doanh thu đang chạy, tỷ lệ duyệt đơn, thẻ thống kê đơn, danh sách xe cho thuê, bảng lịch sử chuyến); /vehicles/[id] tích hợp danh sách đánh giá công khai từ khách thuê; Next.js 16 App Router build clean 100%; 6/6 Playwright test suites pass 100% (28.2s trên Chromium gồm return-review-dashboard.spec.ts); typecheck 0 lỗi |
 | G5-05 | Kiểm thử Toàn diện & Đóng gói Toàn bộ Dự án | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
 
 ### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi - Hoàn tất 100%)
@@ -83,6 +83,31 @@ Task đề xuất tiếp theo: **G5-04** (Web UI Trả xe, Quyết toán, Đánh
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G5-04 — Web UI Trả Xe, Quyết Toán Cọc, Đánh Giá & Dashboard Chủ Xe (Web UI Return, Settlement, Reviews & Host Dashboard)
+Trạng thái: DONE
+Prerequisite: G5-03
+Files thay đổi:
+- apps/web/src/components/ReturnChecklistModal.tsx (Giao diện nghiệm thu trả xe: chụp và tải trực tiếp 4 góc xe FRONT, REAR, LEFT, RIGHT lên MinIO S3 qua Presigned PUT URL, kiểm tra số km ODO sau chuyến không nhỏ hơn trước chuyến theo BR-10, nhập mức nhiên liệu, nút Lưu bản nháp, nút Ký chốt biên bản trả và nút Hoàn tất chuyến đi completeBookingApi)
+- apps/web/src/components/DepositSettlementCard.tsx (Giao diện quyết toán cọc thế chấp: tính toán phụ phí hao hụt xăng 30k/1% và phí vệ sinh, tính số tiền hoàn cọc refundAmount = max(0, deposit - surcharges), chủ xe bấm quyết toán settleDepositApi, hiển thị hóa đơn điện tử minh bạch kèm mã giao dịch hoàn tiền và badge Đã hoàn cọc)
+- apps/web/src/components/ReviewModal.tsx (Giao diện đánh giá hai chiều tương tác: bộ chọn 1-5 sao trực quan có hover effect & nhãn đánh giá, textarea nhận xét có đếm ký tự tối đa 2000, gửi đánh giá createReviewApi)
+- apps/web/src/app/owner/dashboard/page.tsx & apps/web/src/app/owner/page.tsx (Bảng điều khiển chủ xe theo BR-13: 4 thẻ KPI tổng doanh thu chuyến đã hoàn tất, doanh thu dự kiến đang chờ, tỷ lệ duyệt đơn, số lượng xe; thẻ đếm đơn theo 5 trạng thái; bảng lịch sử chuyến gần đây; danh sách đội xe cho thuê kèm trạng thái)
+- apps/web/src/app/bookings/[id]/page.tsx (Tích hợp ReturnChecklistModal, DepositSettlementCard và khu vực đánh giá hai chiều; header banner hiển thị nút hành động trả xe hoặc đánh giá theo ngữ cảnh)
+- apps/web/src/app/vehicles/[id]/page.tsx (Tích hợp khu vực đánh giá xe công khai từ khách thuê: điểm sao trung bình, tổng lượt đánh giá, danh sách nhận xét)
+- apps/web/src/components/UserNav.tsx (Thêm đường dẫn truy cập Bảng điều khiển chủ xe /owner/dashboard với id="nav-owner-dashboard-link")
+- apps/web/src/components/BookingStatusBadge.tsx (Bổ sung id="booking-status-badge" cho tự động hóa kiểm thử)
+- apps/web/src/lib/api.ts (Export types DepositSettlement, SettleDepositPayload, Review, CreateReviewPayload, VehicleReviewsSummary)
+- apps/web/test/return-review-dashboard.spec.ts (Playwright browser E2E test mô phỏng toàn bộ luồng kết thúc chuyến đi: Renter nộp checklist 4 góc S3 + ODO -> hoàn tất chuyến đi -> Owner quyết toán cọc trừ xăng và vệ sinh -> 2 bên nộp review 5 sao -> Owner xem KPI doanh thu trên Dashboard)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> Next.js Turbopack & NestJS build sạch 100%
+- pnpm run test:smoke -> 6/6 Playwright browser test suites pass 100% (28.2s trên Chromium)
+- pnpm run test -> 334/334 backend tests pass 100% (149 unit, 18 constraints, 167 e2e)
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G5-04. Bộ giao diện trả xe, quyết toán tài chính cọc, đánh giá hai chiều và bảng điều khiển chủ xe hoạt động hoàn hảo, mượt mà trên trình duyệt thật.
+```
 
 ```text
 Ngày: 27/10/2026

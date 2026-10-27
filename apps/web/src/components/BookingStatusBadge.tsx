@@ -80,6 +80,7 @@ export function BookingStatusBadge({ status, size = 'md' }: BookingStatusBadgePr
 
   return (
     <span
+      id="booking-status-badge"
       data-testid="booking-status-badge"
       className={`inline-flex items-center rounded-full border ${config.bg} ${config.text} ${config.border} ${sizeClasses}`}
     >

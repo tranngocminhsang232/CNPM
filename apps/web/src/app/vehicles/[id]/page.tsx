@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
-import { fetchVehicleById } from '../../../lib/api';
-import type { VehicleDetail } from '../../../lib/api';
+import { fetchVehicleById, fetchVehicleReviewsApi } from '../../../lib/api';
+import type { VehicleDetail, VehicleReviewsSummary } from '../../../lib/api';
 import { UserNav } from '../../../components/UserNav';
 import { VehicleGallery } from '../../../components/VehicleGallery';
 import { PricingCalculator } from '../../../components/PricingCalculator';
@@ -15,6 +15,7 @@ interface PageProps {
 export default function VehicleDetailPage({ params }: PageProps) {
   const { id } = use(params);
   const [vehicle, setVehicle] = useState<VehicleDetail | null>(null);
+  const [reviewsSummary, setReviewsSummary] = useState<VehicleReviewsSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -23,8 +24,12 @@ export default function VehicleDetailPage({ params }: PageProps) {
       try {
         setIsLoading(true);
         setError(null);
-        const data = await fetchVehicleById(id);
+        const [data, revs] = await Promise.all([
+          fetchVehicleById(id),
+          fetchVehicleReviewsApi(id).catch(() => null),
+        ]);
         setVehicle(data);
+        setReviewsSummary(revs);
       } catch (err: any) {
         setError(err.message || 'Không thể tải thông tin xe');
       } finally {
@@ -343,6 +348,69 @@ export default function VehicleDetailPage({ params }: PageProps) {
                   Tiền cọc thế chấp được hoàn trả đầy đủ vào tài khoản sau khi hoàn tất chuyến đi.
                 </li>
               </ul>
+            </div>
+
+            {/* Vehicle Reviews Section (BR-12) */}
+            <div
+              id="vehicle-reviews-container"
+              className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4"
+            >
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-lg font-bold text-slate-900">Đánh giá từ khách thuê</h2>
+                  {reviewsSummary && reviewsSummary.totalReviews > 0 && (
+                    <span
+                      id="vehicle-rating-badge"
+                      className="rounded-full bg-amber-50 border border-amber-200 px-2.5 py-0.5 text-xs font-black text-amber-800 flex items-center gap-1"
+                    >
+                      <span>★</span> {reviewsSummary.averageScore} ({reviewsSummary.totalReviews}{' '}
+                      đánh giá)
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {!reviewsSummary || reviewsSummary.totalReviews === 0 ? (
+                <div className="text-center py-8 text-xs text-slate-400">
+                  <span className="text-2xl block mb-1">⭐</span>
+                  Xe chưa có lượt đánh giá nào. Hãy là người đầu tiên trải nghiệm chuyến đi!
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {reviewsSummary.reviews.map((rev) => (
+                    <div
+                      key={rev.id}
+                      className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2 text-xs"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="h-7 w-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[11px]">
+                            {rev.author?.name?.charAt(0) || 'K'}
+                          </div>
+                          <div>
+                            <strong className="text-slate-900">
+                              {rev.author?.name || 'Khách thuê'}
+                            </strong>
+                            <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-700">
+                              Đã thuê xe
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1 text-amber-500 font-bold">
+                          <span>{'★'.repeat(rev.score)}</span>
+                          <span className="text-[11px] text-slate-600 ml-1 font-semibold">
+                            {rev.score}/5
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-slate-700 leading-relaxed text-xs">{rev.comment}</p>
+                      <div className="text-[10px] text-slate-400 text-right">
+                        {new Date(rev.createdAt).toLocaleDateString('vi-VN')}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

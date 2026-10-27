@@ -87,6 +87,11 @@ export type {
   SaveInspectionPayload,
   TriggerKeylessPayload,
   KeylessOperation,
+  DepositSettlement,
+  SettleDepositPayload,
+  Review,
+  CreateReviewPayload,
+  VehicleReviewsSummary,
 };
 
 export interface VehicleSearchParams {

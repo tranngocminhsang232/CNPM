@@ -8,14 +8,19 @@ import {
   cancelBookingApi,
   createPaymentIntentApi,
   fetchInspectionsApi,
+  fetchBookingReviewsApi,
   type Booking,
   type Payment,
   type Inspection,
+  type Review,
 } from '../../../lib/api';
 import { BookingStatusBadge } from '../../../components/BookingStatusBadge';
 import { PaymentModal } from '../../../components/PaymentModal';
 import { UserNav } from '../../../components/UserNav';
 import { InspectionChecklistModal } from '../../../components/InspectionChecklistModal';
+import { ReturnChecklistModal } from '../../../components/ReturnChecklistModal';
+import { DepositSettlementCard } from '../../../components/DepositSettlementCard';
+import { ReviewModal } from '../../../components/ReviewModal';
 import { KeylessRemoteWidget } from '../../../components/KeylessRemoteWidget';
 
 interface BookingDetailPageProps {
@@ -29,7 +34,10 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
   const [booking, setBooking] = useState<Booking | null>(null);
   const [inspections, setInspections] = useState<Inspection[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [isInspectionModalOpen, setIsInspectionModalOpen] = useState(false);
+  const [isReturnModalOpen, setIsReturnModalOpen] = useState(false);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -66,12 +74,14 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
       if (!silent) setIsLoading(true);
       setError(null);
       try {
-        const [data, inspList] = await Promise.all([
+        const [data, inspList, revList] = await Promise.all([
           fetchBookingDetailApi(bookingId),
           fetchInspectionsApi(bookingId).catch(() => []),
+          fetchBookingReviewsApi(bookingId).catch(() => []),
         ]);
         setBooking(data);
         setInspections(inspList);
+        setReviews(revList);
       } catch (err: any) {
         setError(err.message || 'Không thể tải thông tin chi tiết đơn đặt xe.');
       } finally {
@@ -168,9 +178,14 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
   const isRenter = user?.id === booking.renterId;
   const isOwner = user?.id === booking.ownerId;
   const checkInInspection = inspections.find((i) => i.type === 'CHECK_IN');
+  const checkOutInspection = inspections.find((i) => i.type === 'CHECK_OUT');
   const isInspectionFinalized = Boolean(
     checkInInspection?.acknowledged && checkInInspection?.finalizedAt,
   );
+  const isCheckOutFinalized = Boolean(
+    checkOutInspection?.acknowledged && checkOutInspection?.finalizedAt,
+  );
+  const hasReviewed = reviews.some((r) => r.authorId === user?.id);
   const isKeylessSupported = Boolean(booking.vehicle?.keylessSupported);
   const showKeylessWidget =
     isKeylessSupported && (booking.status === 'APPROVED' || booking.status === 'IN_PROGRESS');
@@ -215,7 +230,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             {(booking.status === 'REQUESTED' || booking.status === 'APPROVED') && (
               <button
                 id="cancel-booking-action-btn"
@@ -236,6 +251,28 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 cursor-pointer"
               >
                 {isInitiatingPayment ? 'Đang tạo giao dịch...' : 'Thanh toán cọc (Sandbox)'}
+              </button>
+            )}
+
+            {booking.status === 'IN_PROGRESS' && isRenter && (
+              <button
+                id="btn-open-return-modal"
+                type="button"
+                onClick={() => setIsReturnModalOpen(true)}
+                className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700 cursor-pointer"
+              >
+                🏁 Trả xe & Hoàn tất chuyến
+              </button>
+            )}
+
+            {booking.status === 'COMPLETED' && !hasReviewed && (
+              <button
+                id="btn-open-review-modal"
+                type="button"
+                onClick={() => setIsReviewModalOpen(true)}
+                className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 cursor-pointer"
+              >
+                ⭐ Viết đánh giá
               </button>
             )}
           </div>
@@ -405,7 +442,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                        Biên bản bàn giao xe (Checklist 4 góc)
+                        Biên bản bàn giao xe (Checklist 4 góc nhận)
                       </h3>
                       <span
                         id="inspection-status-pill"
@@ -438,6 +475,141 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     {isInspectionFinalized ? 'Xem biên bản đã ký' : '📷 Bắt đầu kiểm tra xe'}
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Return Inspection Checklist Card */}
+            {(booking.status === 'IN_PROGRESS' || booking.status === 'COMPLETED') && (
+              <div
+                id="booking-return-inspection-card"
+                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                        Biên bản trả xe sau chuyến (Check-out)
+                      </h3>
+                      <span
+                        id="return-inspection-status-pill"
+                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                          isCheckOutFinalized
+                            ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
+                            : 'bg-amber-100 text-amber-700 border border-amber-300'
+                        }`}
+                      >
+                        {isCheckOutFinalized ? '✓ Đã chốt trả xe' : '• Chưa hoàn tất'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      {isCheckOutFinalized
+                        ? `Biên bản trả xe đã được chốt (Odo: ${checkOutInspection?.odometerKm} km, Xăng/Pin: ${checkOutInspection?.fuelPercent}%).`
+                        : 'Chụp 4 góc xe và ghi nhận ODO/nhiên liệu khi hoàn trả xe cho chủ xe (BR-10).'}
+                    </p>
+                  </div>
+
+                  <button
+                    id="btn-open-return-checklist"
+                    type="button"
+                    onClick={() => setIsReturnModalOpen(true)}
+                    className={`flex-shrink-0 rounded-xl px-4 py-2.5 text-xs font-bold shadow-sm transition active:scale-95 ${
+                      isCheckOutFinalized
+                        ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/20'
+                    }`}
+                  >
+                    {isCheckOutFinalized ? 'Xem biên bản trả xe' : '🏁 Bắt đầu trả xe'}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Deposit Settlement Card */}
+            {booking.status === 'COMPLETED' && (
+              <DepositSettlementCard
+                bookingId={bookingId}
+                isOwner={isOwner}
+                isRenter={isRenter}
+                depositVnd={booking.pricingSnapshot?.depositVnd || 0}
+                checkInInspection={checkInInspection}
+                checkOutInspection={checkOutInspection}
+                onSettled={async () => {
+                  await loadBooking(true);
+                }}
+              />
+            )}
+
+            {/* Two-Way Reviews Section */}
+            {booking.status === 'COMPLETED' && (
+              <div
+                id="booking-reviews-section"
+                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4"
+              >
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                      Đánh giá chuyến đi (Two-Way Reviews)
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Đánh giá minh bạch giữa khách thuê và chủ xe (Quy tắc BR-12).
+                    </p>
+                  </div>
+                  {!hasReviewed && (
+                    <button
+                      id="btn-open-review-modal-section"
+                      type="button"
+                      onClick={() => setIsReviewModalOpen(true)}
+                      className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 cursor-pointer"
+                    >
+                      ⭐ Viết đánh giá
+                    </button>
+                  )}
+                </div>
+
+                {reviews.length === 0 ? (
+                  <div className="text-center py-6 text-xs text-slate-400">
+                    Chưa có đánh giá nào cho chuyến đi này.
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {reviews.map((rev) => {
+                      const isRenterRev = rev.authorId === booking.renterId;
+                      return (
+                        <div
+                          key={rev.id}
+                          id={`review-card-${rev.id}`}
+                          className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2 text-xs"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="h-7 w-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[11px]">
+                                {rev.author?.name?.charAt(0) || 'U'}
+                              </div>
+                              <div>
+                                <strong className="text-slate-900">
+                                  {rev.author?.name || 'Người dùng'}
+                                </strong>
+                                <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-700">
+                                  {isRenterRev ? 'Khách thuê' : 'Chủ xe'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 text-amber-500 font-bold">
+                              <span>{'★'.repeat(rev.score)}</span>
+                              <span className="text-[11px] text-slate-600 ml-1 font-semibold">
+                                {rev.score}/5
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-slate-700 leading-relaxed text-xs">{rev.comment}</p>
+                          <div className="text-[10px] text-slate-400 text-right">
+                            {formatDate(rev.createdAt)}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -584,7 +756,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
           onPaymentSuccess={handlePaymentSuccess}
         />
 
-        {/* Inspection Checklist Modal */}
+        {/* Inspection Checklist Modal (Check-in) */}
         <InspectionChecklistModal
           isOpen={isInspectionModalOpen}
           onClose={() => setIsInspectionModalOpen(false)}
@@ -595,6 +767,34 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
             await loadBooking(true);
           }}
           readOnly={isOwner}
+        />
+
+        {/* Return Checklist Modal (Check-out) */}
+        <ReturnChecklistModal
+          isOpen={isReturnModalOpen}
+          onClose={() => setIsReturnModalOpen(false)}
+          bookingId={bookingId}
+          checkInInspection={checkInInspection}
+          initialInspection={checkOutInspection}
+          onFinalized={async () => {
+            await loadBooking(true);
+          }}
+          onCompletedTrip={async (updated) => {
+            setBooking(updated);
+            await loadBooking(true);
+          }}
+          readOnly={isOwner}
+        />
+
+        {/* Review Modal */}
+        <ReviewModal
+          isOpen={isReviewModalOpen}
+          onClose={() => setIsReviewModalOpen(false)}
+          bookingId={bookingId}
+          targetRole={isRenter ? 'chủ xe' : 'khách thuê'}
+          onReviewSubmitted={async () => {
+            await loadBooking(true);
+          }}
         />
       </main>
     </div>
