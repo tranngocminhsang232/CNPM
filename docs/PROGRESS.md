@@ -11,14 +11,14 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G2-02** (Động Cơ Tính Giá & Snapshot Chi Phí Thuê Xe). Task G2-01 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G2-03** (Hệ Thống Mã Khuyến Mãi & Giảm Giá Voucher). Task G2-02 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G2-01 | Bộ lọc & tìm kiếm xe nâng cao | DONE | Mở rộng QueryVehiclesDto (q, brand, amenities, sort: price_asc, price_desc, popularity_desc, rating_desc); VehiclesService hỗ trợ lọc keyword, brand, mảng tiện nghi bắt buộc, sorting quan hệ đếm bookings; GET /vehicles/:id trả về chi tiết xe công khai (bảo mật tuyệt đối: không lộ biển số plateNormalized và địa chỉ pickupAddress); 132 tests backend pass (46 unit, 18 constraints, 68 e2e); OpenAPI và contracts tái sinh và build thành công |
-| G2-02 | Động cơ tính giá & snapshot chi phí | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-02 | Động cơ tính giá & snapshot chi phí | DONE | PricingModule, PricingService, PricingController (POST /pricing/quote, POST /pricing/calculate, GET /vehicles/:id/pricing-preview); logic tính số ngày làm tròn 24h, phụ phí cuối tuần T7/CN 10%, gói bảo hiểm BASIC/STANDARD/PREMIUM, phí dịch vụ sàn 10%, tiền cọc lũy tiến 5M/10M/15M VND; bảo đảm đẳng thức toán học total = subtotal + serviceFee + deposit khớp 100% check constraint PostgreSQL; kiểm tra xung đột lịch xe; 146 tests backend pass (53 unit, 18 constraints, 75 e2e); OpenAPI và contracts tái sinh; Playwright smoke pass |
 | G2-03 | Hệ thống mã khuyến mãi & giảm giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 | G2-04 | Web UI chi tiết xe & dự toán giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 | G2-05 | Kiểm tra tích hợp & đóng gói G2 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
@@ -55,6 +55,31 @@ Task đề xuất tiếp theo: **G2-02** (Động Cơ Tính Giá & Snapshot Chi 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G2-02 — Động Cơ Tính Giá & Snapshot Chi Phí Thuê Xe (Pricing Engine & Snapshot)
+Trạng thái: DONE
+Prerequisite: G2-01
+Files thay đổi:
+- apps/api/src/pricing/dto/calculate-pricing.dto.ts (CalculatePricingDto, PricingPreviewQueryDto, InsurancePackageTier enum)
+- apps/api/src/pricing/dto/quote.dto.ts (QuoteDto, PricingBreakdownDto, VehiclePricingSummaryDto)
+- apps/api/src/pricing/pricing.service.ts (Tính số ngày làm tròn trần 24h, tính phụ phí cuối tuần T7/CN 10%, tính phí gói bảo hiểm, tính phí dịch vụ sàn 10%, tính tiền cọc lũy tiến theo giá thuê, bảo đảm đẳng thức toán học total = subtotal + serviceFee + deposit khớp 100% check constraint DB, kiểm tra xung đột lịch xe với vehicle_calendar)
+- apps/api/src/pricing/pricing.controller.ts (POST /pricing/quote và POST /pricing/calculate trả về @HttpCode 200, GET /vehicles/:id/pricing-preview)
+- apps/api/src/pricing/pricing.module.ts (Đăng ký PricingModule vào AppModule)
+- apps/api/src/pricing/pricing.service.spec.ts (7 unit tests kiểm tra: 1 ngày cơ bản, làm tròn 24h, phụ phí cuối tuần, gói bảo hiểm, tiền cọc, khoảng thời gian không hợp lệ 422, xe không tồn tại 404)
+- apps/api/test/pricing.e2e-spec.ts (7 e2e tests kiểm tra: POST /pricing/quote 200, POST /pricing/calculate 200, GET /vehicles/:id/pricing-preview 200, kiểm tra xe bận 200 available=false, 400 validation error, 404 not found)
+- tools/export-openapi.mjs & packages/contracts (Tái sinh openapi.json, sinh schema.ts và export Quote, PricingBreakdown, CalculatePricingPayload, QuoteResponse)
+- apps/web/src/lib/api.ts (Thêm calculateQuoteApi và fetchPricingPreviewApi có type an toàn)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/api test -> 53/53 unit tests pass
+- pnpm --filter @carsharing/api test:constraints -> 18/18 PostgreSQL integration tests pass
+- pnpm --filter @carsharing/api test:e2e -> 75/75 e2e tests pass (146 tests backend pass 100%)
+- pnpm --filter @carsharing/web test:smoke -> 2/2 browser tests pass (10.0s)
+- pnpm run typecheck -> 0 lỗi TypeScript trên 3 packages
+- pnpm run format:check -> All matched files use Prettier code style
+Kết quả: Hoàn thành toàn diện Task G2-02. Động cơ tính giá chuẩn xác từng đồng VND, sẵn sàng làm nền tảng cho voucher khuyến mãi và tạo booking đặt xe.
+```
 
 ```text
 Ngày: 27/10/2026

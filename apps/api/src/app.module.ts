@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { MediaModule } from './media/media.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { PricingModule } from './pricing/pricing.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -22,6 +23,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     MediaModule,
     HealthModule,
     VehiclesModule,
+    PricingModule,
   ],
 })
 export class AppModule implements NestModule {

@@ -911,6 +911,149 @@
         "summary": "Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai",
         "tags": ["owner-vehicles"]
       }
+    },
+    "/api/v1/pricing/quote": {
+      "post": {
+        "operationId": "PricingController_getQuote",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePricingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Báo giá chi tiết với đầy đủ bóc tách chi phí",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu đầu vào hoặc định dạng ngày không hợp lệ"
+          },
+          "404": {
+            "description": "Không tìm thấy xe"
+          },
+          "422": {
+            "description": "Thời lượng thuê không hợp lệ"
+          }
+        },
+        "summary": "Tính báo giá thuê xe theo khoảng ngày, gói bảo hiểm và kiểm tra lịch xe khả dụng",
+        "tags": ["Pricing"]
+      }
+    },
+    "/api/v1/pricing/calculate": {
+      "post": {
+        "operationId": "PricingController_calculatePricing",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CalculatePricingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Biểu phí tính toán thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Tính toán biểu phí thuê xe chi tiết (alias cho POST /pricing/quote)",
+        "tags": ["Pricing"]
+      }
+    },
+    "/api/v1/vehicles/{id}/pricing-preview": {
+      "get": {
+        "operationId": "PricingController_getPricingPreview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "startAt",
+            "required": true,
+            "in": "query",
+            "description": "Thời điểm bắt đầu thuê (ISO 8601 UTC)",
+            "schema": {
+              "example": "2026-11-01T08:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endAt",
+            "required": true,
+            "in": "query",
+            "description": "Thời điểm kết thúc thuê (ISO 8601 UTC)",
+            "schema": {
+              "example": "2026-11-03T18:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "insurancePackage",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "BASIC",
+              "type": "string",
+              "enum": ["BASIC", "STANDARD", "PREMIUM"]
+            }
+          },
+          {
+            "name": "voucherCode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "SUMMER2026",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dự toán chi phí thuê xe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QuoteDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Khoảng ngày không hợp lệ"
+          },
+          "404": {
+            "description": "Không tìm thấy xe"
+          }
+        },
+        "summary": "Xem trước dự toán chi phí thuê xe bằng phương thức GET (hỗ trợ UI widget)",
+        "tags": ["Pricing"]
+      }
     }
   },
   "info": {
@@ -1857,6 +2000,176 @@
             }
           }
         }
+      },
+      "PricingBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "rentalDays": {
+            "type": "number",
+            "example": 2,
+            "description": "Số ngày thuê (làm tròn lên theo block 24h)"
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000,
+            "description": "Đơn giá thuê theo ngày (VND)"
+          },
+          "baseRentVnd": {
+            "type": "number",
+            "example": 2800000,
+            "description": "Tiền thuê gốc = pricePerDayVnd * rentalDays (VND)"
+          },
+          "peakSurchargeVnd": {
+            "type": "number",
+            "example": 140000,
+            "description": "Phụ phí ngày cao điểm/cuối tuần (VND)"
+          },
+          "insuranceFeeVnd": {
+            "type": "number",
+            "example": 200000,
+            "description": "Phí bảo hiểm chuyến đi (VND)"
+          },
+          "discountVnd": {
+            "type": "number",
+            "example": 0,
+            "description": "Số tiền giảm giá từ khuyến mãi (VND)"
+          },
+          "subtotalVnd": {
+            "type": "number",
+            "example": 3140000,
+            "description": "Tổng phụ = baseRent + peakSurcharge + insuranceFee - discount (VND)"
+          },
+          "serviceFeeVnd": {
+            "type": "number",
+            "example": 294000,
+            "description": "Phí dịch vụ nền tảng (10% của baseRent + peakSurcharge) (VND)"
+          },
+          "depositVnd": {
+            "type": "number",
+            "example": 10000000,
+            "description": "Tiền đặt cọc thế chấp giữ xe (hoàn lại sau chuyến đi) (VND)"
+          },
+          "totalVnd": {
+            "type": "number",
+            "example": 13434000,
+            "description": "Tổng thanh toán = subtotal + serviceFee + deposit (VND, bảo đảm toàn vẹn toán học)"
+          }
+        },
+        "required": [
+          "rentalDays",
+          "pricePerDayVnd",
+          "baseRentVnd",
+          "peakSurchargeVnd",
+          "insuranceFeeVnd",
+          "discountVnd",
+          "subtotalVnd",
+          "serviceFeeVnd",
+          "depositVnd",
+          "totalVnd"
+        ]
+      },
+      "QuoteDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "startAt": {
+            "type": "string",
+            "example": "2026-11-01T08:00:00.000Z"
+          },
+          "endAt": {
+            "type": "string",
+            "example": "2026-11-03T18:00:00.000Z"
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000
+          },
+          "rentalDays": {
+            "type": "number",
+            "example": 2
+          },
+          "subtotalVnd": {
+            "type": "number",
+            "example": 2800000
+          },
+          "serviceFeeVnd": {
+            "type": "number",
+            "example": 280000
+          },
+          "depositVnd": {
+            "type": "number",
+            "example": 10000000
+          },
+          "totalVnd": {
+            "type": "number",
+            "example": 13080000
+          },
+          "pricingVersion": {
+            "type": "string",
+            "example": "daily-v1"
+          },
+          "breakdown": {
+            "$ref": "#/components/schemas/PricingBreakdownDto"
+          },
+          "available": {
+            "type": "boolean",
+            "example": true,
+            "description": "Xe có sẵn sàng trong khoảng thời gian này không"
+          },
+          "unavailableReason": {
+            "type": "string",
+            "example": "Xe đã có lịch đặt trước trong khoảng thời gian này"
+          }
+        },
+        "required": [
+          "vehicleId",
+          "startAt",
+          "endAt",
+          "pricePerDayVnd",
+          "rentalDays",
+          "subtotalVnd",
+          "serviceFeeVnd",
+          "depositVnd",
+          "totalVnd",
+          "pricingVersion",
+          "breakdown",
+          "available"
+        ]
+      },
+      "CalculatePricingDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001",
+            "description": "Mã định danh xe"
+          },
+          "startAt": {
+            "type": "string",
+            "example": "2026-11-01T08:00:00.000Z",
+            "description": "Thời điểm bắt đầu thuê (ISO 8601 UTC)"
+          },
+          "endAt": {
+            "type": "string",
+            "example": "2026-11-03T18:00:00.000Z",
+            "description": "Thời điểm kết thúc thuê (ISO 8601 UTC)"
+          },
+          "insurancePackage": {
+            "type": "string",
+            "enum": ["BASIC", "STANDARD", "PREMIUM"],
+            "default": "BASIC",
+            "description": "Gói bảo hiểm lựa chọn (BASIC: 0đ, STANDARD: 100k/ngày, PREMIUM: 200k/ngày)"
+          },
+          "voucherCode": {
+            "type": "string",
+            "example": "SUMMER2026",
+            "description": "Mã khuyến mãi giảm giá (nếu có)"
+          }
+        },
+        "required": ["vehicleId", "startAt", "endAt"]
       }
     }
   }

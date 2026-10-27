@@ -346,6 +346,57 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/pricing/quote': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Tính báo giá thuê xe theo khoảng ngày, gói bảo hiểm và kiểm tra lịch xe khả dụng */
+    post: operations['PricingController_getQuote'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/pricing/calculate': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Tính toán biểu phí thuê xe chi tiết (alias cho POST /pricing/quote) */
+    post: operations['PricingController_calculatePricing'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/vehicles/{id}/pricing-preview': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Xem trước dự toán chi phí thuê xe bằng phương thức GET (hỗ trợ UI widget) */
+    get: operations['PricingController_getPricingPreview'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -966,6 +1017,116 @@ export interface components {
       amenities?: string[];
       /** @description Danh sách ID media ảnh xe */
       photoMediaIds?: string[];
+    };
+    PricingBreakdownDto: {
+      /**
+       * @description Số ngày thuê (làm tròn lên theo block 24h)
+       * @example 2
+       */
+      rentalDays: number;
+      /**
+       * @description Đơn giá thuê theo ngày (VND)
+       * @example 1400000
+       */
+      pricePerDayVnd: number;
+      /**
+       * @description Tiền thuê gốc = pricePerDayVnd * rentalDays (VND)
+       * @example 2800000
+       */
+      baseRentVnd: number;
+      /**
+       * @description Phụ phí ngày cao điểm/cuối tuần (VND)
+       * @example 140000
+       */
+      peakSurchargeVnd: number;
+      /**
+       * @description Phí bảo hiểm chuyến đi (VND)
+       * @example 200000
+       */
+      insuranceFeeVnd: number;
+      /**
+       * @description Số tiền giảm giá từ khuyến mãi (VND)
+       * @example 0
+       */
+      discountVnd: number;
+      /**
+       * @description Tổng phụ = baseRent + peakSurcharge + insuranceFee - discount (VND)
+       * @example 3140000
+       */
+      subtotalVnd: number;
+      /**
+       * @description Phí dịch vụ nền tảng (10% của baseRent + peakSurcharge) (VND)
+       * @example 294000
+       */
+      serviceFeeVnd: number;
+      /**
+       * @description Tiền đặt cọc thế chấp giữ xe (hoàn lại sau chuyến đi) (VND)
+       * @example 10000000
+       */
+      depositVnd: number;
+      /**
+       * @description Tổng thanh toán = subtotal + serviceFee + deposit (VND, bảo đảm toàn vẹn toán học)
+       * @example 13434000
+       */
+      totalVnd: number;
+    };
+    QuoteDto: {
+      /** @example 10000000-0000-0000-0000-000000000001 */
+      vehicleId: string;
+      /** @example 2026-11-01T08:00:00.000Z */
+      startAt: string;
+      /** @example 2026-11-03T18:00:00.000Z */
+      endAt: string;
+      /** @example 1400000 */
+      pricePerDayVnd: number;
+      /** @example 2 */
+      rentalDays: number;
+      /** @example 2800000 */
+      subtotalVnd: number;
+      /** @example 280000 */
+      serviceFeeVnd: number;
+      /** @example 10000000 */
+      depositVnd: number;
+      /** @example 13080000 */
+      totalVnd: number;
+      /** @example daily-v1 */
+      pricingVersion: string;
+      breakdown: components['schemas']['PricingBreakdownDto'];
+      /**
+       * @description Xe có sẵn sàng trong khoảng thời gian này không
+       * @example true
+       */
+      available: boolean;
+      /** @example Xe đã có lịch đặt trước trong khoảng thời gian này */
+      unavailableReason?: string;
+    };
+    CalculatePricingDto: {
+      /**
+       * @description Mã định danh xe
+       * @example 10000000-0000-0000-0000-000000000001
+       */
+      vehicleId: string;
+      /**
+       * @description Thời điểm bắt đầu thuê (ISO 8601 UTC)
+       * @example 2026-11-01T08:00:00.000Z
+       */
+      startAt: string;
+      /**
+       * @description Thời điểm kết thúc thuê (ISO 8601 UTC)
+       * @example 2026-11-03T18:00:00.000Z
+       */
+      endAt: string;
+      /**
+       * @description Gói bảo hiểm lựa chọn (BASIC: 0đ, STANDARD: 100k/ngày, PREMIUM: 200k/ngày)
+       * @default BASIC
+       * @enum {string}
+       */
+      insurancePackage: 'BASIC' | 'STANDARD' | 'PREMIUM';
+      /**
+       * @description Mã khuyến mãi giảm giá (nếu có)
+       * @example SUMMER2026
+       */
+      voucherCode?: string;
     };
   };
   responses: never;
@@ -1697,6 +1858,118 @@ export interface operations {
       };
       /** @description Xe chưa đủ điều kiện publish (thiếu ảnh hoặc giấy tờ) */
       422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  PricingController_getQuote: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CalculatePricingDto'];
+      };
+    };
+    responses: {
+      /** @description Báo giá chi tiết với đầy đủ bóc tách chi phí */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['QuoteDto'];
+        };
+      };
+      /** @description Dữ liệu đầu vào hoặc định dạng ngày không hợp lệ */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy xe */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Thời lượng thuê không hợp lệ */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  PricingController_calculatePricing: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CalculatePricingDto'];
+      };
+    };
+    responses: {
+      /** @description Biểu phí tính toán thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['QuoteDto'];
+        };
+      };
+    };
+  };
+  PricingController_getPricingPreview: {
+    parameters: {
+      query: {
+        /** @description Thời điểm bắt đầu thuê (ISO 8601 UTC) */
+        startAt: string;
+        /** @description Thời điểm kết thúc thuê (ISO 8601 UTC) */
+        endAt: string;
+        insurancePackage?: 'BASIC' | 'STANDARD' | 'PREMIUM';
+        voucherCode?: string;
+      };
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Dự toán chi phí thuê xe */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['QuoteDto'];
+        };
+      };
+      /** @description Khoảng ngày không hợp lệ */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không tìm thấy xe */
+      404: {
         headers: {
           [name: string]: unknown;
         };

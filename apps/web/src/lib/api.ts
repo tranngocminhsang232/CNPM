@@ -15,6 +15,10 @@ import type {
   OwnerVehicleResponse,
   OwnerVehiclesResponse,
   PaginationMeta,
+  PricingBreakdown,
+  Quote,
+  QuoteResponse,
+  CalculatePricingPayload,
   SubmitDriverLicensePayload,
   UploadIntentResponse,
   UploadIntentResponseWrapper,
@@ -26,11 +30,14 @@ import type {
 } from '@carsharing/contracts';
 
 export type {
+  CalculatePricingPayload,
   DriverLicense,
   MediaObject,
   MediaReadUrlResponse,
   OwnerVehicle,
   PaginationMeta,
+  PricingBreakdown,
+  Quote,
   UploadIntentResponse,
   User,
   VehicleDetail,
@@ -129,6 +136,38 @@ export async function fetchVehicleOptions(): Promise<GetVehicleOptionsResponse> 
   });
 
   return handleResponse<GetVehicleOptionsResponse>(res);
+}
+
+// -----------------------------------------------------------------------------
+// Pricing Engine APIs (G2-02)
+// -----------------------------------------------------------------------------
+
+export async function calculateQuoteApi(payload: CalculatePricingPayload): Promise<Quote> {
+  const res = await fetch('/api/v1/pricing/quote', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<QuoteResponse>(res);
+  return json.data;
+}
+
+export async function fetchPricingPreviewApi(
+  vehicleId: string,
+  startAt: string,
+  endAt: string,
+  insurancePackage: 'BASIC' | 'STANDARD' | 'PREMIUM' = 'BASIC',
+  voucherCode?: string,
+): Promise<Quote> {
+  const query = new URLSearchParams({ startAt, endAt, insurancePackage });
+  if (voucherCode) query.set('voucherCode', voucherCode);
+
+  const res = await fetch(`/api/v1/vehicles/${vehicleId}/pricing-preview?${query.toString()}`, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  const json = await handleResponse<QuoteResponse>(res);
+  return json.data;
 }
 
 // -----------------------------------------------------------------------------

@@ -65,3 +65,10 @@ export type MediaReadUrlResponseWrapper = {
 export type MediaObjectResponseWrapper = {
   data: MediaObject;
 };
+
+export type Quote = components['schemas']['QuoteDto'];
+export type PricingBreakdown = components['schemas']['PricingBreakdownDto'];
+export type CalculatePricingPayload = components['schemas']['CalculatePricingDto'];
+export type QuoteResponse = {
+  data: Quote;
+};
