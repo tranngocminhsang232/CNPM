@@ -541,6 +541,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings/{id}/settle-deposit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)
+     * @description Khấu trừ phụ phí nhiên liệu hao hụt (30.000 đ/1%), phụ phí vệ sinh, trễ giờ và hoàn phần cọc còn lại qua cổng thanh toán.
+     */
+    post: operations['BookingsController_settleDeposit'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/settlement': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Xem chi tiết hoặc xem trước quyết toán cọc
+     * @description Chỉ khách thuê hoặc chủ xe mới có quyền xem thông tin quyết toán cọc của chuyến đi.
+     */
+    get: operations['BookingsController_getSettlement'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/v1/payments/create-intent': {
     parameters: {
       query?: never;
@@ -1674,6 +1714,85 @@ export interface components {
        */
       reason: string;
     };
+    SettleDepositDto: {
+      /**
+       * @description Phí vệ sinh nếu xe bị bẩn quá mức quy định (VND)
+       * @default 0
+       * @example 100000
+       */
+      cleaningFeeVnd: number;
+      /**
+       * @description Phụ phí phát sinh khác (ví dụ đền bù xước nhỏ, trễ giờ...) (VND)
+       * @default 0
+       * @example 0
+       */
+      otherSurchargeVnd: number;
+      /**
+       * @description Ghi chú lý do khấu trừ hoặc nghiệm thu hoàn cọc
+       * @example Khấu trừ 5% nhiên liệu hao hụt và phí rửa xe
+       */
+      damageNotes?: string;
+    };
+    SurchargeBreakdownDto: {
+      /**
+       * @description Phần trăm nhiên liệu/pin bị hao hụt so với lúc nhận
+       * @example 5
+       */
+      fuelShortfallPercent: number;
+      /**
+       * @description Đơn giá bù nhiên liệu / 1% (VND)
+       * @example 30000
+       */
+      fuelUnitPriceVnd: number;
+      /**
+       * @description Tiền phụ thu nhiên liệu hao hụt (VND)
+       * @example 150000
+       */
+      fuelSurchargeVnd: number;
+      /**
+       * @description Phí vệ sinh (VND)
+       * @example 100000
+       */
+      cleaningFeeVnd: number;
+      /**
+       * @description Phụ phí phát sinh khác (VND)
+       * @example 0
+       */
+      otherSurchargeVnd: number;
+      /**
+       * @description Tổng toàn bộ phụ phí khấu trừ (VND)
+       * @example 250000
+       */
+      totalSurchargesVnd: number;
+      /** @description Ghi chú giải trình của chủ xe */
+      damageNotes?: Record<string, never>;
+    };
+    DepositSettlementResponseDto: {
+      /** @description ID chuyến đi */
+      bookingId: string;
+      /**
+       * @description Số tiền ký quỹ ban đầu (VND)
+       * @example 10000000
+       */
+      depositVnd: number;
+      /** @description Chi tiết bóc tách phụ phí phát sinh */
+      breakdown: components['schemas']['SurchargeBreakdownDto'];
+      /**
+       * @description Số tiền hoàn trả lại cho khách thuê (VND)
+       * @example 9750000
+       */
+      refundAmountVnd: number;
+      /**
+       * @description Trạng thái quyết toán cọc
+       * @example SETTLED
+       * @enum {string}
+       */
+      status: 'SETTLED' | 'PENDING';
+      /** @description Mã giao dịch hoàn tiền nếu có */
+      refundTransactionRef?: Record<string, never>;
+      /** @description Thời điểm quyết toán hoàn tất */
+      settledAt?: Record<string, never>;
+    };
     CreatePaymentIntentDto: {
       /**
        * @description Mã định danh đơn đặt xe (UUID)
@@ -1685,7 +1804,7 @@ export interface components {
        * @default DEPOSIT
        * @enum {string}
        */
-      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT';
+      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT' | 'REFUND';
       /**
        * @description URL chuyển hướng sau khi hoàn tất thanh toán
        * @example http://localhost:3000/bookings/20000000-0000-0000-0000-000000000001
@@ -1708,7 +1827,7 @@ export interface components {
        * @example DEPOSIT
        * @enum {string}
        */
-      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT';
+      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT' | 'REFUND';
       /**
        * @example PENDING
        * @enum {string}
@@ -3009,6 +3128,54 @@ export interface operations {
         };
         content: {
           'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_settleDeposit: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SettleDepositDto'];
+      };
+    };
+    responses: {
+      /** @description Quyết toán ký quỹ thành công, hoàn cọc cho khách thuê */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DepositSettlementResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_getSettlement: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin quyết toán cọc */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DepositSettlementResponseDto'];
         };
       };
     };

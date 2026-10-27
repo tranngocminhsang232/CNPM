@@ -114,3 +114,9 @@ export type KeylessOperation = components['schemas']['KeylessOperationResponseDt
 export type KeylessOperationResponse = {
   data: KeylessOperation;
 };
+
+export type DepositSettlement = components['schemas']['DepositSettlementResponseDto'];
+export type SettleDepositPayload = components['schemas']['SettleDepositDto'];
+export type DepositSettlementResponse = {
+  data: DepositSettlement;
+};

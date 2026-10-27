@@ -18,6 +18,8 @@ import { CreateBookingDto } from './dto/create-booking.dto';
 import { QueryBookingsDto } from './dto/query-bookings.dto';
 import { RejectBookingDto, CancelBookingDto } from './dto/booking-action.dto';
 import { BookingResponseDto } from './dto/booking-response.dto';
+import { PaymentsService } from '../payments/payments.service';
+import { SettleDepositDto, DepositSettlementResponseDto } from '../payments/dto/settlement.dto';
 import { SessionGuard } from '../auth/guards/session.guard';
 import { CsrfGuard } from '../auth/guards/csrf.guard';
 import { KycVerifiedGuard } from '../users/guards/kyc-verified.guard';
@@ -29,7 +31,10 @@ import { ParseUuidPipe } from '../common/pipes/parse-uuid.pipe';
 @Controller('bookings')
 @UseGuards(SessionGuard, CsrfGuard)
 export class BookingsController {
-  constructor(private readonly bookingsService: BookingsService) {}
+  constructor(
+    private readonly bookingsService: BookingsService,
+    private readonly paymentsService: PaymentsService,
+  ) {}
 
   @Post()
   @UseGuards(KycVerifiedGuard)
@@ -171,5 +176,43 @@ export class BookingsController {
     @Param('id', ParseUuidPipe) id: string,
   ): Promise<BookingResponseDto> {
     return this.bookingsService.completeBooking(id, actorId);
+  }
+
+  @Post(':id/settle-deposit')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)',
+    description:
+      'Khấu trừ phụ phí nhiên liệu hao hụt (30.000 đ/1%), phụ phí vệ sinh, trễ giờ và hoàn phần cọc còn lại qua cổng thanh toán.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Quyết toán ký quỹ thành công, hoàn cọc cho khách thuê',
+    type: DepositSettlementResponseDto,
+  })
+  async settleDeposit(
+    @CurrentUser('id') actorId: string,
+    @Param('id', ParseUuidPipe) id: string,
+    @Body() dto: SettleDepositDto,
+  ): Promise<DepositSettlementResponseDto> {
+    return this.paymentsService.settleDeposit(id, actorId, dto);
+  }
+
+  @Get(':id/settlement')
+  @ApiOperation({
+    summary: 'Xem chi tiết hoặc xem trước quyết toán cọc',
+    description:
+      'Chỉ khách thuê hoặc chủ xe mới có quyền xem thông tin quyết toán cọc của chuyến đi.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Thông tin quyết toán cọc',
+    type: DepositSettlementResponseDto,
+  })
+  async getSettlement(
+    @CurrentUser('id') actorId: string,
+    @Param('id', ParseUuidPipe) id: string,
+  ): Promise<DepositSettlementResponseDto> {
+    return this.paymentsService.getDepositSettlement(id, actorId);
   }
 }

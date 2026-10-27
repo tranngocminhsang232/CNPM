@@ -11,14 +11,14 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G5-02** (Quyết toán Ký quỹ & Xử lý Khấu trừ / Hoàn cọc - Deposit Settlement & Surcharge Deduction Engine). Task G5-01 đã hoàn tất 100% với 300 tests backend pass.
+Task đề xuất tiếp theo: **G5-03** (Động cơ Đánh giá Hai chiều Khách & Chủ - Two-Way Reviews & Rating Engine). Task G5-02 đã hoàn tất 100% với 315 tests backend pass.
 
 ### Bảng tiến độ Milestone G5 (Trả Xe, Quyết Toán Ký Quỹ, Đánh Giá Hai Chiều & Dashboard Chủ Xe)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G5-01 | Quy trình Trả xe & Checklist hoàn trả | DONE | POST /bookings/:id/complete (Renter only 403, IN_PROGRESS required 409, no unresolved Keyless ops 409, CHECK_OUT inspection acknowledged & finalized 422, ODO check-out >= check-in 400/422 BR-10, releases vehicle calendar, emits TRIP_COMPLETED event & notifications, idempotent replay 200); 300 tests backend pass (132 unit, 18 constraints, 150 e2e); trip-completion.e2e-spec.ts 10/10 pass; OpenAPI & contracts cập nhật; completeBookingApi |
-| G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc | DONE | Migration enum PaymentType thêm REFUND; POST /bookings/:id/settle-deposit (Owner only 403, COMPLETED required 409, tính hao hụt xăng 30k/1% + phí vệ sinh, tạo giao dịch hoàn tiền REFUND SUCCESS, ghi BookingEvent DEPOSIT_SETTLED & notification 2 bên, idempotent replay 200); GET /bookings/:id/settlement (xem trước hoặc chi tiết cọc); 315 tests backend pass (139 unit, 18 constraints, 158 e2e); deposit-settlement.e2e-spec.ts 8/8 pass; contracts & web client cập nhật |
 | G5-03 | Động cơ Đánh giá Hai chiều (Khách & Chủ) | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
 | G5-04 | Web UI Trả xe, Quyết toán, Đánh giá & Dashboard | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
 | G5-05 | Kiểm thử Toàn diện & Đóng gói Toàn bộ Dự án | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
@@ -83,6 +83,28 @@ Task đề xuất tiếp theo: **G5-02** (Quyết toán Ký quỹ & Xử lý Kh�
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G5-02 — Quyết toán Ký quỹ & Xử lý Khấu trừ / Hoàn cọc (Deposit Settlement & Surcharge Deduction Engine)
+Trạng thái: DONE
+Prerequisite: G5-01
+Files thay đổi:
+- prisma/schema.prisma & prisma/migrations/20261027170000_add_refund_payment_type (Thêm giá trị REFUND vào enum PaymentType, áp dụng cả carsharing_dev và carsharing_test)
+- apps/api/src/payments/dto/settlement.dto.ts (SettleDepositDto: cleaningFeeVnd, otherSurchargeVnd, damageNotes; SurchargeBreakdownDto, DepositSettlementResponseDto)
+- apps/api/src/payments/payments.service.ts (Triển khai settleDeposit: chỉ chủ xe 403, kiểm tra booking COMPLETED 409, so khớp nhiên liệu lúc nhận vs trả để tính hao hụt 30k/1%, cộng phí vệ sinh, tính số tiền hoàn cọc refundAmount = max(0, deposit - surcharges), tạo giao dịch thanh toán hoàn tiền Payment REFUND SUCCESS, ghi nhận BookingEvent DEPOSIT_SETTLED và gửi Notification tóm tắt chi phí cho 2 bên, xử lý idempotent replay 200; triển khai getDepositSettlement xem trước hoặc xem chi tiết cọc đã quyết toán)
+- apps/api/src/bookings/bookings.controller.ts (Expose endpoint POST /bookings/:id/settle-deposit và GET /bookings/:id/settlement với SessionGuard & CsrfGuard)
+- apps/api/src/bookings/bookings.module.ts (Import PaymentsModule vào BookingsModule)
+- apps/api/src/payments/payments.service.spec.ts (7 unit tests mới kiểm tra đầy đủ 404, 403, 409, tính toán hao hụt xăng & phí vệ sinh, tạo payment REFUND & event & notification, idempotent replay, getDepositSettlement preview)
+- apps/api/test/deposit-settlement.e2e-spec.ts (8 integration tests e2e kiểm tra 401 unauth, 403 stranger, 403 renter, 409 IN_PROGRESS, 200 GET preview PENDING, 200 POST settle-deposit COMPLETED sinh payment REFUND và notification, 200 idempotent replay, 200 GET settlement SETTLED)
+- tools/export-openapi.mjs & packages/contracts (Đăng ký endpoint settle-deposit & settlement, sinh OpenAPI schema, contracts types DepositSettlement, SettleDepositPayload)
+- apps/web/src/lib/api.ts (Cung cấp hàm settleDepositApi và fetchDepositSettlementApi)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run test -> 315/315 backend tests pass 100% (139 unit, 18 constraints, 158 e2e)
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G5-02. Động cơ quyết toán cọc ký quỹ minh bạch, khấu trừ phụ phí nhiên liệu/vệ sinh và giải ngân hoàn cọc qua cổng thanh toán đã vận hành chuẩn xác, sẵn sàng cho Động cơ Đánh giá Hai chiều G5-03.
+```
 
 ```text
 Ngày: 27/10/2026

@@ -2,7 +2,7 @@ import { describe, it, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
 import { PaymentsService, computePaymentSignature } from './payments.service';
-import { PaymentStatus, PaymentType } from '@prisma/client';
+import { InspectionType, PaymentStatus, PaymentType } from '@prisma/client';
 
 describe('PaymentsService (unit) - G3-02 Payment Gateway & Escrow', () => {
   let service: PaymentsService;
@@ -288,6 +288,178 @@ describe('PaymentsService (unit) - G3-02 Payment Gateway & Escrow', () => {
       const res = await service.getPaymentByRef('TX-TEST-0001', ACTOR_RENTER);
       assert.equal(res.transactionRef, 'TX-TEST-0001');
       assert.equal(res.amountVnd, 10000000);
+    });
+  });
+
+  describe('settleDeposit', () => {
+    const completedBooking = {
+      id: BOOKING_ID,
+      renterId: ACTOR_RENTER,
+      ownerId: ACTOR_OWNER,
+      status: 'COMPLETED',
+      pricingSnapshot: {
+        depositVnd: BigInt(10000000),
+      },
+      inspections: [
+        { type: InspectionType.CHECK_IN, fuelPercent: 90 },
+        { type: InspectionType.CHECK_OUT, fuelPercent: 80 }, // 10% shortfall = 300,000 VND
+      ],
+      events: [],
+      payments: [],
+    };
+
+    it('rejects 404 if booking not found', async () => {
+      mockPrisma.booking.findUnique = async () => null;
+
+      await assert.rejects(
+        () => service.settleDeposit('non-existent', ACTOR_OWNER, {}),
+        (err: any) =>
+          err instanceof NotFoundException && (err.getResponse() as any)?.code === 'NOT_FOUND',
+      );
+    });
+
+    it('rejects 403 if requester is not the vehicle owner', async () => {
+      mockPrisma.booking.findUnique = async () => completedBooking;
+
+      await assert.rejects(
+        () => service.settleDeposit(BOOKING_ID, ACTOR_RENTER, {}),
+        (err: any) =>
+          err instanceof ForbiddenException && (err.getResponse() as any)?.code === 'FORBIDDEN',
+      );
+    });
+
+    it('rejects 409 if booking is not COMPLETED', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        ...completedBooking,
+        status: 'IN_PROGRESS',
+      });
+
+      await assert.rejects(
+        () => service.settleDeposit(BOOKING_ID, ACTOR_OWNER, {}),
+        (err: any) =>
+          err instanceof ConflictException &&
+          (err.getResponse() as any)?.code === 'INVALID_BOOKING_STATUS',
+      );
+    });
+
+    it('calculates fuel shortfall (10% * 30k = 300k), cleaning fee, creates REFUND payment and notifies parties', async () => {
+      let createdPayment: any = null;
+      let createdEvent: any = null;
+      const createdNotifications: any[] = [];
+
+      mockPrisma.booking.findUnique = async () => completedBooking;
+
+      mockPrisma.payment.create = async (args: any) => {
+        createdPayment = args.data;
+        return { id: 'refund-p-1', ...args.data };
+      };
+
+      mockPrisma.bookingEvent.create = async (args: any) => {
+        createdEvent = args.data;
+        return { id: 'evt-settled', createdAt: new Date(), ...args.data };
+      };
+
+      mockPrisma.notification.create = async (args: any) => {
+        createdNotifications.push(args.data);
+        return { id: `notif-${createdNotifications.length}`, ...args.data };
+      };
+
+      const res = await service.settleDeposit(BOOKING_ID, ACTOR_OWNER, {
+        cleaningFeeVnd: 100000,
+        otherSurchargeVnd: 0,
+        damageNotes: 'Khấu trừ 10% xăng và rửa xe',
+      });
+
+      assert.equal(res.bookingId, BOOKING_ID);
+      assert.equal(res.depositVnd, 10000000);
+      assert.equal(res.breakdown.fuelShortfallPercent, 10);
+      assert.equal(res.breakdown.fuelSurchargeVnd, 300000);
+      assert.equal(res.breakdown.cleaningFeeVnd, 100000);
+      assert.equal(res.breakdown.totalSurchargesVnd, 400000);
+      assert.equal(res.refundAmountVnd, 9600000); // 10M - 400k
+      assert.equal(res.status, 'SETTLED');
+      assert.ok(res.refundTransactionRef?.startsWith('REFUND-'));
+
+      // Check DB records
+      assert.equal(createdPayment.amountVnd, BigInt(9600000));
+      assert.equal(createdPayment.paymentType, PaymentType.REFUND);
+      assert.equal(createdPayment.status, PaymentStatus.SUCCESS);
+      assert.equal(createdEvent.eventType, 'DEPOSIT_SETTLED');
+      assert.equal(createdNotifications.length, 2);
+      const recipientIds = createdNotifications.map((n) => n.userId);
+      assert.ok(recipientIds.includes(ACTOR_RENTER));
+      assert.ok(recipientIds.includes(ACTOR_OWNER));
+    });
+
+    it('returns existing settlement idempotently if already settled', async () => {
+      const alreadySettledBooking = {
+        ...completedBooking,
+        events: [
+          {
+            id: 'evt-already-settled',
+            eventType: 'DEPOSIT_SETTLED',
+            createdAt: new Date(),
+            reason: JSON.stringify({
+              depositVnd: 10000000,
+              breakdown: {
+                fuelShortfallPercent: 10,
+                fuelUnitPriceVnd: 30000,
+                fuelSurchargeVnd: 300000,
+                cleaningFeeVnd: 100000,
+                otherSurchargeVnd: 0,
+                totalSurchargesVnd: 400000,
+                damageNotes: 'Đã quyết toán trước đó',
+              },
+              refundAmountVnd: 9600000,
+              refundTransactionRef: 'REFUND-PREV-12345',
+            }),
+          },
+        ],
+      };
+
+      mockPrisma.booking.findUnique = async () => alreadySettledBooking;
+
+      const res = await service.settleDeposit(BOOKING_ID, ACTOR_OWNER, {});
+      assert.equal(res.status, 'SETTLED');
+      assert.equal(res.refundAmountVnd, 9600000);
+      assert.equal(res.refundTransactionRef, 'REFUND-PREV-12345');
+    });
+  });
+
+  describe('getDepositSettlement', () => {
+    it('rejects 403 if unrelated user queries settlement', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: BOOKING_ID,
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        events: [],
+      });
+
+      await assert.rejects(
+        () => service.getDepositSettlement(BOOKING_ID, THIRD_PARTY),
+        (err: any) =>
+          err instanceof ForbiddenException && (err.getResponse() as any)?.code === 'FORBIDDEN',
+      );
+    });
+
+    it('returns PENDING preview for renter before owner settles', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: BOOKING_ID,
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        pricingSnapshot: { depositVnd: BigInt(10000000) },
+        inspections: [
+          { type: InspectionType.CHECK_IN, fuelPercent: 90 },
+          { type: InspectionType.CHECK_OUT, fuelPercent: 85 }, // 5% = 150k
+        ],
+        events: [],
+      });
+
+      const res = await service.getDepositSettlement(BOOKING_ID, ACTOR_RENTER);
+      assert.equal(res.status, 'PENDING');
+      assert.equal(res.breakdown.fuelShortfallPercent, 5);
+      assert.equal(res.breakdown.fuelSurchargeVnd, 150000);
+      assert.equal(res.refundAmountVnd, 9850000);
     });
   });
 });

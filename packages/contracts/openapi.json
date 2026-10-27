@@ -1418,6 +1418,86 @@
         "tags": ["Bookings"]
       }
     },
+    "/api/v1/bookings/{id}/settle-deposit": {
+      "post": {
+        "description": "Khấu trừ phụ phí nhiên liệu hao hụt (30.000 đ/1%), phụ phí vệ sinh, trễ giờ và hoàn phần cọc còn lại qua cổng thanh toán.",
+        "operationId": "BookingsController_settleDeposit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettleDepositDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quyết toán ký quỹ thành công, hoàn cọc cho khách thuê",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositSettlementResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)",
+        "tags": ["Bookings"]
+      }
+    },
+    "/api/v1/bookings/{id}/settlement": {
+      "get": {
+        "description": "Chỉ khách thuê hoặc chủ xe mới có quyền xem thông tin quyết toán cọc của chuyến đi.",
+        "operationId": "BookingsController_getSettlement",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin quyết toán cọc",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepositSettlementResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Xem chi tiết hoặc xem trước quyết toán cọc",
+        "tags": ["Bookings"]
+      }
+    },
     "/api/v1/payments/create-intent": {
       "post": {
         "description": "Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.",
@@ -3398,6 +3478,117 @@
         },
         "required": ["reason"]
       },
+      "SettleDepositDto": {
+        "type": "object",
+        "properties": {
+          "cleaningFeeVnd": {
+            "type": "number",
+            "description": "Phí vệ sinh nếu xe bị bẩn quá mức quy định (VND)",
+            "example": 100000,
+            "default": 0
+          },
+          "otherSurchargeVnd": {
+            "type": "number",
+            "description": "Phụ phí phát sinh khác (ví dụ đền bù xước nhỏ, trễ giờ...) (VND)",
+            "example": 0,
+            "default": 0
+          },
+          "damageNotes": {
+            "type": "string",
+            "description": "Ghi chú lý do khấu trừ hoặc nghiệm thu hoàn cọc",
+            "example": "Khấu trừ 5% nhiên liệu hao hụt và phí rửa xe"
+          }
+        }
+      },
+      "SurchargeBreakdownDto": {
+        "type": "object",
+        "properties": {
+          "fuelShortfallPercent": {
+            "type": "number",
+            "description": "Phần trăm nhiên liệu/pin bị hao hụt so với lúc nhận",
+            "example": 5
+          },
+          "fuelUnitPriceVnd": {
+            "type": "number",
+            "description": "Đơn giá bù nhiên liệu / 1% (VND)",
+            "example": 30000
+          },
+          "fuelSurchargeVnd": {
+            "type": "number",
+            "description": "Tiền phụ thu nhiên liệu hao hụt (VND)",
+            "example": 150000
+          },
+          "cleaningFeeVnd": {
+            "type": "number",
+            "description": "Phí vệ sinh (VND)",
+            "example": 100000
+          },
+          "otherSurchargeVnd": {
+            "type": "number",
+            "description": "Phụ phí phát sinh khác (VND)",
+            "example": 0
+          },
+          "totalSurchargesVnd": {
+            "type": "number",
+            "description": "Tổng toàn bộ phụ phí khấu trừ (VND)",
+            "example": 250000
+          },
+          "damageNotes": {
+            "type": "object",
+            "description": "Ghi chú giải trình của chủ xe"
+          }
+        },
+        "required": [
+          "fuelShortfallPercent",
+          "fuelUnitPriceVnd",
+          "fuelSurchargeVnd",
+          "cleaningFeeVnd",
+          "otherSurchargeVnd",
+          "totalSurchargesVnd"
+        ]
+      },
+      "DepositSettlementResponseDto": {
+        "type": "object",
+        "properties": {
+          "bookingId": {
+            "type": "string",
+            "description": "ID chuyến đi"
+          },
+          "depositVnd": {
+            "type": "number",
+            "description": "Số tiền ký quỹ ban đầu (VND)",
+            "example": 10000000
+          },
+          "breakdown": {
+            "description": "Chi tiết bóc tách phụ phí phát sinh",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SurchargeBreakdownDto"
+              }
+            ]
+          },
+          "refundAmountVnd": {
+            "type": "number",
+            "description": "Số tiền hoàn trả lại cho khách thuê (VND)",
+            "example": 9750000
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái quyết toán cọc",
+            "example": "SETTLED",
+            "enum": ["SETTLED", "PENDING"]
+          },
+          "refundTransactionRef": {
+            "type": "object",
+            "description": "Mã giao dịch hoàn tiền nếu có"
+          },
+          "settledAt": {
+            "type": "object",
+            "description": "Thời điểm quyết toán hoàn tất"
+          }
+        },
+        "required": ["bookingId", "depositVnd", "breakdown", "refundAmountVnd", "status"]
+      },
       "CreatePaymentIntentDto": {
         "type": "object",
         "properties": {
@@ -3408,7 +3599,7 @@
           },
           "paymentType": {
             "type": "string",
-            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT"],
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT", "REFUND"],
             "default": "DEPOSIT",
             "description": "Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)"
           },
@@ -3442,7 +3633,7 @@
           },
           "paymentType": {
             "type": "string",
-            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT"],
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT", "REFUND"],
             "example": "DEPOSIT"
           },
           "status": {

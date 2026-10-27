@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "PaymentType" ADD VALUE IF NOT EXISTS 'REFUND';

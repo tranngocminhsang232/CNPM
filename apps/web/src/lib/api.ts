@@ -48,6 +48,9 @@ import type {
   TriggerKeylessPayload,
   KeylessOperation,
   KeylessOperationResponse,
+  DepositSettlement,
+  SettleDepositPayload,
+  DepositSettlementResponse,
 } from '@carsharing/contracts';
 
 export type {
@@ -697,5 +700,38 @@ export async function reconcileKeylessOperationApi(
     },
   );
   const json = await handleResponse<KeylessOperationResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Deposit Settlement APIs (G5-02)
+// -----------------------------------------------------------------------------
+
+export async function settleDepositApi(
+  bookingId: string,
+  payload: SettleDepositPayload,
+  csrfToken: string,
+): Promise<DepositSettlement> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/settle-deposit`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<DepositSettlementResponse>(res);
+  return json.data;
+}
+
+export async function fetchDepositSettlementApi(bookingId: string): Promise<DepositSettlement> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/settlement`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<DepositSettlementResponse>(res);
   return json.data;
 }

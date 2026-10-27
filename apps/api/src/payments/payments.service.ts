@@ -9,7 +9,8 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePaymentIntentDto } from './dto/create-payment-intent.dto';
 import { PaymentResponseDto } from './dto/payment-response.dto';
 import { PaymentWebhookDto, SimulatePaymentDto } from './dto/payment-webhook.dto';
-import { PaymentStatus, PaymentType } from '@prisma/client';
+import { SettleDepositDto, DepositSettlementResponseDto } from './dto/settlement.dto';
+import { InspectionType, PaymentStatus, PaymentType } from '@prisma/client';
 
 export function computePaymentSignature(
   transactionRef: string,
@@ -227,6 +228,234 @@ export class PaymentsService {
     }
 
     return this.formatPaymentResponse(payment);
+  }
+
+  async settleDeposit(
+    bookingId: string,
+    actorId: string,
+    dto: SettleDepositDto,
+  ): Promise<DepositSettlementResponseDto> {
+    const FUEL_UNIT_PRICE_VND = 30000;
+
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        pricingSnapshot: true,
+        inspections: true,
+        events: { where: { eventType: 'DEPOSIT_SETTLED' } },
+        payments: { where: { paymentType: PaymentType.REFUND } },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Không tìm thấy chuyến đi tương ứng để quyết toán cọc',
+      });
+    }
+
+    if (booking.ownerId !== actorId) {
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Chỉ chủ xe của chuyến đi mới có quyền thực hiện quyết toán ký quỹ',
+      });
+    }
+
+    if (booking.status !== 'COMPLETED') {
+      throw new ConflictException({
+        code: 'INVALID_BOOKING_STATUS',
+        message: `Chỉ có thể quyết toán cọc sau khi chuyến đi đã COMPLETED (trạng thái hiện tại: ${booking.status})`,
+      });
+    }
+
+    // Check if already settled (idempotency)
+    const existingSettledEvent = booking.events?.[0];
+    if (existingSettledEvent) {
+      try {
+        const parsed = JSON.parse(existingSettledEvent.reason || '{}');
+        if (parsed.breakdown) {
+          return {
+            bookingId,
+            depositVnd: parsed.depositVnd,
+            breakdown: parsed.breakdown,
+            refundAmountVnd: parsed.refundAmountVnd,
+            status: 'SETTLED',
+            refundTransactionRef: parsed.refundTransactionRef || null,
+            settledAt: existingSettledEvent.createdAt.toISOString(),
+          };
+        }
+      } catch {
+        // Fallthrough if parsing fails
+      }
+    }
+
+    // Calculate fuel shortfall
+    const checkIn = booking.inspections.find((i) => i.type === InspectionType.CHECK_IN);
+    const checkOut = booking.inspections.find((i) => i.type === InspectionType.CHECK_OUT);
+    const checkInFuel = checkIn?.fuelPercent ?? 100;
+    const checkOutFuel = checkOut?.fuelPercent ?? 100;
+    const fuelShortfallPercent = Math.max(0, checkInFuel - checkOutFuel);
+    const fuelSurchargeVnd = fuelShortfallPercent * FUEL_UNIT_PRICE_VND;
+
+    const cleaningFeeVnd = dto.cleaningFeeVnd ?? 0;
+    const otherSurchargeVnd = dto.otherSurchargeVnd ?? 0;
+    const totalSurchargesVnd = fuelSurchargeVnd + cleaningFeeVnd + otherSurchargeVnd;
+    const depositVnd = Number(booking.pricingSnapshot?.depositVnd ?? 0);
+    const refundAmountVnd = Math.max(0, depositVnd - totalSurchargesVnd);
+
+    const breakdown = {
+      fuelShortfallPercent,
+      fuelUnitPriceVnd: FUEL_UNIT_PRICE_VND,
+      fuelSurchargeVnd,
+      cleaningFeeVnd,
+      otherSurchargeVnd,
+      totalSurchargesVnd,
+      damageNotes: dto.damageNotes || null,
+    };
+
+    return await this.prisma.$transaction(async (tx) => {
+      let refundTransactionRef: string | null = null;
+
+      if (refundAmountVnd > 0) {
+        refundTransactionRef = `REFUND-${Date.now()}-${randomBytes(4).toString('hex')}`;
+        await tx.payment.create({
+          data: {
+            bookingId: booking.id,
+            renterId: booking.renterId,
+            amountVnd: BigInt(refundAmountVnd),
+            paymentType: PaymentType.REFUND,
+            status: PaymentStatus.SUCCESS,
+            provider: 'SANDBOX_GATEWAY',
+            transactionRef: refundTransactionRef,
+            gatewayTxnId: `GW-${randomBytes(4).toString('hex')}`,
+            paidAt: new Date(),
+          },
+        });
+      }
+
+      const event = await tx.bookingEvent.create({
+        data: {
+          bookingId: booking.id,
+          actorId,
+          eventType: 'DEPOSIT_SETTLED',
+          fromStatus: 'COMPLETED',
+          toStatus: 'COMPLETED',
+          reason: JSON.stringify({
+            depositVnd,
+            breakdown,
+            refundAmountVnd,
+            refundTransactionRef,
+          }),
+        },
+      });
+
+      await tx.notification.create({
+        data: {
+          userId: booking.renterId,
+          bookingId: booking.id,
+          eventId: event.id,
+          type: 'DEPOSIT_SETTLED',
+        },
+      });
+
+      await tx.notification.create({
+        data: {
+          userId: booking.ownerId,
+          bookingId: booking.id,
+          eventId: event.id,
+          type: 'DEPOSIT_SETTLED',
+        },
+      });
+
+      return {
+        bookingId,
+        depositVnd,
+        breakdown,
+        refundAmountVnd,
+        status: 'SETTLED',
+        refundTransactionRef,
+        settledAt: event.createdAt.toISOString(),
+      };
+    });
+  }
+
+  async getDepositSettlement(
+    bookingId: string,
+    actorId: string,
+  ): Promise<DepositSettlementResponseDto> {
+    const FUEL_UNIT_PRICE_VND = 30000;
+
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        pricingSnapshot: true,
+        inspections: true,
+        events: { where: { eventType: 'DEPOSIT_SETTLED' } },
+        payments: { where: { paymentType: PaymentType.REFUND } },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Không tìm thấy chuyến đi tương ứng',
+      });
+    }
+
+    if (booking.renterId !== actorId && booking.ownerId !== actorId) {
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Bạn không có quyền xem thông tin quyết toán cọc của chuyến đi này',
+      });
+    }
+
+    const existingSettledEvent = booking.events?.[0];
+    if (existingSettledEvent) {
+      try {
+        const parsed = JSON.parse(existingSettledEvent.reason || '{}');
+        if (parsed.breakdown) {
+          return {
+            bookingId,
+            depositVnd: parsed.depositVnd,
+            breakdown: parsed.breakdown,
+            refundAmountVnd: parsed.refundAmountVnd,
+            status: 'SETTLED',
+            refundTransactionRef: parsed.refundTransactionRef || null,
+            settledAt: existingSettledEvent.createdAt.toISOString(),
+          };
+        }
+      } catch {
+        // Fallthrough
+      }
+    }
+
+    // If not settled yet, provide calculation preview
+    const checkIn = booking.inspections.find((i) => i.type === InspectionType.CHECK_IN);
+    const checkOut = booking.inspections.find((i) => i.type === InspectionType.CHECK_OUT);
+    const checkInFuel = checkIn?.fuelPercent ?? 100;
+    const checkOutFuel = checkOut?.fuelPercent ?? 100;
+    const fuelShortfallPercent = Math.max(0, checkInFuel - checkOutFuel);
+    const fuelSurchargeVnd = fuelShortfallPercent * FUEL_UNIT_PRICE_VND;
+    const depositVnd = Number(booking.pricingSnapshot?.depositVnd ?? 0);
+    const refundAmountVnd = Math.max(0, depositVnd - fuelSurchargeVnd);
+
+    return {
+      bookingId,
+      depositVnd,
+      breakdown: {
+        fuelShortfallPercent,
+        fuelUnitPriceVnd: FUEL_UNIT_PRICE_VND,
+        fuelSurchargeVnd,
+        cleaningFeeVnd: 0,
+        otherSurchargeVnd: 0,
+        totalSurchargesVnd: fuelSurchargeVnd,
+        damageNotes: null,
+      },
+      refundAmountVnd,
+      status: 'PENDING',
+      refundTransactionRef: null,
+      settledAt: null,
+    };
   }
 
   private formatPaymentResponse(payment: any): PaymentResponseDto {
