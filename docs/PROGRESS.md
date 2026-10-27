@@ -20,7 +20,7 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-02 | NestJS và health | DONE | apps/api scaffold, GET /api/v1/health liveness, build/typecheck & unit/e2e smoke test pass |
 | G0-03 | Request và error contract | DONE | RequestIdMiddleware, TransformInterceptor, HttpExceptionFilter, 19 ca test unit & e2e pass |
 | G0-04 | Next.js và cùng origin | DONE | Next.js 16 App Router, cùng origin rewrite /api/v1/health, build/typecheck & gọi health thực tế |
-| G0-05 | PostgreSQL/storage local | TODO | Chưa có compose/config đã chạy |
+| G0-05 | PostgreSQL/storage local | DONE | Docker Compose (Postgres 18 & MinIO/Silo), btree_gist trên dev/test DB, private bucket & upload/download probe pass |
 | G0-06 | Prisma schema | TODO | Chưa có schema |
 | G0-07 | Migration/constraints | TODO | Chưa chạy PostgreSQL tests |
 | G0-08 | Seed/database provider | TODO | Chưa có seed/provider |
@@ -32,6 +32,30 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-05 — PostgreSQL và object storage local
+Trạng thái: DONE
+Prerequisite: G0-00, G0-01
+Files thay đổi:
+- infra/compose.yaml (Định nghĩa services: postgres:18-alpine, minio: pgsty/silo:latest, minio-init: pgsty/mc:latest; persistent named volumes; healthchecks)
+- infra/init-db.sh (Script khởi tạo cài đặt btree_gist trên cả carsharing_dev và carsharing_test)
+- README.md (Bổ sung mục Hướng dẫn Khởi chạy Môi trường Hạ tầng Local, lệnh start/stop bảo toàn volume)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-05)
+Lệnh đã chạy và kết quả:
+- docker compose -f infra/compose.yaml up -d: Khởi chạy carsharing-postgres, carsharing-minio và carsharing-minio-init thành công.
+- docker compose -f infra/compose.yaml ps -a: Cả 2 service postgres và minio đều đạt trạng thái "healthy" (postgres port 5433->5432, minio port 9000-9001).
+- carsharing-minio-init hoàn tất với Exit 0: Khởi tạo bucket 'car-sharing-private' và thiết lập quyền 'private' (anonymous: none).
+- docker exec carsharing-postgres psql -U carsharing -d carsharing_dev -c "SELECT extname, extversion FROM pg_extension;": Xác nhận btree_gist v1.8 đã cài đặt thành công trên carsharing_dev.
+- docker exec carsharing-postgres psql -U carsharing -d carsharing_test -c "SELECT extname, extversion FROM pg_extension;": Xác nhận btree_gist v1.8 đã cài đặt thành công trên carsharing_test.
+- curl -i http://localhost:9000/car-sharing-private/test-probe.txt: Phản hồi HTTP 403 Forbidden <Code>AccessDenied</Code> xác nhận anonymous bị chặn hoàn toàn.
+- docker run --rm --entrypoint /bin/sh --network infra_default pgsty/mc:latest -c "...": Upload file thử nghiệm 'probe.txt' bằng credential local và download lại kiểm tra nội dung 'Car Sharing Platform S3 Probe Test' khớp 100%.
+- Kiểm tra bảo toàn volume: Dữ liệu được lưu trữ an toàn trong named volumes carsharing_postgres_data và carsharing_minio_data.
+Ca chưa chạy và lý do: Chưa tích hợp Google hoặc S3 production (theo đúng tiêu chí G0-05).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Docker PostgreSQL ánh xạ cổng host 5433:5432 để hoạt động song song với native PostgreSQL 18 trên cổng 5432.
+Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-05.
+```
 
 ```text
 Ngày: 27/10/2026
