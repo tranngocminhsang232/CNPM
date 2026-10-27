@@ -10,11 +10,11 @@ Dựa trên SRS 1.1, BR-08, BR-10, BR-12, BR-13, REQ-CAR-05, REQ-CAR-06, REQ-CAR
 
 | Mã | Tên Task | Phụ trách chính | Trạng thái |
 | --- | --- | --- | --- |
-| G5-01 | Quy trình Trả xe, Checklist 4 Góc Sau Chuyến & Hoàn tất Chuyến đi | Backend (Triệu Minh Trí) | TODO |
-| G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc / Phụ phí phát sinh | Backend (Triệu Minh Trí / Đinh Hoàng Việt) | TODO |
-| G5-03 | Động cơ Đánh giá Hai chiều (Khách thuê & Chủ xe) | Backend (Triệu Minh Trí) | TODO |
-| G5-04 | Web UI Trả xe, Quyết toán Cọc, Đánh giá & Dashboard Chủ xe | Frontend (Trần Văn Tiền) | TODO |
-| G5-05 | Kiểm thử Tích hợp Toàn diện, Audit An ninh & Đóng gói Dự án | Test / QA (Trần Ngọc Minh Sang) | TODO |
+| G5-01 | Quy trình Trả xe, Checklist 4 Góc Sau Chuyến & Hoàn tất Chuyến đi | Backend (Triệu Minh Trí) | DONE |
+| G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc / Phụ phí phát sinh | Backend (Triệu Minh Trí / Đinh Hoàng Việt) | DONE |
+| G5-03 | Động cơ Đánh giá Hai chiều (Khách thuê & Chủ xe) | Backend (Triệu Minh Trí) | DONE |
+| G5-04 | Web UI Trả xe, Quyết toán Cọc, Đánh giá & Dashboard Chủ xe | Frontend (Trần Văn Tiền) | DONE |
+| G5-05 | Kiểm thử Tích hợp Toàn diện, Audit An ninh & Đóng gói Dự án | Test / QA (Trần Ngọc Minh Sang) | DONE |
 
 ---
 

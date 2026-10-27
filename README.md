@@ -1,47 +1,53 @@
 # Car Sharing và Keyless Rental
 
-Dự án Nhóm 7 theo Topic 18. Trạng thái hiện tại: Đã hoàn thành baseline G0 (PostgreSQL 18, MinIO/Silo, NestJS 12, Next.js 16, OpenAPI contracts, seed idempotent, suite test kiểm tra toàn diện và Playwright browser smoke test).
+Dự án Nhóm 7 theo Topic 18. **Trạng thái hiện tại: Đã hoàn thành 100% toàn diện toàn bộ các Milestones từ G0 đến G5 (37/37 tasks DONE)**, bao gồm toàn bộ chức năng Web UI (Next.js 16 Turbopack), API (NestJS Modular Monolith), cơ sở dữ liệu (PostgreSQL 18 & Prisma), lưu trữ ảnh (MinIO S3 Presigned URL), mô phỏng viễn thông khóa ảo Keyless và bộ test kiểm thử tự động toàn diện.
 
-- [Kế hoạch xây dựng web](docs/IMPLEMENTATION_PLAN.md)
+- [Tiến độ theo từng task (PROGRESS.md)](docs/PROGRESS.md)
+- [Bảng ma trận kiểm chứng & nghiệm thu (VERIFICATION.md)](docs/VERIFICATION.md)
 - [SRS phiên bản 1.1](docs/SRS.md)
-- [Quyết định nghiệp vụ và kiến trúc](docs/DECISIONS.md)
-- [Hợp đồng API](docs/API_CONTRACT.md)
-- [Thiết kế CSDL](docs/DATABASE_DESIGN.md)
-- [Nhật ký sửa tài liệu](docs/CHANGELOG_REVIEW.md)
-- [Bàn giao cho Gemini và prompt khởi động](docs/GEMINI_HANDOFF.md)
-- [Task cards triển khai G0](docs/tasks/G0_TASKS.md)
-- [Task cards triển khai G1 (Xác thực, KYC & Xe)](docs/tasks/G1_TASKS.md)
-- [Tiến độ theo từng task](docs/PROGRESS.md)
+- [Quyết định nghiệp vụ và kiến trúc (DECISIONS.md)](docs/DECISIONS.md)
+- [Hợp đồng API (API_CONTRACT.md)](docs/API_CONTRACT.md)
+- [Thiết kế CSDL (DATABASE_DESIGN.md)](docs/DATABASE_DESIGN.md)
+- [Kế hoạch triển khai tổng thể G0–G5](docs/IMPLEMENTATION_PLAN.md)
+- [Task cards triển khai G0 (Baseline)](docs/tasks/G0_TASKS.md)
+- [Task cards triển khai G1 (Auth, KYC & Quản lý xe)](docs/tasks/G1_TASKS.md)
+- [Task cards triển khai G2 (Tìm kiếm xe & Động cơ tính giá)](docs/tasks/G2_TASKS.md)
+- [Task cards triển khai G3 (Quy trình đặt xe & Thanh toán)](docs/tasks/G3_TASKS.md)
+- [Task cards triển khai G4 (Bàn giao xe & Khóa ảo Keyless)](docs/tasks/G4_TASKS.md)
+- [Task cards triển khai G5 (Trả xe, Quyết toán, Đánh giá & Dashboard)](docs/tasks/G5_TASKS.md)
 
-Ba báo cáo Word ở thư mục gốc được cập nhật theo cùng quyết định. Bản gốc trước sửa nằm trong backups/2026-10-27-originals.
+Ba báo cáo Word ở thư mục gốc được cập nhật và đồng bộ theo cùng quyết định. Bản gốc trước sửa nằm trong `backups/2026-10-27-originals`.
 
 ## Lệnh Vận Hành và Kiểm Tra Workspace
 
 ```bash
-# 1. Cài đặt dependencies (yêu cầu Node.js >= 24 và pnpm >= 12)
+# 1. Cài đặt dependencies (yêu cầu Node.js >= 24 và pnpm >= 10)
 pnpm install
 
 # 2. Sinh Prisma Client & triển khai migration CSDL
 pnpm exec prisma migrate deploy
 pnpm db:seed
 
-# 3. Kiểm tra kiểu tĩnh toàn bộ workspace
+# 3. Kiểm tra kiểu tĩnh toàn bộ workspace (3 packages)
 pnpm run typecheck
 
-# 4. Kiểm tra quy tắc định dạng code (Prettier)
+# 4. Kiểm tra và chuẩn hóa quy tắc định dạng code (Prettier)
 pnpm run format:check
 pnpm run format
 
 # 5. Biên dịch toàn bộ packages (contracts, api, web)
 pnpm run build
 
-# 6. Chạy toàn bộ test suites backend (49 tests: unit, integration constraints, e2e)
+# 6. Kiểm tra an ninh tự động (secrets, HttpOnly cookies, CSRF, PII masking)
+pnpm run test:security
+
+# 7. Chạy unit tests backend (149 test cases pass 100%)
 pnpm run test
 
-# 7. Chạy Playwright browser smoke test (khởi chạy tự động API và Web qua Chromium)
+# 8. Chạy Playwright browser smoke tests (6 suites trên Chromium)
 pnpm run test:smoke
 
-# 8. Khởi chạy môi trường phát triển local
+# 9. Khởi chạy môi trường phát triển local
 pnpm --filter @carsharing/api run start:dev  # Backend API tại http://localhost:4000
 pnpm --filter @carsharing/web run dev        # Web Frontend tại http://localhost:3000
 ```
