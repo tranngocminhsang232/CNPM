@@ -11,13 +11,13 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-02** (Khởi tạo NestJS và health check). Task G0-01 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G0-03** (Nền xử lý request và lỗi API). Task G0-02 đã hoàn tất và được ghi nhận.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G0-00 | Môi trường và phiên bản | DONE | Đã kiểm tra thực tế máy host & ghim bộ phiên bản tại docs/TECH_STACK.md |
 | G0-01 | Workspace và baseline | DONE | package.json, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig.base.json, .env.example, git baseline |
-| G0-02 | NestJS và health | TODO | Chưa có API |
+| G0-02 | NestJS và health | DONE | apps/api scaffold, GET /api/v1/health liveness, build/typecheck & unit/e2e smoke test pass |
 | G0-03 | Request và error contract | TODO | Chưa có implementation |
 | G0-04 | Next.js và cùng origin | TODO | Chưa có web |
 | G0-05 | PostgreSQL/storage local | TODO | Chưa có compose/config đã chạy |
@@ -32,6 +32,36 @@ Task đề xuất tiếp theo: **G0-02** (Khởi tạo NestJS và health check).
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-02 — Khởi tạo NestJS và health check
+Trạng thái: DONE
+Prerequisite: G0-01
+Files thay đổi:
+- apps/api/package.json (scaffold @carsharing/api, ghim NestJS 12.2.0, class-validator, class-transformer, scripts test/e2e)
+- apps/api/tsconfig.json & apps/api/tsconfig.build.json (kế thừa tsconfig.base.json, commonjs, moduleResolution node, strict)
+- apps/api/nest-cli.json (cấu hình Nest CLI)
+- apps/api/src/config/env.validation.ts (validation cấu hình NODE_ENV, API_PORT, CORS_ORIGIN bằng class-validator)
+- apps/api/src/health/health.controller.ts & apps/api/src/health/health.module.ts (GET /health trả status ok, timestamp UTC ISO, uptime; không lộ secret)
+- apps/api/src/app.module.ts (ConfigModule toàn cục + HealthModule)
+- apps/api/src/main.ts (tiền tố toàn cục /api/v1, graceful shutdown, cấu hình CORS, khởi chạy cổng 4000)
+- apps/api/src/health/health.controller.spec.ts (unit test 2 ca: defined & data response structure)
+- apps/api/test/health.e2e-spec.ts (smoke e2e test gọi GET /api/v1/health qua supertest, nhận 200 OK)
+- pnpm-workspace.yaml & pnpm-lock.yaml (cập nhật allowBuilds và lockfile)
+- docs/PROGRESS.md (cập nhật tiến độ)
+Lệnh đã chạy và kết quả:
+- pnpm --filter @carsharing/api run build: nest build thành công (exit 0)
+- pnpm --filter @carsharing/api run typecheck: tsc --noEmit thành công (exit 0)
+- pnpm --filter @carsharing/api run test: 2 unit tests pass (exit 0)
+- pnpm --filter @carsharing/api run test:e2e: 1 smoke e2e test pass (exit 0)
+- node dist/main.js & Invoke-RestMethod: Máy chủ khởi động lắng nghe port 4000, gọi GET http://localhost:4000/api/v1/health trả đúng { data: { status: 'ok', timestamp: '...', uptime: ... } } (HTTP 200)
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
+Ca chưa chạy và lý do: Chưa tích hợp Prisma readiness DB (chờ G0-05/G0-06), chưa có business modules (theo kế hoạch G0-03 trở đi).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Tiền tố API là /api/v1, response chuẩn { data }. Cấu hình allowBuilds cho pnpm v12 trong pnpm-workspace.yaml.
+Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-02
+Task đề xuất tiếp theo: G0-03 — Nền xử lý request và lỗi API
+```
 
 ```text
 Ngày: 27/10/2026
