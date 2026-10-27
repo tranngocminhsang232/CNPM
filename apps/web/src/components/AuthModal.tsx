@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../lib/auth-context';
 
 interface AuthModalProps {
@@ -17,13 +18,13 @@ const DEMO_ACCOUNTS = [
   },
   {
     role: 'Chủ xe 1',
-    name: 'Trần Thị Chủ 1',
+    name: 'Nguyễn Văn Chủ 1',
     email: 'owner1@carsharing.local',
     badge: 'Chủ xe',
   },
   {
     role: 'Chủ xe 2',
-    name: 'Nguyễn Văn Chủ 2',
+    name: 'Trần Thị Chủ 2',
     email: 'owner2@carsharing.local',
     badge: 'Chủ xe',
   },
@@ -35,8 +36,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [password, setPassword] = useState('DemoPassword123!');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -65,7 +71,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   };
 
-  return (
+  return createPortal(
     <div
       id="auth-modal-backdrop"
       style={{
@@ -78,6 +84,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         justifyContent: 'center',
         zIndex: 9999,
         padding: '16px',
+        overflowY: 'auto',
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -317,6 +324,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </form>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

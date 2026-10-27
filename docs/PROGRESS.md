@@ -11,9 +11,19 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-06** (Kiểm Tra Tích Hợp Toàn Diện & Đóng Gói Milestone G1). Task G1-05 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G2-01** (Bộ Lọc & Tìm Kiếm Xe Nâng Cao). Milestone G1 đã hoàn tất 100% (6/6 tasks) và được nghiệm thu toàn diện.
 
-### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
+### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G2-01 | Bộ lọc & tìm kiếm xe nâng cao | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-02 | Động cơ tính giá & snapshot chi phí | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-03 | Hệ thống mã khuyến mãi & giảm giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-04 | Web UI chi tiết xe & dự toán giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-05 | Kiểm tra tích hợp & đóng gói G2 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+
+### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe - Hoàn tất 100%)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -22,7 +32,7 @@ Task đề xuất tiếp theo: **G1-06** (Kiểm Tra Tích Hợp Toàn Diện & 
 | G1-03 | Dịch vụ S3 Presigned URL | DONE | MediaModule, tích hợp @aws-sdk/client-s3 & @aws-sdk/s3-request-presigner, POST /media/upload-intents (presigned PUT, TTL 15m, giới hạn 5MB, JPEG/PNG), upload trực tiếp lên MinIO private bucket, POST /media/:id/verify (S3 HeadObject probe, move staging sang finalized, state VERIFIED), GET /media/:id/read-url (presigned GET URL, chặn tài liệu nhạy cảm GPLX 403, mở ảnh xe công khai); 98 tests pass (33 unit, 18 constraints, 47 e2e) |
 | G1-04 | Đăng ký & quản lý xe chủ xe | DONE | OwnerVehiclesController & Service, POST /owner/vehicles (trạng thái DRAFT, chuẩn hóa biển số plateNormalized, chặn trùng biển số 409, kiểm tra khoảng giá 100k-100M VND, liên kết tiện nghi và ảnh xe VERIFIED), GET /owner/vehicles (danh sách xe cá nhân kèm biển số và địa chỉ đón trả), GET /owner/vehicles/:id (bảo mật 403 nếu không phải chủ xe), PATCH /owner/vehicles/:id (cập nhật thông tin và tăng version concurrency), POST /owner/vehicles/:id/publish (yêu cầu tối thiểu 1 ảnh xe 422 PUBLISH_REQUIREMENTS_NOT_MET, chuyển PUBLISHED và xuất hiện trên public GET /vehicles không lộ biển số); 115 tests pass (40 unit, 18 constraints, 57 e2e) |
 | G1-05 | Web UI Auth, KYC & Quản lý xe | DONE | AuthProvider context, AuthModal (1-click quick login demo & standard form), UserNav (avatar, tên, badge KYC, menu dropdown), /profile/kyc (form nộp GPLX, upload ảnh trực tiếp lên MinIO qua S3 presigned URL, hiển thị thẻ hồ sơ GPLX), /owner/vehicles (bảng điều khiển xe cá nhân, gắn thẻ trạng thái DRAFT/PUBLISHED, nút publish xe), /owner/vehicles/new (form đăng ký xe mới, chọn tiện nghi, upload nhiều ảnh lên S3); 0 import Prisma; Next.js Turbopack build 100% không lỗi; Playwright smoke pass |
-| G1-06 | Kiểm tra tích hợp & đóng gói G1 | TODO | Chưa triển khai |
+| G1-06 | Kiểm tra tích hợp & đóng gói G1 | DONE | Toàn bộ 115 tests backend pass (40 unit, 18 constraints, 57 e2e); Playwright E2E browser tests pass trên Chromium (smoke.spec.ts + auth-kyc-vehicle.spec.ts: login -> check KYC -> logout -> switch owner -> view vehicle dashboard); typecheck 3/3 packages 0 lỗi; format:check 100% pass; lập bộ task cards G2_TASKS.md |
 
 ### Bảng tiến độ Milestone G0 (Baseline Kiến Trúc & Dữ Liệu - Hoàn tất 100%)
 
@@ -45,6 +55,27 @@ Task đề xuất tiếp theo: **G1-06** (Kiểm Tra Tích Hợp Toàn Diện & 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-06 — Kiểm Tra Tích Hợp Toàn Diện & Đóng Gói Milestone G1
+Trạng thái: DONE
+Prerequisite: G1-01, G1-02, G1-03, G1-04, G1-05
+Files thay đổi:
+- apps/web/src/components/AuthModal.tsx (Tối ưu hóa render modal dùng createPortal ra document.body tránh bị giới hạn bới header backdrop-filter stacking context, đồng bộ tên tài khoản demo với seed)
+- apps/web/test/auth-kyc-vehicle.spec.ts (Playwright test kịch bản người dùng toàn diện: Đăng nhập renter1 -> kiểm tra badge KYC -> truy cập /profile/kyc -> đăng xuất -> đăng nhập owner1 -> truy cập /owner/vehicles quản lý xe)
+- docs/tasks/G2_TASKS.md (Soạn thảo chi tiết 5 task cards cho Milestone G2: Tìm kiếm nâng cao, Động cơ tính giá, Khuyến mãi & Voucher, Web UI chi tiết xe & dự toán giá, Đóng gói G2)
+- docs/PROGRESS.md (Cập nhật tiến độ nghiệm thu hoàn thành 100% Milestone G1, lập bảng Milestone G2 và ghi nhận bằng chứng thực tế)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/web build -> Thành công, Next.js 16 App Router prerendered 5 static routes không lỗi
+- pnpm --filter @carsharing/web test:smoke -> 2/2 tests pass (smoke.spec.ts + auth-kyc-vehicle.spec.ts, thời gian chạy 8.9s)
+- pnpm --filter @carsharing/api test -> 40/40 unit tests pass (Auth, KYC, Media, OwnerVehicles, Health, Vehicles, Filters, Interceptors, Middleware)
+- pnpm --filter @carsharing/api test:constraints -> 18/18 PostgreSQL integration tests pass (GiST exclusion no_overlap, partial unique indexes, business checks)
+- pnpm --filter @carsharing/api test:e2e -> 57/57 e2e tests pass (Auth, KYC, Media, OwnerVehicles, Health, Vehicles, Request/Error contract)
+- pnpm run typecheck -> 0 lỗi TypeScript trên cả 3 packages (api, web, contracts)
+- pnpm run format:check -> All matched files use Prettier code style
+Kết quả: Milestone G1 hoàn thành 100% với 115 tests backend và 2 browser e2e tests xanh hoàn toàn. Toàn bộ logic xác thực, bảo mật CSRF/HttpOnly, S3 presigned upload, KYC bằng lái xe và CRUD xe chủ xe đều hoạt động thông suốt từ frontend Next.js đến backend NestJS và PostgreSQL/MinIO.
+```
 
 ```text
 Ngày: 27/10/2026
