@@ -59,7 +59,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
 Ca chưa chạy và lý do: Chưa tích hợp Prisma readiness DB (chờ G0-05/G0-06), chưa có business modules (theo kế hoạch G0-03 trở đi).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Tiền tố API là /api/v1, response chuẩn { data }. Cấu hình allowBuilds cho pnpm v12 trong pnpm-workspace.yaml.
-Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-02
+Commit hoặc điểm lưu diff nếu có: Commit `176fe49` ("feat(api): scaffold NestJS API with health check (G0-02)")
 Task đề xuất tiếp theo: G0-03 — Nền xử lý request và lỗi API
 ```
 
