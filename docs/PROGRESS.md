@@ -22,7 +22,7 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-04 | Next.js và cùng origin | DONE | Next.js 16 App Router, cùng origin rewrite /api/v1/health, build/typecheck & gọi health thực tế |
 | G0-05 | PostgreSQL/storage local | DONE | Docker Compose (Postgres 18 & MinIO/Silo), btree_gist trên dev/test DB, private bucket & upload/download probe pass |
 | G0-06 | Prisma schema | DONE | prisma/schema.prisma bao phủ 18 bảng, enums, timestamptz, bigint, UUID, relations; prisma validate & generate thành công |
-| G0-07 | Migration/constraints | TODO | Chưa chạy PostgreSQL tests |
+| G0-07 | Migration/constraints | DONE | Migration áp dụng dev/test DB; 18 integration tests pass: GiST exclusion, touching, partial indexes, business checks |
 | G0-08 | Seed/database provider | TODO | Chưa có seed/provider |
 | G0-09 | API đọc xe và OpenAPI | TODO | Chưa có endpoint/type sinh |
 | G0-10 | Contract client và UI danh sách | TODO | Chưa có luồng dữ liệu thật |
@@ -32,6 +32,35 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-07 — Migration và constraint PostgreSQL
+Trạng thái: DONE
+Prerequisite: G0-06
+Files thay đổi:
+- prisma/migrations/20261027050309_init_schema_and_constraints/migration.sql (Tạo migration đầy đủ 18 bảng, bổ sung btree_gist, exclusion GiST [start_at, end_at), unique partial indexes và check constraints)
+- apps/api/test/constraints.integration-spec.ts (Bộ test tích hợp 18 ca kiểm tra trực tiếp trên PostgreSQL test database carsharing_test)
+- apps/api/package.json (Thêm script test:constraints và cập nhật test:all)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-07)
+Lệnh đã chạy và kết quả:
+- pnpm exec prisma migrate deploy: Áp dụng thành công migration lên database carsharing_dev.
+- DATABASE_URL=.../carsharing_test pnpm exec prisma migrate deploy: Áp dụng thành công migration lên database carsharing_test rỗng, không gây drift.
+- pnpm --filter @carsharing/api run test:constraints: Toàn bộ 18/18 ca test ràng buộc chạy trên PostgreSQL thật đều PASS 100%:
+  + Calendar overlap cùng xe bị từ chối với SQLSTATE 23P01 (Exclusion violation).
+  + Owner block xung đột với booking bị chặn bởi exclusion constraint.
+  + Touching adjacent intervals [T1, T2) và [T2, T3) được chấp nhận thành công theo ngữ nghĩa range [).
+  + Overlap trên 2 xe khác nhau được chấp thuận.
+  + Overlap khi bản ghi cũ đã được giải phóng (released_at IS NOT NULL) được chấp thuận.
+  + Unique partial index: Chặn 2 booking IN_PROGRESS trên cùng 1 xe (SQLSTATE 23505).
+  + Unique partial index: Chặn 2 keyless operation chưa giải quyết (PENDING/UNKNOWN) trên cùng 1 booking.
+  + Check constraints: Giá xe <= 0 hoặc > 100M VND bị chặn; start_at >= end_at bị chặn; renter_id = owner_id bị chặn; pricing snapshot sai tổng bị chặn; review sai thang điểm 1-5 hoặc tự review bị chặn.
+- pnpm --filter @carsharing/api run test:all: Toàn bộ 37/37 tests unit, integration và e2e pass (exit 0).
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa kết luận API concurrency đã đạt vì booking API chưa viết (theo đúng tiêu chí G0-07).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Bổ sung script test:constraints để kiểm tra tự động định kỳ trên database test thật.
+Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-07.
+```
 
 ```text
 Ngày: 27/10/2026
