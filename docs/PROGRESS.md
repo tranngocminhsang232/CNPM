@@ -53,7 +53,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
 Ca chưa chạy và lý do: Chưa seed quyền truy cập xe của người khác (theo đúng capability model).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Dùng fixed UUIDs cho seed để đảm bảo tính tái lập cho các suite test E2E.
-Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-08.
+Commit hoặc điểm lưu diff nếu có: Commit `a2b1673` ("feat(database): implement idempotent seed data and PrismaService with DB readiness (G0-08)")
 ```
 
 ```text
