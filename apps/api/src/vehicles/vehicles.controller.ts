@@ -1,0 +1,49 @@
+import { Controller, Get, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { VehiclesService } from './vehicles.service';
+import { QueryVehiclesDto } from './dto/query-vehicles.dto';
+import { VehicleOptionsDto } from './dto/vehicle-options.dto';
+import { VehicleSummaryDto, PaginationMetaDto } from './dto/vehicle-summary.dto';
+
+@ApiTags('Vehicles')
+@Controller()
+export class VehiclesController {
+  constructor(private readonly vehiclesService: VehiclesService) {}
+
+  @Get('vehicle-options')
+  @ApiOperation({
+    summary: 'Lấy danh mục các tùy chọn tìm kiếm xe (thành phố, loại xe, hộp số, tiện nghi)',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Danh mục tùy chọn cho phép tìm kiếm xe',
+    type: VehicleOptionsDto,
+  })
+  getVehicleOptions(): { data: VehicleOptionsDto } {
+    const options = this.vehiclesService.getVehicleOptions();
+    return { data: options };
+  }
+
+  @Get('vehicles')
+  @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+  @ApiOperation({ summary: 'Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Danh sách xe thỏa mãn điều kiện lọc và thông tin phân trang',
+    schema: {
+      properties: {
+        data: {
+          type: 'array',
+          items: { $ref: '#/components/schemas/VehicleSummaryDto' },
+        },
+        meta: { $ref: '#/components/schemas/PaginationMetaDto' },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'Tham số tìm kiếm hoặc khoảng ngày không hợp lệ' })
+  async getVehicles(
+    @Query() query: QueryVehiclesDto,
+  ): Promise<{ data: VehicleSummaryDto[]; meta: PaginationMetaDto }> {
+    return this.vehiclesService.getVehicles(query);
+  }
+}

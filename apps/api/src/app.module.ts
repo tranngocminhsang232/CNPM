@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { VehiclesModule } from './vehicles/vehicles.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -14,6 +15,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     }),
     PrismaModule,
     HealthModule,
+    VehiclesModule,
   ],
 })
 export class AppModule implements NestModule {

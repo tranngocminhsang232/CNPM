@@ -1,0 +1,260 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": ["Health"]
+      }
+    },
+    "/api/v1/vehicle-options": {
+      "get": {
+        "operationId": "VehiclesController_getVehicleOptions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Danh mục tùy chọn cho phép tìm kiếm xe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleOptionsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lấy danh mục các tùy chọn tìm kiếm xe (thành phố, loại xe, hộp số, tiện nghi)",
+        "tags": ["Vehicles"]
+      }
+    },
+    "/api/v1/vehicles": {
+      "get": {
+        "operationId": "VehiclesController_getVehicles",
+        "parameters": [
+          {
+            "name": "city",
+            "required": false,
+            "in": "query",
+            "description": "Tỉnh / thành phố tìm kiếm",
+            "schema": {
+              "example": "TP. Hồ Chí Minh",
+              "type": "string"
+            }
+          },
+          {
+            "name": "startAt",
+            "required": false,
+            "in": "query",
+            "description": "Thời điểm bắt đầu thuê (ISO 8601)",
+            "schema": {
+              "example": "2026-11-01T08:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endAt",
+            "required": false,
+            "in": "query",
+            "description": "Thời điểm kết thúc thuê (ISO 8601)",
+            "schema": {
+              "example": "2026-11-03T18:00:00Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "carType",
+            "required": false,
+            "in": "query",
+            "description": "Phân khúc xe",
+            "schema": {
+              "type": "string",
+              "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
+            }
+          },
+          {
+            "name": "transmission",
+            "required": false,
+            "in": "query",
+            "description": "Hộp số",
+            "schema": {
+              "type": "string",
+              "enum": ["AUTO", "MANUAL"]
+            }
+          },
+          {
+            "name": "seats",
+            "required": false,
+            "in": "query",
+            "description": "Số chỗ ngồi tối thiểu",
+            "schema": {
+              "example": 5,
+              "type": "number"
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "description": "Giá thuê ngày tối thiểu (VND)",
+            "schema": {
+              "example": 500000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "description": "Giá thuê ngày tối đa (VND)",
+            "schema": {
+              "example": 3000000,
+              "type": "number"
+            }
+          },
+          {
+            "name": "keylessOnly",
+            "required": false,
+            "in": "query",
+            "description": "Chỉ tìm xe hỗ trợ tự mở khóa Keyless",
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "description": "Sắp xếp kết quả",
+            "schema": {
+              "default": "newest",
+              "type": "string",
+              "enum": ["price_asc", "price_desc", "newest", "rating_desc"]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Số trang (1-indexed)",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Số xe trên một trang",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách xe thỏa mãn điều kiện lọc và thông tin phân trang",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/VehicleSummaryDto"
+                      }
+                    },
+                    "meta": {
+                      "$ref": "#/components/schemas/PaginationMetaDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Tham số tìm kiếm hoặc khoảng ngày không hợp lệ"
+          }
+        },
+        "summary": "Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED)",
+        "tags": ["Vehicles"]
+      }
+    }
+  },
+  "info": {
+    "title": "Car Sharing Platform API",
+    "description": "Nền tảng chia sẻ xe tự lái (Car Sharing MVP) - API Contract v1.1",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "Health",
+      "description": "Kiểm tra trạng thái liveness & readiness của hệ thống"
+    },
+    {
+      "name": "Vehicles",
+      "description": "Tìm kiếm xe và danh mục tùy chọn công khai"
+    }
+  ],
+  "servers": [],
+  "components": {
+    "schemas": {
+      "AmenityOptionDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "GPS"
+          },
+          "name": {
+            "type": "string",
+            "example": "Định vị GPS"
+          }
+        },
+        "required": ["code", "name"]
+      },
+      "VehicleOptionsDto": {
+        "type": "object",
+        "properties": {
+          "cities": {
+            "example": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "carTypes": {
+            "example": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "transmissions": {
+            "example": ["AUTO", "MANUAL"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "amenities": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AmenityOptionDto"
+            }
+          }
+        },
+        "required": ["cities", "carTypes", "transmissions", "amenities"]
+      }
+    }
+  }
+}

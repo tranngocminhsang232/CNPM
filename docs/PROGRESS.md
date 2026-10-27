@@ -24,7 +24,7 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-06 | Prisma schema | DONE | prisma/schema.prisma bao phủ 18 bảng, enums, timestamptz, bigint, UUID, relations; prisma validate & generate thành công |
 | G0-07 | Migration/constraints | DONE | Migration áp dụng dev/test DB; 18 integration tests pass: GiST exclusion, touching, partial indexes, business checks |
 | G0-08 | Seed/database provider | DONE | prisma/seed.ts idempotent (4 users, 13 vehicles, 4 bookings, calendar); PrismaService/Module tích hợp; health readiness phản ánh DB thật |
-| G0-09 | API đọc xe và OpenAPI | TODO | Chưa có endpoint/type sinh |
+| G0-09 | API đọc xe và OpenAPI | DONE | GET /vehicles và /vehicle-options; bộ lọc, phân trang, sort, calendar conflict, bảo mật thông tin riêng tư; OpenAPI sinh tại packages/contracts/openapi.json; 49 tests pass |
 | G0-10 | Contract client và UI danh sách | TODO | Chưa có luồng dữ liệu thật |
 | G0-11 | CI và kiểm tra G0 | TODO | Chưa chạy app build/test |
 | G0-12 | Review và chuẩn bị G1 | TODO | Phụ thuộc G0 hoàn tất |
@@ -32,6 +32,39 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-09 — API đọc danh sách xe và OpenAPI
+Trạng thái: DONE
+Prerequisite: G0-03, G0-08
+Files thay đổi:
+- apps/api/src/vehicles/dto/vehicle-options.dto.ts (DTO danh mục allowlist: cities, carTypes, transmissions, amenities)
+- apps/api/src/vehicles/dto/query-vehicles.dto.ts (DTO lọc xe: city, startAt/endAt ISO 8601, carType, transmission, seats, minPrice/maxPrice, keylessOnly, sort, pagination)
+- apps/api/src/vehicles/dto/vehicle-summary.dto.ts (DTO tóm tắt xe công khai: che giấu plateNormalized và pickupAddress, an toàn số nguyên VND)
+- apps/api/src/vehicles/vehicles.service.ts (Service truy vấn DB thật: lọc PUBLISHED, loại xe quá hạn chưa trả, loại trùng lịch calendar, tính điểm đánh giá trung bình và quote)
+- apps/api/src/vehicles/vehicles.controller.ts (Controller cung cấp GET /vehicle-options và GET /vehicles với OpenAPI Swagger annotations)
+- apps/api/src/vehicles/vehicles.module.ts & app.module.ts (Đăng ký VehiclesModule)
+- apps/api/src/main.ts (Cấu hình SwaggerModule tại /api/v1/docs và /api/v1/docs-json)
+- tools/export-openapi.mjs (Script xuất OpenAPI schema ra packages/contracts/openapi.json)
+- packages/contracts/openapi.json (Tài liệu OpenAPI sinh từ API thật cho các route thực tế đã triển khai)
+- apps/api/src/vehicles/vehicles.controller.spec.ts & apps/api/test/vehicles.e2e-spec.ts (Bộ test unit và e2e kiểm tra toàn diện các bộ lọc, trường riêng tư, ngày sai, kết quả rỗng)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-09)
+Lệnh đã chạy và kết quả:
+- node tools/export-openapi.mjs: Xuất thành công file OpenAPI spec chuẩn 3.0.0 tại packages/contracts/openapi.json chỉ chứa các endpoint thực tế (/health, /vehicle-options, /vehicles).
+- pnpm --filter @carsharing/api run test:all: Toàn bộ 49/49 tests (12 unit, 18 integration constraints, 19 e2e) pass 100% trong 5.4 giây.
+  + GET /api/v1/vehicle-options phản hồi 200 danh mục chuẩn.
+  + GET /api/v1/vehicles lọc chính xác 12 xe PUBLISHED, loại trừ hoàn toàn xe DRAFT.
+  + Bảo mật: Xác nhận plateNormalized và pickupAddress không lộ trong bất kỳ kết quả tìm kiếm nào.
+  + Lọc thành phố, loại xe, keylessOnly và khoảng giá hoạt động chính xác.
+  + Kiểm tra lỗi: startAt thiếu endAt hoặc endAt <= startAt trả về đúng HTTP 400 VALIDATION_ERROR.
+  + Kiểm tra trùng lịch: Xe có chuyến APPROVED trong khoảng ngày tìm kiếm bị loại trừ chính xác.
+  + Thành phố không có xe (Huế) trả về mảng rỗng [] kèm metadata { total: 0, page: 1, pageSize: 10, totalPages: 1 }.
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa tính quote đầy đủ theo module giá nâng cao (thuộc G2).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. OpenAPI được sinh tự động từ code thật thay vì viết mock giả lập.
+Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-09.
+```
 
 ```text
 Ngày: 27/10/2026

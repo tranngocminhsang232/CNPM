@@ -11,7 +11,8 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "export:openapi": "node tools/export-openapi.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
