@@ -11,16 +11,26 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G4-04** (Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G4 - Milestone G4 Integration & Packaging). Task G4-03 đã hoàn tất 100% và được kiểm thử toàn diện.
+Task đề xuất tiếp theo: **G5-01** (Quy trình Trả xe, Checklist 4 Góc Sau Chuyến & Hoàn tất Chuyến đi - Return Inspection & Trip Completion Engine). Toàn bộ Milestone G4 đã hoàn tất 100% và được kiểm thử toàn diện.
 
-### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi)
+### Bảng tiến độ Milestone G5 (Trả Xe, Quyết Toán Ký Quỹ, Đánh Giá Hai Chiều & Dashboard Chủ Xe)
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G5-01 | Quy trình Trả xe & Checklist hoàn trả | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-03 | Động cơ Đánh giá Hai chiều (Khách & Chủ) | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-04 | Web UI Trả xe, Quyết toán, Đánh giá & Dashboard | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-05 | Kiểm thử Toàn diện & Đóng gói Toàn bộ Dự án | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+
+### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi - Hoàn tất 100%)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G4-01 | Quy trình bàn giao & checklist 4 góc xe | DONE | InspectionsModule, InspectionsService, InspectionsController; PUT /bookings/:id/inspections (lưu bản nháp CHECK_IN / CHECK_OUT, odometer >= 0, fuel 0-100%, optimistic locking version); POST /bookings/:id/inspections/:type/finalize (kiểm tra bắt buộc đủ 4 góc FRONT, REAR, LEFT, RIGHT từ ảnh VERIFIED, chốt acknowledged, ghi nhận BookingEvent INSPECTION_{type}_FINALIZED & Notification, replay idempotent); GET /bookings/:id/inspections & GET /bookings/:id/inspections/:type; bảo mật 401 unauth, 403 CSRF & stranger; 253 tests backend pass 100% (108 unit, 18 constraints, 127 e2e); OpenAPI & contracts cập nhật; web api client (saveInspectionApi, finalizeInspectionApi, fetchInspectionsApi, fetchInspectionByTypeApi) |
 | G4-02 | Bộ điều khiển khóa ảo Keyless & simulator | DONE | KeylessModule, KeylessService, KeylessController, KeylessSimulatorAdapter; POST /bookings/:id/keyless-operations (Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409, xác thực nghiêm ngặt BR-09: chỉ Renter 403, keylessSupported 422, APPROVED/IN_PROGRESS 409, khung giờ thuê kèm 15m buffer 422, bắt buộc chốt CHECK_IN inspection 422, partial unique index keyless_one_unresolved_per_booking chặn lệnh PENDING/UNKNOWN song song 409, tự động chuyển APPROVED -> IN_PROGRESS khi mở khóa thành công, ghi BookingEvent TRIP_STARTED & Notification cho chủ xe); GET /bookings/:id/keyless-operations/:opId; POST /bookings/:id/keyless-operations/:opId/reconcile đối soát viễn thông; 280 tests backend pass 100% (122 unit, 18 constraints, 140 e2e); OpenAPI & contracts cập nhật; web client (triggerKeylessOperationApi, fetchKeylessOperationApi, reconcileKeylessOperationApi) |
 | G4-03 | Web UI bàn giao, chụp checklist & khóa xe | DONE | InspectionChecklistModal (chụp & upload 4 góc FRONT, REAR, LEFT, RIGHT trực tiếp lên MinIO S3 qua Presigned PUT URL, xác thực media, nhập odo & mức pin/xăng, lưu nháp, ký chốt biên bản); KeylessRemoteWidget (giao diện remote chìa khóa số cao cấp automotive dark-mode, hiển thị trạng thái viễn thông IoT, banner quy định an toàn bắt buộc checklist, nút MỞ KHÓA / KHÓA CỬA kèm Idempotency-Key, tự động cập nhật trạng thái cửa và chuyển booking sang IN_PROGRESS không cần reload trang); tích hợp trang chi tiết /bookings/[id]; Playwright browser E2E test inspection-keyless.spec.ts pass 100% trên Chromium; 5/5 Playwright suites pass xanh toàn diện (25.5s); typecheck & build sạch 100% |
-| G4-04 | Kiểm tra tích hợp & đóng gói G4 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-04 | Kiểm tra tích hợp & đóng gói G4 | DONE | Pipeline CI/CD xanh 100%: pnpm run typecheck (0 lỗi trên cả 3 packages), pnpm run build (apps/api NestJS & apps/web Next.js 16 Turbopack build sạch 100%), pnpm run test (toàn bộ 280 tests backend pass gồm 122 unit, 18 constraints, 140 e2e), pnpm run test:smoke (5/5 Playwright browser test suites pass 100% trong 25.5s trên Chromium), pnpm run format:check (100% chuẩn Prettier); biên soạn 5 task cards chi tiết Milestone G5 tại docs/tasks/G5_TASKS.md |
 
 ### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Hoàn tất 100%)
 
@@ -73,6 +83,23 @@ Task đề xuất tiếp theo: **G4-04** (Kiểm Tra Tích Hợp Toàn Diện, C
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G4-04 — Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G4 (Milestone G4 Integration & Packaging)
+Trạng thái: DONE
+Prerequisite: G4-01, G4-02, G4-03
+Files thay đổi:
+- docs/PROGRESS.md (Cập nhật bảng tiến độ Milestone G4 đạt 100% DONE, bổ sung bảng theo dõi Milestone G5, ghi nhận nhật ký G4-04)
+- docs/tasks/G5_TASKS.md (Biên soạn 5 task cards chi tiết cho Milestone G5: G5-01 Quy trình trả xe & checklist hoàn trả, G5-02 Quyết toán ký quỹ & hoàn cọc, G5-03 Động cơ đánh giá hai chiều, G5-04 Web UI trả xe, quyết toán, đánh giá & dashboard chủ xe, G5-05 Kiểm thử toàn diện & đóng gói dự án)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript (@carsharing/api, @carsharing/web, @carsharing/contracts)
+- pnpm run build -> apps/api nest build và apps/web Next.js Turbopack build thành công (10 routes static/dynamic tối ưu)
+- pnpm run test -> 280/280 backend tests pass 100% (122 unit, 18 constraints, 140 e2e)
+- pnpm run test:smoke -> 5/5 Playwright browser test suites pass 100% trong 25.5s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Milestone G4 (100% DONE). Toàn bộ luồng nghiệp vụ bàn giao xe, chụp ảnh kiểm tra 4 góc xe, lưu trữ ảnh MinIO S3 qua Presigned PUT URL, điều khiển khóa ảo Keyless telematics simulator, tự động khởi động chuyến đi sang IN_PROGRESS và kiểm thử trình duyệt Playwright hoạt động xuất sắc, sẵn sàng triển khai Milestone G5.
+```
 
 ```text
 Ngày: 27/10/2026
