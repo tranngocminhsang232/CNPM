@@ -131,7 +131,16 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
       window.location.href = '/profile/kyc';
       return;
     }
-    alert('Báo giá đã sẵn sàng! Chuyển sang giai đoạn đặt cọc và thanh toán VNPay (Milestone G3).');
+    const startAtUtc = new Date(startDateStr).toISOString();
+    const endAtUtc = new Date(endDateStr).toISOString();
+    const query = new URLSearchParams({
+      vehicleId,
+      startAt: startAtUtc,
+      endAt: endAtUtc,
+      insurance: insurancePackage,
+      ...(appliedVoucher?.code ? { voucher: appliedVoucher.code } : {}),
+    });
+    window.location.href = `/checkout?${query.toString()}`;
   };
 
   return (

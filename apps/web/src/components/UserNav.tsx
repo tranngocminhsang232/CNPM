@@ -182,6 +182,42 @@ export function UserNav() {
           </Link>
 
           <Link
+            id="nav-renter-bookings-link"
+            href="/bookings"
+            onClick={() => setDropdownOpen(false)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              color: '#334155',
+              textDecoration: 'none',
+              display: 'block',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            Chuyến đi của tôi
+          </Link>
+
+          <Link
+            id="nav-owner-bookings-link"
+            href="/owner/bookings"
+            onClick={() => setDropdownOpen(false)}
+            style={{
+              padding: '8px 12px',
+              borderRadius: '6px',
+              fontSize: '0.875rem',
+              color: '#334155',
+              textDecoration: 'none',
+              display: 'block',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = '#f8fafc')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+          >
+            Quản lý yêu cầu thuê
+          </Link>
+
+          <Link
             id="nav-owner-vehicles-link"
             href="/owner/vehicles"
             onClick={() => setDropdownOpen(false)}

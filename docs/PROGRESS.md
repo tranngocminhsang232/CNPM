@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G3-03** (Giao Diện Web Đặt Xe, Thanh Toán Giữ Chỗ & Quản Lý Chuyến Đi - Web UI Booking Checkout, Payment & Trip Management). Task G3-02 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G3-04** (Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G3 - Milestone G3 Integration & Packaging). Task G3-03 đã hoàn tất và được kiểm thử thực tế.
 
 ### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Booking & Payment)
 
@@ -19,7 +19,7 @@ Task đề xuất tiếp theo: **G3-03** (Giao Diện Web Đặt Xe, Thanh Toán
 | --- | --- | --- | --- |
 | G3-01 | Động cơ đặt xe & quản lý vòng đời | DONE | BookingsModule, BookingsService, BookingsController (POST /bookings, GET /bookings, GET /bookings/:id, POST /bookings/:id/approve, POST /bookings/:id/reject, POST /bookings/:id/cancel); Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409; KYC verification check (403); chặn tự thuê xe chính mình (403); kiểm tra trượt giá (409); Prisma transaction nguyên tử (Booking REQUESTED, PricingSnapshot bất biến, VehicleCalendar BOOKING GiST exclusion, IdempotencyRecord, BookingEvent, Notification, PromotionUsage); che giấu biển số và địa chỉ đón xe cho đến khi APPROVED; 204 tests backend pass 100% (85 unit, 18 constraints, 101 e2e); OpenAPI & contracts cập nhật; web api client đồng bộ |
 | G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | DONE | Model Payment, enum PaymentType (DEPOSIT, RENTAL_FEE, FULL_PAYMENT), PaymentStatus (PENDING, SUCCESS, FAILED, CANCELLED); Migration 20261027091500_add_payments; check constraint PostgreSQL payments_amount_positive (amount_vnd > 0); PaymentsService (HMAC-SHA512 checksum canonical, createPaymentIntent, processWebhook, simulatePayment, getPaymentByRef); PaymentsController (POST /payments/create-intent, POST /payments/webhook @PublicCsrf, POST /payments/simulate @PublicCsrf, GET /payments/:ref); xử lý webhook idempotency replay; ghi nhận sự kiện PAYMENT_RECEIVED và notification; 231 tests backend pass 100% (98 unit, 18 constraints, 115 e2e); OpenAPI & contracts cập nhật; web client (createPaymentIntentApi, simulatePaymentApi, fetchPaymentByRefApi) |
-| G3-03 | Web UI đặt xe & quản lý chuyến đi | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-03 | Web UI đặt xe & quản lý chuyến đi | DONE | BookingStatusBadge (6 trạng thái REQUESTED, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED, REJECTED); PaymentModal (mô phỏng cổng thanh toán VNPay/VietQR sandbox, hiển thị QR và mã giao dịch TX-, mô phỏng SUCCESS/FAILED); PricingCalculator điều hướng sang /checkout; /checkout (bóc tách cước xe, bảo hiểm, voucher, chính sách cọc thế chấp, 1-click tạo booking kèm Idempotency-Key và mở modal thanh toán cọc); /bookings (bảng điều khiển chuyến đi khách thuê, lọc tab trạng thái, thẻ chuyến đi kèm ảnh cover, ẩn/hiện biển số, modal hủy chuyến); /bookings/[id] (chi tiết chuyến đi toàn diện, bảng biểu phí snapshot bất biến, liên hệ chủ/khách, tự động hiện biển số và địa chỉ đón xe khi được duyệt); /owner/bookings (hộp thư duyệt yêu cầu thuê xe của chủ xe, nút phê duyệt 1-click và modal từ chối có lý do); Header đồng bộ có UserNav trên toàn bộ các trang; Playwright E2E browser test booking-flow.spec.ts pass (3.9s); tổng 4 Playwright suites pass 100% (15.2s); typecheck 0 lỗi |
 | G3-04 | Kiểm tra tích hợp & đóng gói G3 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá - Hoàn tất 100%)
@@ -64,6 +64,29 @@ Task đề xuất tiếp theo: **G3-03** (Giao Diện Web Đặt Xe, Thanh Toán
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G3-03 — Giao Diện Web Đặt Xe, Thanh Toán Giữ Chỗ & Quản Lý Chuyến Đi (Web UI Booking Checkout, Payment & Trip Management)
+Trạng thái: DONE
+Prerequisite: G3-02
+Files thay đổi:
+- apps/web/src/components/BookingStatusBadge.tsx (Component hiển thị huy hiệu trạng thái chuyến đi trực quan cho 6 trạng thái: REQUESTED, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED, REJECTED)
+- apps/web/src/components/PaymentModal.tsx (Modal mô phỏng cổng thanh toán VNPay/VietQR sandbox: hiển thị mã giao dịch TX-, khoản cọc/tiền thuê, box mã QR trực quan, nút xác nhận mô phỏng SUCCESS/FAILED gọi API simulatePaymentApi)
+- apps/web/src/components/PricingCalculator.tsx (Cập nhật nút tiến hành đặt xe điều hướng tự động sang /checkout với query params vehicleId, startAt, endAt, insurancePackage, voucherCode)
+- apps/web/src/components/UserNav.tsx (Bổ sung liên kết dropdown 'Chuyến đi của tôi' /bookings và 'Quản lý yêu cầu thuê' /owner/bookings)
+- apps/web/src/app/checkout/page.tsx (Trang xác nhận đặt xe và đặt cọc: bóc tách thời gian thuê, thông tin xe, gói bảo hiểm, chính sách ký quỹ an toàn Escrow; tính giá tươi từ calculateQuoteApi; tạo UUID Idempotency-Key và gọi createBookingApi; tự động kích hoạt createPaymentIntentApi và mở PaymentModal)
+- apps/web/src/app/bookings/page.tsx (Bảng điều khiển chuyến đi của khách thuê: bộ lọc tabs ALL/REQUESTED/APPROVED/IN_PROGRESS/COMPLETED/CANCELLED; danh sách booking cards kèm ảnh cover, ẩn/hiện biển số theo trạng thái, modal hủy chuyến yêu cầu lý do)
+- apps/web/src/app/bookings/[id]/page.tsx (Chi tiết chuyến đi toàn diện: banner trạng thái, thông tin xe, bảo mật hiển thị biển số plateNormalized và địa chỉ pickupAddress sau khi được duyệt, thông tin liên hệ đôi bên, bảng biểu phí snapshot bất biến, nút hủy chuyến và thanh toán cọc)
+- apps/web/src/app/owner/bookings/page.tsx (Hộp thư yêu cầu thuê xe của chủ xe: lọc tabs Chờ duyệt/Tất cả, thông tin khách thuê và doanh thu dự kiến, 1-click phê duyệt gọi approveBookingApi, modal từ chối có lý do gọi rejectBookingApi)
+- apps/web/test/booking-flow.spec.ts (Playwright E2E browser test kiểm thử vòng đời 2 vai trò: renter1 đặt xe VF8 Plus -> sandbox payment modal SUCCESS -> trang chi tiết chuyến đi REQUESTED che giấu biển số và địa chỉ -> đăng xuất renter1 -> đăng nhập owner1 -> hộp thư chủ xe /owner/bookings phê duyệt -> đăng xuất owner1 -> đăng nhập lại renter1 -> chi tiết chuyến đi APPROVED tự động hiển thị biển số 51K-10001 và địa chỉ Nguyễn Hữu Cảnh, hiển thị biểu phí snapshot bất biến)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> apps/api nest build và apps/web Next.js 16 Turbopack build thành công (10 routes static/dynamic tối ưu)
+- pnpm --filter @carsharing/web test:smoke -> 4/4 Playwright browser test suites pass 100% trong 15.2s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G3-03. Giao diện web đặt xe, ký quỹ an toàn và quản lý hành trình hai chiều renter/owner vận hành trơn tru, chuẩn xác và thẩm mỹ cao.
+```
 
 ```text
 Ngày: 27/10/2026

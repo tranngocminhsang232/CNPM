@@ -151,6 +151,8 @@ export async function fetchVehicleById(id: string): Promise<VehicleDetail> {
   return json.data;
 }
 
+export const fetchVehicleDetailApi = fetchVehicleById;
+
 export async function fetchVehicleOptions(): Promise<GetVehicleOptionsResponse> {
   const res = await fetch('/api/v1/vehicle-options', {
     headers: { Accept: 'application/json' },
