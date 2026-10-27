@@ -11,14 +11,14 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-02** (Xác thực Bằng lái xe: KYC Driver License Flow). Task G1-01 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G1-03** (Dịch vụ S3 Presigned URL & Quản lý Media Riêng tư). Task G1-02 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G1-01 | Nền tảng Xác thực (Cookies, CSRF, Auth) | DONE | AuthModule, cookie HttpOnly (access 15m, refresh 7d), Double Submit CSRF token (X-CSRF-Token), SessionGuard, CsrfGuard, CurrentUser decorator, Google OIDC callback, capability model (RENTER + OWNER); 68 tests pass (19 unit, 18 constraints, 31 e2e); Playwright smoke pass |
-| G1-02 | Xác thực Bằng lái xe (KYC) | TODO | Chưa triển khai |
+| G1-02 | Xác thực Bằng lái xe (KYC) | DONE | UsersModule, migration 20261027064407_add_driver_licenses_kyc áp dụng dev/test DB; check constraints PostgreSQL (đúng 12 số GPLX, tuổi >= 18, hạn >= 30 ngày, status PENDING -> VERIFIED/REJECTED, chặn nộp lại khi VERIFIED 409); KycVerifiedGuard; 81 tests pass; Playwright smoke pass |
 | G1-03 | Dịch vụ S3 Presigned URL | TODO | Chưa triển khai |
 | G1-04 | Đăng ký & quản lý xe chủ xe | TODO | Chưa triển khai |
 | G1-05 | Web UI Auth, KYC & Quản lý xe | TODO | Chưa triển khai |
@@ -45,6 +45,45 @@ Task đề xuất tiếp theo: **G1-02** (Xác thực Bằng lái xe: KYC Driver
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-02 — Xác thực Bằng lái xe (KYC Driver License Flow)
+Trạng thái: DONE
+Prerequisite: G1-01
+Files thay đổi:
+- prisma/schema.prisma (Thêm enum KycStatus [NONE, PENDING, VERIFIED, REJECTED] và model DriverLicense liên kết User 1-1)
+- prisma/migrations/20261027064407_add_driver_licenses_kyc/migration.sql (Migration tạo bảng driver_licenses, enum KycStatus, check constraints: 12 số GPLX, expiry > dob, verified_at đồng bộ với status)
+- apps/api/src/users/dto/submit-license.dto.ts (Định nghĩa SubmitDriverLicenseDto, VerifyDriverLicenseDto, DriverLicenseDto với allowlist hạng GPLX và validation)
+- apps/api/src/users/users.service.ts (Service xử lý nộp GPLX, kiểm tra hạn >= 30 ngày, tuổi >= 18, chặn nộp lại khi đã VERIFIED, duyệt/từ chối KYC)
+- apps/api/src/users/guards/kyc-verified.guard.ts (Guard chặn các hành động yêu cầu bằng lái đã duyệt KYC_REQUIRED)
+- apps/api/src/users/users.controller.ts (Controller cung cấp GET /users/me/driver-license, POST /users/me/driver-license, POST /users/:id/driver-license/verify)
+- apps/api/src/users/users.module.ts (Module Users xuất UsersService và KycVerifiedGuard)
+- apps/api/src/app.module.ts (Đăng ký UsersModule vào ứng dụng)
+- apps/api/src/main.ts (Cấu hình Swagger tag Users)
+- tools/export-openapi.mjs (Cập nhật Swagger tag Users)
+- packages/contracts/openapi.json & src/schema.ts (Cập nhật OpenAPI schema và types tự động)
+- packages/contracts/src/index.ts (Xuất DriverLicense, SubmitDriverLicensePayload, VerifyDriverLicensePayload, DriverLicenseResponse)
+- apps/api/src/users/users.service.spec.ts (Unit tests kiểm tra toàn diện nghiệp vụ xác minh GPLX)
+- apps/api/test/driver-license.e2e-spec.ts (7 ca test E2E kiểm tra nộp GPLX, kiểm tra 12 số, kiểm tra thời hạn, kiểm tra CSRF token, duyệt VERIFIED và chặn nộp lại 409)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G1-02)
+Lệnh đã chạy và kết quả:
+- pnpm exec prisma migrate deploy: Áp dụng migration sạch vào cả dev database carsharing_dev và test database carsharing_test.
+- pnpm --filter @carsharing/api run build: Biên dịch NestJS API đạt 0 lỗi.
+- node tools/export-openapi.mjs: Xuất schema OpenAPI v1.1 bao gồm đầy đủ endpoint Users / Driver License vào packages/contracts/openapi.json.
+- pnpm --filter @carsharing/contracts run generate && build: Tái sinh types TypeScript và biên dịch contracts thành công.
+- pnpm --filter @carsharing/api run test:all: Toàn bộ 81/81 tests (25 unit, 18 DB constraints, 38 e2e) pass 100% trong 8.9 giây (exit 0).
+  + GET /api/v1/users/me/driver-license trả về hồ sơ GPLX của user.
+  + POST /api/v1/users/me/driver-license kiểm tra CSRF token, định dạng 12 số GPLX, thời hạn ít nhất 30 ngày.
+  + POST /api/v1/users/:id/driver-license/verify duyệt chuyển trạng thái sang VERIFIED cập nhật verifiedAt.
+  + Cố tình gửi lại khi đã VERIFIED trả về đúng HTTP 409 ALREADY_VERIFIED.
+- pnpm run test:smoke: Playwright browser smoke test trên Chromium pass 100% trong 7.2 giây (exit 0).
+- pnpm run typecheck: Kiểm tra kiểu tĩnh toàn bộ 3 packages trong workspace đạt 0 lỗi (exit 0).
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa nộp ảnh chụp GPLX nhị phân trực tiếp lên S3 (thuộc G1-03).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Định nghĩa chuẩn hóa trạng thái KYC theo đúng SRS.
+Commit hoặc điểm lưu diff nếu có: Sẽ commit sau khi lưu log tiến độ.
+```
 
 ```text
 Ngày: 27/10/2026

@@ -24,6 +24,7 @@ async function run() {
     .addTag('Health', 'Kiểm tra trạng thái liveness & readiness của hệ thống')
     .addTag('Vehicles', 'Tìm kiếm xe và danh mục tùy chọn công khai')
     .addTag('Auth', 'Xác thực, phân quyền và quản lý phiên người dùng')
+    .addTag('Users', 'Hồ sơ người dùng và xác thực giấy phép lái xe (KYC)')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

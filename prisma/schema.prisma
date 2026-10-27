@@ -84,18 +84,27 @@ enum KeylessOperationStatus {
   UNKNOWN
 }
 
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
 // -----------------------------------------------------------------------------
 // Models
 // -----------------------------------------------------------------------------
 
 model User {
-  id              String   @id @default(uuid()) @db.Uuid
+  id              String    @id @default(uuid()) @db.Uuid
   name            String
-  emailNormalized String   @unique @map("email_normalized")
+  emailNormalized String    @unique @map("email_normalized")
   phone           String
-  passwordHash    String?  @map("password_hash")
-  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  passwordHash    String?   @map("password_hash")
+  kycStatus       KycStatus @default(NONE) @map("kyc_status")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
+  driverLicense   DriverLicense?
   oauthAccounts   OAuthAccount[]
   refreshSessions RefreshSession[]
   ownedVehicles   Vehicle[]        @relation("UserOwnedVehicles")
@@ -109,6 +118,25 @@ model User {
   notifications   Notification[]
 
   @@map("users")
+}
+
+model DriverLicense {
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @unique @map("user_id") @db.Uuid
+  licenseNumber   String    @map("license_number")
+  fullName        String    @map("full_name")
+  dateOfBirth     DateTime  @map("date_of_birth") @db.Date
+  licenseClass    String    @map("license_class")
+  expiryDate      DateTime  @map("expiry_date") @db.Date
+  status          KycStatus @default(PENDING)
+  verifiedAt      DateTime? @map("verified_at") @db.Timestamptz(6)
+  rejectionReason String?   @map("rejection_reason")
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("driver_licenses")
 }
 
 model OAuthAccount {

@@ -10,6 +10,10 @@ export type User = components['schemas']['UserDto'];
 export type AuthResponse = components['schemas']['AuthResponseDto'];
 export type CsrfResponse = components['schemas']['CsrfResponseDto'];
 
+export type DriverLicense = components['schemas']['DriverLicenseDto'];
+export type SubmitDriverLicensePayload = components['schemas']['SubmitDriverLicenseDto'];
+export type VerifyDriverLicensePayload = components['schemas']['VerifyDriverLicenseDto'];
+
 export type GetVehiclesQuery = operations['VehiclesController_getVehicles']['parameters']['query'];
 export type GetVehiclesResponse = {
   data: VehicleSummary[];
@@ -29,4 +33,7 @@ export type CsrfResponseWrapper = {
 };
 export type UserProfileResponse = {
   data: User;
+};
+export type DriverLicenseResponse = {
+  data: DriverLicense | null;
 };

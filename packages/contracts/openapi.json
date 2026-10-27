@@ -201,6 +201,116 @@
         "tags": ["Auth"]
       }
     },
+    "/api/v1/users/me/driver-license": {
+      "get": {
+        "operationId": "UsersController_getMyDriverLicense",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Hồ sơ GPLX của người dùng hoặc null nếu chưa nộp",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DriverLicenseDto",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Xem thông tin giấy phép lái xe hiện tại của tôi",
+        "tags": ["Users"]
+      },
+      "post": {
+        "operationId": "UsersController_submitDriverLicense",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDriverLicenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Nộp GPLX thành công, trạng thái chuyển sang PENDING",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DriverLicenseDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ (hết hạn, < 18 tuổi, sai số GPLX)"
+          },
+          "409": {
+            "description": "GPLX đã được xác thực trước đó (ALREADY_VERIFIED)"
+          }
+        },
+        "summary": "Nộp thông tin giấy phép lái xe (GPLX) để xác thực KYC",
+        "tags": ["Users"]
+      }
+    },
+    "/api/v1/users/{id}/driver-license/verify": {
+      "post": {
+        "operationId": "UsersController_verifyDriverLicense",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID người dùng cần duyệt GPLX",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyDriverLicenseDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật trạng thái KYC thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/DriverLicenseDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy hồ sơ GPLX của người dùng"
+          }
+        },
+        "summary": "Duyệt hoặc từ chối giấy phép lái xe (Admin / Mock Verification)",
+        "tags": ["Users"]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "HealthController_check",
@@ -407,6 +517,10 @@
     {
       "name": "Auth",
       "description": "Xác thực, phân quyền và quản lý phiên người dùng"
+    },
+    {
+      "name": "Users",
+      "description": "Hồ sơ người dùng và xác thực giấy phép lái xe (KYC)"
     }
   ],
   "servers": [],
@@ -517,6 +631,121 @@
           }
         },
         "required": ["name", "email", "password", "phone"]
+      },
+      "DriverLicenseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID hồ sơ GPLX (UUID)",
+            "example": "40000000-0000-0000-0000-000000000001"
+          },
+          "userId": {
+            "type": "string",
+            "description": "ID chủ tài khoản (UUID)",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "licenseNumber": {
+            "type": "string",
+            "description": "Số Giấy phép lái xe",
+            "example": "079199012345"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Họ và tên người lái xe",
+            "example": "NGUYỄN VĂN CHỦ"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Ngày sinh (YYYY-MM-DD)",
+            "example": "1995-05-15"
+          },
+          "licenseClass": {
+            "type": "string",
+            "description": "Hạng GPLX",
+            "example": "B2"
+          },
+          "expiryDate": {
+            "type": "string",
+            "description": "Ngày hết hạn (YYYY-MM-DD)",
+            "example": "2030-05-15"
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái xác thực KYC",
+            "example": "PENDING",
+            "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"]
+          },
+          "verifiedAt": {
+            "type": "object",
+            "description": "Thời điểm duyệt xác minh",
+            "nullable": true
+          },
+          "rejectionReason": {
+            "type": "object",
+            "description": "Lý do từ chối xác thực",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "licenseNumber",
+          "fullName",
+          "dateOfBirth",
+          "licenseClass",
+          "expiryDate",
+          "status"
+        ]
+      },
+      "SubmitDriverLicenseDto": {
+        "type": "object",
+        "properties": {
+          "licenseNumber": {
+            "type": "string",
+            "description": "Số Giấy phép lái xe (đúng 12 chữ số chuẩn Việt Nam)",
+            "example": "079199012345"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Họ và tên ghi trên GPLX (2 - 100 ký tự)",
+            "example": "NGUYỄN VĂN CHỦ"
+          },
+          "dateOfBirth": {
+            "type": "string",
+            "description": "Ngày sinh định dạng ISO 8601 (YYYY-MM-DD)",
+            "example": "1995-05-15"
+          },
+          "licenseClass": {
+            "type": "string",
+            "description": "Hạng GPLX hợp lệ (B1, B2, C, D, E, FB2, FC, FD, FE)",
+            "example": "B2",
+            "enum": ["B1", "B2", "C", "D", "E", "FB2", "FC", "FD", "FE"]
+          },
+          "expiryDate": {
+            "type": "string",
+            "description": "Ngày hết hạn GPLX (bắt buộc còn hạn ít nhất 30 ngày)",
+            "example": "2030-05-15"
+          }
+        },
+        "required": ["licenseNumber", "fullName", "dateOfBirth", "licenseClass", "expiryDate"]
+      },
+      "VerifyDriverLicenseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Trạng thái xác thực GPLX",
+            "example": "VERIFIED",
+            "enum": ["VERIFIED", "REJECTED"]
+          },
+          "rejectionReason": {
+            "type": "string",
+            "description": "Lý do từ chối (bắt buộc nếu REJECTED)",
+            "example": "Ảnh chụp GPLX bị mờ, không rõ số hiệu"
+          }
+        },
+        "required": ["status"]
       },
       "VehicleSummaryDto": {
         "type": "object",
