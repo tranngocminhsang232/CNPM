@@ -56,7 +56,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Xác nhận toàn bộ file tuân thủ format (exit 0)
 Ca chưa chạy và lý do: Chưa scaffold apps/api và apps/web (thuộc G0-02 và G0-04)
 Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Định nghĩa chuẩn biến môi trường trong .env.example theo các ADR đã chốt.
-Commit hoặc điểm lưu diff nếu có: Git repo đã khởi tạo, sẵn sàng cho initial commit baseline
+Commit hoặc điểm lưu diff nếu có: Commit `90c2151` ("chore: initialize workspace baseline (G0-01)")
 Task đề xuất tiếp theo: G0-02 — Khởi tạo NestJS và health check
 ```
 
