@@ -63,7 +63,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
 Ca chưa chạy và lý do: Chưa tính quote đầy đủ theo module giá nâng cao (thuộc G2).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. OpenAPI được sinh tự động từ code thật thay vì viết mock giả lập.
-Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-09.
+Commit hoặc điểm lưu diff nếu có: Commit `c9c7324` ("feat(api): implement GET /vehicles and /vehicle-options with OpenAPI spec (G0-09)")
 ```
 
 ```text
