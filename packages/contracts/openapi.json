@@ -1514,6 +1514,188 @@
         "summary": "Tra cứu trạng thái giao dịch theo transactionRef",
         "tags": ["Payments"]
       }
+    },
+    "/api/v1/bookings/{id}/inspections": {
+      "put": {
+        "description": "Ghi nhận số km, mức pin/xăng, ghi chú vết xước và danh sách ảnh chụp 4 góc xe. Áp dụng optimistic locking qua trường version.",
+        "operationId": "InspectionsController_saveInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveInspectionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lưu biên bản thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ hoặc ảnh chưa verified"
+          },
+          "403": {
+            "description": "Không có quyền thao tác trên booking này"
+          },
+          "404": {
+            "description": "Chuyến đi không tồn tại"
+          },
+          "409": {
+            "description": "Biên bản đã chốt hoặc xung đột phiên bản version"
+          }
+        },
+        "summary": "Lưu hoặc cập nhật bản nháp biên bản bàn giao xe (CHECK_IN / CHECK_OUT)",
+        "tags": ["Inspections"]
+      },
+      "get": {
+        "description": "Chỉ người thuê hoặc chủ xe của đơn mới có quyền truy cập. Kèm presigned read URL cho các ảnh.",
+        "operationId": "InspectionsController_getInspections",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách biên bản",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InspectionResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Tra cứu danh sách biên bản kiểm tra của chuyến đi",
+        "tags": ["Inspections"]
+      }
+    },
+    "/api/v1/bookings/{id}/inspections/{type}/finalize": {
+      "post": {
+        "description": "Yêu cầu bắt buộc phải có đầy đủ 4 góc ảnh xe (FRONT, REAR, LEFT, RIGHT). Khi hoàn tất, ghi nhận sự kiện hệ thống và gửi thông báo cho đối tác.",
+        "operationId": "InspectionsController_finalizeInspection",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "description": "Loại biên bản: CHECK_IN hoặc CHECK_OUT",
+            "schema": {
+              "enum": ["CHECK_IN", "CHECK_OUT"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chốt biên bản thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền thao tác"
+          },
+          "404": {
+            "description": "Biên bản chưa được tạo"
+          },
+          "422": {
+            "description": "Thiếu góc ảnh bắt buộc trong 4 góc"
+          }
+        },
+        "summary": "Ký duyệt và chốt biên bản bàn giao bất biến",
+        "tags": ["Inspections"]
+      }
+    },
+    "/api/v1/bookings/{id}/inspections/{type}": {
+      "get": {
+        "operationId": "InspectionsController_getInspectionByType",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "type",
+            "required": true,
+            "in": "path",
+            "description": "Loại biên bản: CHECK_IN hoặc CHECK_OUT",
+            "schema": {
+              "enum": ["CHECK_IN", "CHECK_OUT"],
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chi tiết biên bản",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InspectionResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Biên bản chưa được tạo"
+          }
+        },
+        "summary": "Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT)",
+        "tags": ["Inspections"]
+      }
     }
   },
   "info": {
@@ -1554,6 +1736,10 @@
     {
       "name": "Payments",
       "description": "Cổng thanh toán sandbox, ký số HMAC-SHA512 và ký quỹ chuyến đi"
+    },
+    {
+      "name": "Inspections",
+      "description": "Quy trình kiểm tra xe, biên bản bàn giao 4 góc xe và công tơ mét"
     }
   ],
   "servers": [],
@@ -3141,6 +3327,156 @@
           }
         },
         "required": ["transactionRef", "status"]
+      },
+      "InspectionPhotoInputDto": {
+        "type": "object",
+        "properties": {
+          "angle": {
+            "type": "string",
+            "enum": ["FRONT", "REAR", "LEFT", "RIGHT"],
+            "description": "Góc chụp ảnh kiểm tra xe"
+          },
+          "mediaId": {
+            "type": "string",
+            "description": "ID của media đã được xác thực trên storage",
+            "format": "uuid"
+          }
+        },
+        "required": ["angle", "mediaId"]
+      },
+      "SaveInspectionDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["CHECK_IN", "CHECK_OUT"],
+            "description": "Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT"
+          },
+          "odometerKm": {
+            "type": "number",
+            "description": "Số km trên đồng hồ công tơ mét",
+            "minimum": 0,
+            "default": 0
+          },
+          "fuelPercent": {
+            "type": "number",
+            "description": "Tỷ lệ nhiên liệu / pin (0 - 100%)",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 100
+          },
+          "damageNotes": {
+            "type": "string",
+            "description": "Ghi chú vết trầy xước, va chạm có sẵn",
+            "maxLength": 1000
+          },
+          "version": {
+            "type": "number",
+            "description": "Phiên bản concurrency phục vụ optimistic locking",
+            "default": 1
+          },
+          "photos": {
+            "description": "Danh sách các ảnh chụp theo từng góc",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InspectionPhotoInputDto"
+            }
+          }
+        },
+        "required": ["type", "odometerKm", "fuelPercent", "photos"]
+      },
+      "InspectionPhotoDto": {
+        "type": "object",
+        "properties": {
+          "angle": {
+            "type": "string",
+            "enum": ["FRONT", "REAR", "LEFT", "RIGHT"],
+            "description": "Góc chụp ảnh"
+          },
+          "mediaId": {
+            "type": "string",
+            "description": "ID của media object",
+            "format": "uuid"
+          },
+          "readUrl": {
+            "type": "string",
+            "description": "Presigned GET URL để xem ảnh bảo mật (TTL 15m)"
+          }
+        },
+        "required": ["angle", "mediaId"]
+      },
+      "InspectionResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID của biên bản kiểm tra",
+            "format": "uuid"
+          },
+          "bookingId": {
+            "type": "string",
+            "description": "ID của chuyến đi booking",
+            "format": "uuid"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["CHECK_IN", "CHECK_OUT"],
+            "description": "Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT"
+          },
+          "odometerKm": {
+            "type": "number",
+            "description": "Số km trên đồng hồ công tơ mét"
+          },
+          "fuelPercent": {
+            "type": "number",
+            "description": "Tỷ lệ nhiên liệu / pin (0 - 100%)"
+          },
+          "damageNotes": {
+            "type": "object",
+            "description": "Ghi chú vết trầy xước, va chạm có sẵn"
+          },
+          "acknowledged": {
+            "type": "boolean",
+            "description": "Đã được xác nhận hoàn tất chưa"
+          },
+          "finalizedAt": {
+            "type": "object",
+            "description": "Thời điểm chốt biên bản bất biến"
+          },
+          "version": {
+            "type": "number",
+            "description": "Phiên bản concurrency"
+          },
+          "performedBy": {
+            "type": "string",
+            "description": "ID người thực hiện kiểm tra",
+            "format": "uuid"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Thời gian khởi tạo"
+          },
+          "photos": {
+            "description": "Danh sách ảnh 4 góc xe",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/InspectionPhotoDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "bookingId",
+          "type",
+          "odometerKm",
+          "fuelPercent",
+          "acknowledged",
+          "version",
+          "performedBy",
+          "createdAt",
+          "photos"
+        ]
       }
     }
   }

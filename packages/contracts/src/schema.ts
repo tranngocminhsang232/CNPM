@@ -598,6 +598,67 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings/{id}/inspections': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Tra cứu danh sách biên bản kiểm tra của chuyến đi
+     * @description Chỉ người thuê hoặc chủ xe của đơn mới có quyền truy cập. Kèm presigned read URL cho các ảnh.
+     */
+    get: operations['InspectionsController_getInspections'];
+    /**
+     * Lưu hoặc cập nhật bản nháp biên bản bàn giao xe (CHECK_IN / CHECK_OUT)
+     * @description Ghi nhận số km, mức pin/xăng, ghi chú vết xước và danh sách ảnh chụp 4 góc xe. Áp dụng optimistic locking qua trường version.
+     */
+    put: operations['InspectionsController_saveInspection'];
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/inspections/{type}/finalize': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Ký duyệt và chốt biên bản bàn giao bất biến
+     * @description Yêu cầu bắt buộc phải có đầy đủ 4 góc ảnh xe (FRONT, REAR, LEFT, RIGHT). Khi hoàn tất, ghi nhận sự kiện hệ thống và gửi thông báo cho đối tác.
+     */
+    post: operations['InspectionsController_finalizeInspection'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/inspections/{type}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT) */
+    get: operations['InspectionsController_getInspectionByType'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1625,6 +1686,99 @@ export interface components {
        * @enum {string}
        */
       status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
+    };
+    InspectionPhotoInputDto: {
+      /**
+       * @description Góc chụp ảnh kiểm tra xe
+       * @enum {string}
+       */
+      angle: 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
+      /**
+       * Format: uuid
+       * @description ID của media đã được xác thực trên storage
+       */
+      mediaId: string;
+    };
+    SaveInspectionDto: {
+      /**
+       * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
+       * @enum {string}
+       */
+      type: 'CHECK_IN' | 'CHECK_OUT';
+      /**
+       * @description Số km trên đồng hồ công tơ mét
+       * @default 0
+       */
+      odometerKm: number;
+      /**
+       * @description Tỷ lệ nhiên liệu / pin (0 - 100%)
+       * @default 100
+       */
+      fuelPercent: number;
+      /** @description Ghi chú vết trầy xước, va chạm có sẵn */
+      damageNotes?: string;
+      /**
+       * @description Phiên bản concurrency phục vụ optimistic locking
+       * @default 1
+       */
+      version: number;
+      /** @description Danh sách các ảnh chụp theo từng góc */
+      photos: components['schemas']['InspectionPhotoInputDto'][];
+    };
+    InspectionPhotoDto: {
+      /**
+       * @description Góc chụp ảnh
+       * @enum {string}
+       */
+      angle: 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
+      /**
+       * Format: uuid
+       * @description ID của media object
+       */
+      mediaId: string;
+      /** @description Presigned GET URL để xem ảnh bảo mật (TTL 15m) */
+      readUrl?: string;
+    };
+    InspectionResponseDto: {
+      /**
+       * Format: uuid
+       * @description ID của biên bản kiểm tra
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description ID của chuyến đi booking
+       */
+      bookingId: string;
+      /**
+       * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
+       * @enum {string}
+       */
+      type: 'CHECK_IN' | 'CHECK_OUT';
+      /** @description Số km trên đồng hồ công tơ mét */
+      odometerKm: number;
+      /** @description Tỷ lệ nhiên liệu / pin (0 - 100%) */
+      fuelPercent: number;
+      /** @description Ghi chú vết trầy xước, va chạm có sẵn */
+      damageNotes?: Record<string, never>;
+      /** @description Đã được xác nhận hoàn tất chưa */
+      acknowledged: boolean;
+      /** @description Thời điểm chốt biên bản bất biến */
+      finalizedAt?: Record<string, never>;
+      /** @description Phiên bản concurrency */
+      version: number;
+      /**
+       * Format: uuid
+       * @description ID người thực hiện kiểm tra
+       */
+      performedBy: string;
+      /**
+       * Format: date-time
+       * @description Thời gian khởi tạo
+       */
+      createdAt: string;
+      /** @description Danh sách ảnh 4 góc xe */
+      photos: components['schemas']['InspectionPhotoDto'][];
     };
   };
   responses: never;
@@ -2771,6 +2925,162 @@ export interface operations {
         content: {
           'application/json': components['schemas']['PaymentResponseDto'];
         };
+      };
+    };
+  };
+  InspectionsController_getInspections: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Danh sách biên bản */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionResponseDto'][];
+        };
+      };
+    };
+  };
+  InspectionsController_saveInspection: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['SaveInspectionDto'];
+      };
+    };
+    responses: {
+      /** @description Lưu biên bản thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionResponseDto'];
+        };
+      };
+      /** @description Dữ liệu không hợp lệ hoặc ảnh chưa verified */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không có quyền thao tác trên booking này */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Chuyến đi không tồn tại */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Biên bản đã chốt hoặc xung đột phiên bản version */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  InspectionsController_finalizeInspection: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+        /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
+        type: 'CHECK_IN' | 'CHECK_OUT';
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chốt biên bản thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionResponseDto'];
+        };
+      };
+      /** @description Không có quyền thao tác */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Biên bản chưa được tạo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Thiếu góc ảnh bắt buộc trong 4 góc */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  InspectionsController_getInspectionByType: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+        /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
+        type: 'CHECK_IN' | 'CHECK_OUT';
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chi tiết biên bản */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['InspectionResponseDto'];
+        };
+      };
+      /** @description Biên bản chưa được tạo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
       };
     };
   };

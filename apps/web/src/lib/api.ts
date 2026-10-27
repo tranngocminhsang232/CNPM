@@ -40,6 +40,11 @@ import type {
   PaymentResponse,
   CreatePaymentIntentPayload,
   SimulatePaymentPayload,
+  Inspection,
+  InspectionPhoto,
+  SaveInspectionPayload,
+  InspectionResponse,
+  InspectionsListResponse,
 } from '@carsharing/contracts';
 
 export type {
@@ -65,6 +70,9 @@ export type {
   Payment,
   CreatePaymentIntentPayload,
   SimulatePaymentPayload,
+  Inspection,
+  InspectionPhoto,
+  SaveInspectionPayload,
 };
 
 export interface VehicleSearchParams {
@@ -551,5 +559,69 @@ export async function fetchPaymentByRefApi(ref: string): Promise<Payment> {
     },
   });
   const json = await handleResponse<PaymentResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Inspection & Handover APIs (G4-01)
+// -----------------------------------------------------------------------------
+
+export async function saveInspectionApi(
+  bookingId: string,
+  payload: SaveInspectionPayload,
+  csrfToken: string,
+): Promise<Inspection> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/inspections`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<InspectionResponse>(res);
+  return json.data;
+}
+
+export async function finalizeInspectionApi(
+  bookingId: string,
+  type: 'CHECK_IN' | 'CHECK_OUT',
+  csrfToken: string,
+): Promise<Inspection> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/inspections/${type}/finalize`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+  });
+  const json = await handleResponse<InspectionResponse>(res);
+  return json.data;
+}
+
+export async function fetchInspectionsApi(bookingId: string): Promise<Inspection[]> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/inspections`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<InspectionsListResponse>(res);
+  return json.data;
+}
+
+export async function fetchInspectionByTypeApi(
+  bookingId: string,
+  type: 'CHECK_IN' | 'CHECK_OUT',
+): Promise<Inspection | null> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/inspections/${type}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  if (res.status === 404) return null;
+  const json = await handleResponse<InspectionResponse>(res);
   return json.data;
 }

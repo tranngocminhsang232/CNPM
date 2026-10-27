@@ -98,3 +98,13 @@ export type SimulatePaymentPayload = components['schemas']['SimulatePaymentDto']
 export type PaymentResponse = {
   data: Payment;
 };
+
+export type Inspection = components['schemas']['InspectionResponseDto'];
+export type InspectionPhoto = components['schemas']['InspectionPhotoDto'];
+export type SaveInspectionPayload = components['schemas']['SaveInspectionDto'];
+export type InspectionResponse = {
+  data: Inspection;
+};
+export type InspectionsListResponse = {
+  data: Inspection[];
+};

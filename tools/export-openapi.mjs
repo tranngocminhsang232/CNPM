@@ -29,6 +29,7 @@ async function run() {
     .addTag('Promotions', 'Quản lý và áp dụng mã khuyến mãi')
     .addTag('Bookings', 'Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi')
     .addTag('Payments', 'Cổng thanh toán sandbox, ký số HMAC-SHA512 và ký quỹ chuyến đi')
+    .addTag('Inspections', 'Quy trình kiểm tra xe, biên bản bàn giao 4 góc xe và công tơ mét')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

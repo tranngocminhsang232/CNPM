@@ -11,13 +11,13 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G4-01** (Quy Trình Bàn Giao & Checklist 4 Góc Xe - Handover & Inspection Engine). Milestone G3 đã hoàn tất 100% và được kiểm thử toàn diện.
+Task đề xuất tiếp theo: **G4-02** (Bộ Điều Khiển Khóa Ảo Keyless & Adapter Simulator). Task G4-01 đã hoàn tất 100% và được kiểm thử toàn diện.
 
 ### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
-| G4-01 | Quy trình bàn giao & checklist 4 góc xe | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-01 | Quy trình bàn giao & checklist 4 góc xe | DONE | InspectionsModule, InspectionsService, InspectionsController; PUT /bookings/:id/inspections (lưu bản nháp CHECK_IN / CHECK_OUT, odometer >= 0, fuel 0-100%, optimistic locking version); POST /bookings/:id/inspections/:type/finalize (kiểm tra bắt buộc đủ 4 góc FRONT, REAR, LEFT, RIGHT từ ảnh VERIFIED, chốt acknowledged, ghi nhận BookingEvent INSPECTION_{type}_FINALIZED & Notification, replay idempotent); GET /bookings/:id/inspections & GET /bookings/:id/inspections/:type; bảo mật 401 unauth, 403 CSRF & stranger; 253 tests backend pass 100% (108 unit, 18 constraints, 127 e2e); OpenAPI & contracts cập nhật; web api client (saveInspectionApi, finalizeInspectionApi, fetchInspectionsApi, fetchInspectionByTypeApi) |
 | G4-02 | Bộ điều khiển khóa ảo Keyless & simulator | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
 | G4-03 | Web UI bàn giao, chụp checklist & khóa xe | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
 | G4-04 | Kiểm tra tích hợp & đóng gói G4 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
