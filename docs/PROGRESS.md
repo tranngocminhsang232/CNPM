@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G2-04** (Giao Diện Web Chi Tiết Xe & Bảng Dự Toán Chi Phí Tương Tác). Task G2-03 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G2-05** (Kiểm Tra Tích Hợp Toàn Diện & Đóng Gói Milestone G2). Task G2-04 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
 
@@ -20,7 +20,7 @@ Task đề xuất tiếp theo: **G2-04** (Giao Diện Web Chi Tiết Xe & Bảng
 | G2-01 | Bộ lọc & tìm kiếm xe nâng cao | DONE | Mở rộng QueryVehiclesDto (q, brand, amenities, sort: price_asc, price_desc, popularity_desc, rating_desc); VehiclesService hỗ trợ lọc keyword, brand, mảng tiện nghi bắt buộc, sorting quan hệ đếm bookings; GET /vehicles/:id trả về chi tiết xe công khai (bảo mật tuyệt đối: không lộ biển số plateNormalized và địa chỉ pickupAddress); 132 tests backend pass (46 unit, 18 constraints, 68 e2e); OpenAPI và contracts tái sinh và build thành công |
 | G2-02 | Động cơ tính giá & snapshot chi phí | DONE | PricingModule, PricingService, PricingController (POST /pricing/quote, POST /pricing/calculate, GET /vehicles/:id/pricing-preview); logic tính số ngày làm tròn 24h, phụ phí cuối tuần T7/CN 10%, gói bảo hiểm BASIC/STANDARD/PREMIUM, phí dịch vụ sàn 10%, tiền cọc lũy tiến 5M/10M/15M VND; bảo đảm đẳng thức toán học total = subtotal + serviceFee + deposit khớp 100% check constraint PostgreSQL; kiểm tra xung đột lịch xe; 146 tests backend pass (53 unit, 18 constraints, 75 e2e); OpenAPI và contracts tái sinh; Playwright smoke pass |
 | G2-03 | Hệ thống mã khuyến mãi & giảm giá | DONE | Migration 20261027080137_add_promotions; check constraints PostgreSQL (discount > 0, % <= 100, min order >= 0, max discount > 0, valid dates, usages >= 0); seed 5 promotions thực tế; PromotionsModule, Service, Controller (POST /promotions/validate); tích hợp PricingService tính toán voucher discount trừ subtotal trước khi tính phí dịch vụ; 166 tests backend pass (63 unit, 18 constraints, 85 e2e); OpenAPI & contracts cập nhật; Playwright smoke pass |
-| G2-04 | Web UI chi tiết xe & dự toán giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-04 | Web UI chi tiết xe & dự toán giá | DONE | VehicleGallery (ảnh hero, thumbnails tương tác, badges Keyless & CarType); PricingCalculator (bộ chọn ngày giờ, 3 gói bảo hiểm BASIC/STANDARD/PREMIUM, nhập voucher mã WELCOME2026 giảm 200k thời gian thực, bóc tách biểu phí rentalDays, baseRent, peakSurcharge, insuranceFee, discountVnd, subtotal, serviceFee, deposit, total); trang /vehicles/[id] đầy đủ thông số kỹ thuật, tiện nghi, hồ sơ chủ xe, cảnh báo KYC; VehicleCard liên kết Next Link trực tiếp; Next.js 16 Turbopack build 100% clean; 3/3 Playwright browser tests pass (10.1s) |
 | G2-05 | Kiểm tra tích hợp & đóng gói G2 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe - Hoàn tất 100%)
@@ -55,6 +55,25 @@ Task đề xuất tiếp theo: **G2-04** (Giao Diện Web Chi Tiết Xe & Bảng
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G2-04 — Giao Diện Web Chi Tiết Xe & Bảng Dự Toán Chi Phí Tương Tác (Vehicle Details & Price Preview UI)
+Trạng thái: DONE
+Prerequisite: G2-03
+Files thay đổi:
+- apps/web/src/components/VehicleGallery.tsx (Component thư viện hình ảnh: ảnh hero kích thước lớn, danh sách thumbnails thu nhỏ tương tác, hiển thị badge phân khúc xe và huy hiệu tự mở khóa Keyless)
+- apps/web/src/components/PricingCalculator.tsx (Widget dự toán chi phí tương tác trực tiếp: chọn ngày giờ nhận/trả xe, chọn 3 gói bảo hiểm BASIC/STANDARD/PREMIUM, nhập mã khuyến mãi voucher có xác thực thời gian thực, bóc tách đầy đủ rentalDays, baseRent, peakSurcharge cuối tuần, insuranceFee, discountVnd từ voucher, subtotal, serviceFee sàn 10%, tiền cọc thế chấp deposit, tổng thanh toán totalVnd; cảnh báo KYC nếu chưa xác thực GPLX, kích hoạt modal đăng nhập khi chưa có phiên)
+- apps/web/src/app/vehicles/[id]/page.tsx (Trang chi tiết xe hoàn chỉnh: breadcrumb điều hướng, thông số kỹ thuật 4 chiều: hộp số, số chỗ, kiểu dáng, keyless; danh mục tiện nghi phong phú; mô tả của chủ xe; thẻ thông tin chủ xe; điều khoản và giấy tờ thuê xe; tích hợp widget PricingCalculator cố định phía cột phải)
+- apps/web/src/components/VehicleCard.tsx (Chuyển nút Xem chi tiết sang Next Link trực tiếp trỏ đến /vehicles/[id])
+- apps/web/test/vehicle-details-pricing.spec.ts (Playwright test kiểm tra toàn bộ luồng: Xem chi tiết xe từ trang chủ -> kiểm tra thông số và chủ xe -> thay đổi gói bảo hiểm nâng cao -> nhập voucher WELCOME2026 giảm 200k -> bấm tiến hành đặt xe mở modal xác thực)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/web typecheck -> 0 lỗi TypeScript
+- pnpm --filter @carsharing/web build -> Thành công, Next.js 16 Turbopack render tĩnh và dynamic /vehicles/[id] không lỗi
+- pnpm --filter @carsharing/web test:smoke -> 3/3 browser tests pass (10.1s: smoke.spec.ts, auth-kyc-vehicle.spec.ts, vehicle-details-pricing.spec.ts)
+- pnpm run format:check -> All matched files use Prettier code style
+Kết quả: Hoàn thành toàn diện Task G2-04. Giao diện trang chi tiết xe và công cụ tính giá tương tác hoạt động mượt mà, trực quan, thẩm mỹ cao.
+```
 
 ```text
 Ngày: 27/10/2026

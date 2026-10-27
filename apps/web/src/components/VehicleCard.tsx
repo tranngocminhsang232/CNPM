@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import type { VehicleSummary } from '@carsharing/contracts';
 
 interface VehicleCardProps {
@@ -177,12 +178,13 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               {formattedPrice} <span className="text-xs font-medium text-slate-500">₫/ngày</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95 cursor-pointer"
+          <Link
+            id={`view-vehicle-btn-${vehicle.id}`}
+            href={`/vehicles/${vehicle.id}`}
+            className="rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-blue-700 active:scale-95 cursor-pointer text-center inline-block"
           >
             Xem chi tiết
-          </button>
+          </Link>
         </div>
       </div>
     </div>
