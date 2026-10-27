@@ -54,7 +54,7 @@ Lệnh đã chạy và kết quả:
 - Kiểm tra bảo toàn volume: Dữ liệu được lưu trữ an toàn trong named volumes carsharing_postgres_data và carsharing_minio_data.
 Ca chưa chạy và lý do: Chưa tích hợp Google hoặc S3 production (theo đúng tiêu chí G0-05).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Docker PostgreSQL ánh xạ cổng host 5433:5432 để hoạt động song song với native PostgreSQL 18 trên cổng 5432.
-Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-05.
+Commit hoặc điểm lưu diff nếu có: Commit `53a76e9` ("feat(infra): configure postgresql 18 and minio with private bucket (G0-05)")
 ```
 
 ```text
