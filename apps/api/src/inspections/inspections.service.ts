@@ -62,6 +62,17 @@ export class InspectionsService {
           'Biên bản trả xe chỉ có thể thực hiện khi chuyến đi đang diễn ra',
         );
       }
+
+      // BR-10: Kiểm tra số km ODO sau chuyến không nhỏ hơn trước chuyến
+      const checkInInspection = await this.prisma.inspection.findUnique({
+        where: { bookingId_type: { bookingId, type: InspectionType.CHECK_IN } },
+      });
+
+      if (checkInInspection && dto.odometerKm < checkInInspection.odometerKm) {
+        throw new BadRequestException(
+          `Số km lúc trả xe (${dto.odometerKm} km) không được nhỏ hơn số km lúc nhận xe (${checkInInspection.odometerKm} km)`,
+        );
+      }
     }
 
     // 3. Check existing inspection & optimistic locking
@@ -191,6 +202,19 @@ export class InspectionsService {
       throw new UnprocessableEntityException(
         `Biên bản kiểm tra xe bắt buộc phải có đủ 4 góc ảnh. Còn thiếu các góc: ${missingAngles.join(', ')}`,
       );
+    }
+
+    // BR-10: Kiểm tra số km ODO sau chuyến không nhỏ hơn trước chuyến đối với CHECK_OUT
+    if (type === InspectionType.CHECK_OUT) {
+      const checkInInspection = await this.prisma.inspection.findUnique({
+        where: { bookingId_type: { bookingId, type: InspectionType.CHECK_IN } },
+      });
+
+      if (checkInInspection && inspection.odometerKm < checkInInspection.odometerKm) {
+        throw new UnprocessableEntityException(
+          `Số km lúc trả xe (${inspection.odometerKm} km) không được nhỏ hơn số km lúc nhận xe (${checkInInspection.odometerKm} km)`,
+        );
+      }
     }
 
     // 4. Atomic finalize

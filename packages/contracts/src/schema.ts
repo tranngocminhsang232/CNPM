@@ -521,6 +521,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings/{id}/complete': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Khách thuê hoàn tất trả xe và kết thúc chuyến đi
+     * @description Chuyển trạng thái đơn sang COMPLETED, giải phóng lịch xe và gửi thông báo hoàn tất cho 2 bên.
+     */
+    post: operations['BookingsController_completeBooking'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/v1/payments/create-intent': {
     parameters: {
       query?: never;
@@ -2961,6 +2981,28 @@ export interface operations {
     };
     responses: {
       /** @description Hủy đơn thành công, lịch xe đã được mở lại */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_completeBooking: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chuyến đi đã hoàn tất thành công, lịch xe đã được giải phóng */
       200: {
         headers: {
           [name: string]: unknown;

@@ -526,6 +526,18 @@ export async function cancelBookingApi(
   return json.data;
 }
 
+export async function completeBookingApi(id: string, csrfToken: string): Promise<Booking> {
+  const res = await fetch(`/api/v1/bookings/${id}/complete`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+  });
+  const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
 export async function createPaymentIntentApi(
   payload: CreatePaymentIntentPayload,
   csrfToken: string,

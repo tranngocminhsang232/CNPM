@@ -11,13 +11,13 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G5-01** (Quy trình Trả xe, Checklist 4 Góc Sau Chuyến & Hoàn tất Chuyến đi - Return Inspection & Trip Completion Engine). Toàn bộ Milestone G4 đã hoàn tất 100% và được kiểm thử toàn diện.
+Task đề xuất tiếp theo: **G5-02** (Quyết toán Ký quỹ & Xử lý Khấu trừ / Hoàn cọc - Deposit Settlement & Surcharge Deduction Engine). Task G5-01 đã hoàn tất 100% với 300 tests backend pass.
 
 ### Bảng tiến độ Milestone G5 (Trả Xe, Quyết Toán Ký Quỹ, Đánh Giá Hai Chiều & Dashboard Chủ Xe)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
-| G5-01 | Quy trình Trả xe & Checklist hoàn trả | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
+| G5-01 | Quy trình Trả xe & Checklist hoàn trả | DONE | POST /bookings/:id/complete (Renter only 403, IN_PROGRESS required 409, no unresolved Keyless ops 409, CHECK_OUT inspection acknowledged & finalized 422, ODO check-out >= check-in 400/422 BR-10, releases vehicle calendar, emits TRIP_COMPLETED event & notifications, idempotent replay 200); 300 tests backend pass (132 unit, 18 constraints, 150 e2e); trip-completion.e2e-spec.ts 10/10 pass; OpenAPI & contracts cập nhật; completeBookingApi |
 | G5-02 | Quyết toán Ký quỹ & Xử lý Hoàn cọc | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
 | G5-03 | Động cơ Đánh giá Hai chiều (Khách & Chủ) | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
 | G5-04 | Web UI Trả xe, Quyết toán, Đánh giá & Dashboard | TODO | Lập kế hoạch chi tiết tại docs/tasks/G5_TASKS.md |
@@ -83,6 +83,27 @@ Task đề xuất tiếp theo: **G5-01** (Quy trình Trả xe, Checklist 4 Góc 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G5-01 — Quy trình Trả xe, Checklist 4 Góc Sau Chuyến & Hoàn tất Chuyến đi (Return Inspection, Check-out Checklist & Trip Completion Engine)
+Trạng thái: DONE
+Prerequisite: G4-04
+Files thay đổi:
+- apps/api/src/inspections/inspections.service.ts (Quy tắc BR-10: kiểm tra odometerKm của CHECK_OUT không được nhỏ hơn CHECK_IN trong saveInspection và finalizeInspection)
+- apps/api/src/inspections/inspections.service.spec.ts (2 unit tests kiểm tra BR-10 cho saveInspection và finalizeInspection)
+- apps/api/src/bookings/bookings.service.ts (Triển khai completeBooking: kiểm tra Renter 403, trạng thái IN_PROGRESS 409, không có thao tác Keyless dở dang PENDING/UNKNOWN 409, bắt buộc biên bản CHECK_OUT đã ký chốt đủ 4 góc 422, kiểm tra ODO lúc trả >= lúc nhận 422, Prisma $transaction chuyển trạng thái COMPLETED, giải phóng lịch xe releasedAt, ghi nhận BookingEvent TRIP_COMPLETED, gửi notification cho cả khách thuê và chủ xe, replay idempotent 200)
+- apps/api/src/bookings/bookings.controller.ts (Endpoint POST /bookings/:id/complete với SessionGuard và CsrfGuard)
+- apps/api/src/bookings/bookings.service.spec.ts (8 unit tests bao phủ 100% các kịch bản của completeBooking)
+- apps/api/test/trip-completion.e2e-spec.ts (10 integration tests e2e kiểm tra 401 unauth, 403 stranger, 403 owner, 409 APPROVED, 422 thiếu CHECK_OUT, 400 ODO không hợp lệ, 200 lưu nháp & chốt CHECK_OUT, 409 unresolved keyless op, 200 hoàn tất chuyến đi & giải phóng lịch xe & phát sự kiện thông báo, 200 idempotent replay)
+- tools/export-openapi.mjs & packages/contracts (Đăng ký endpoint completeBooking, sinh OpenAPI schema, contracts types)
+- apps/web/src/lib/api.ts (Cung cấp hàm completeBookingApi có xác thực cookie & CSRF)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run test -> 300/300 backend tests pass 100% (132 unit, 18 constraints, 150 e2e)
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G5-01. Quy trình trả xe, nghiệm thu sau chuyến đi BR-10 và hoàn tất hành trình an toàn, giải phóng phương tiện đã vận hành hoàn hảo, sẵn sàng cho nghiệp vụ Quyết toán Ký quỹ G5-02.
+```
 
 ```text
 Ngày: 27/10/2026

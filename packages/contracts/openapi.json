@@ -1383,6 +1383,41 @@
         "tags": ["Bookings"]
       }
     },
+    "/api/v1/bookings/{id}/complete": {
+      "post": {
+        "description": "Chuyển trạng thái đơn sang COMPLETED, giải phóng lịch xe và gửi thông báo hoàn tất cho 2 bên.",
+        "operationId": "BookingsController_completeBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chuyến đi đã hoàn tất thành công, lịch xe đã được giải phóng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Khách thuê hoàn tất trả xe và kết thúc chuyến đi",
+        "tags": ["Bookings"]
+      }
+    },
     "/api/v1/payments/create-intent": {
       "post": {
         "description": "Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.",

@@ -343,4 +343,92 @@ describe('InspectionsService (Unit)', () => {
     assert.strictEqual(res.acknowledged, true);
     assert.strictEqual(res.finalizedAt, existingDate);
   });
+
+  it('11. should reject saveDraft for CHECK_OUT when odometerKm < checkIn.odometerKm (BR-10)', async () => {
+    // Set booking to IN_PROGRESS
+    mockPrisma.booking.findUnique = () =>
+      Promise.resolve({
+        id: bookingId,
+        renterId,
+        ownerId,
+        status: BookingStatus.IN_PROGRESS,
+      });
+
+    // Existing CHECK_IN inspection has odo = 15000
+    mockPrisma.inspection.findUnique = (args: any) => {
+      if (args.where?.bookingId_type?.type === InspectionType.CHECK_IN) {
+        return Promise.resolve({
+          id: 'insp-checkin',
+          bookingId,
+          type: InspectionType.CHECK_IN,
+          odometerKm: 15000,
+        });
+      }
+      return Promise.resolve(null);
+    };
+
+    await assert.rejects(
+      () =>
+        service.saveInspection(bookingId, renterId, {
+          type: InspectionType.CHECK_OUT,
+          odometerKm: 14500, // nhỏ hơn 15000
+          fuelPercent: 85,
+          photos: [],
+          version: 1,
+        }),
+      (err: any) => {
+        assert.ok(err instanceof BadRequestException);
+        assert.ok(err.message.includes('không được nhỏ hơn số km lúc nhận xe'));
+        return true;
+      },
+    );
+  });
+
+  it('12. should reject finalizeInspection for CHECK_OUT when odometerKm < checkIn.odometerKm (BR-10)', async () => {
+    mockPrisma.booking.findUnique = () =>
+      Promise.resolve({
+        id: bookingId,
+        renterId,
+        ownerId,
+        status: BookingStatus.IN_PROGRESS,
+      });
+
+    mockPrisma.inspection.findUnique = (args: any) => {
+      if (args.where?.bookingId_type?.type === InspectionType.CHECK_OUT) {
+        return Promise.resolve({
+          id: 'insp-checkout',
+          bookingId,
+          type: InspectionType.CHECK_OUT,
+          finalizedAt: null,
+          version: 1,
+          odometerKm: 14000, // nhỏ hơn CHECK_IN 15000
+          fuelPercent: 80,
+          photos: [
+            { angle: InspectionAngle.FRONT, mediaId: mediaIdFront },
+            { angle: InspectionAngle.REAR, mediaId: mediaIdRear },
+            { angle: InspectionAngle.LEFT, mediaId: mediaIdLeft },
+            { angle: InspectionAngle.RIGHT, mediaId: mediaIdRight },
+          ],
+        });
+      }
+      if (args.where?.bookingId_type?.type === InspectionType.CHECK_IN) {
+        return Promise.resolve({
+          id: 'insp-checkin',
+          bookingId,
+          type: InspectionType.CHECK_IN,
+          odometerKm: 15000,
+        });
+      }
+      return Promise.resolve(null);
+    };
+
+    await assert.rejects(
+      () => service.finalizeInspection(bookingId, renterId, InspectionType.CHECK_OUT),
+      (err: any) => {
+        assert.ok(err instanceof UnprocessableEntityException);
+        assert.ok(err.message.includes('không được nhỏ hơn số km lúc nhận xe'));
+        return true;
+      },
+    );
+  });
 });

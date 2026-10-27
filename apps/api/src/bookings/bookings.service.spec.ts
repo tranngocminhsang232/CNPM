@@ -126,6 +126,9 @@ describe('BookingsService (unit)', () => {
       notification: {
         create: async (args: any) => ({ id: 'notif-uuid-1', ...args.data }),
       },
+      keylessOperation: {
+        findFirst: async () => null,
+      },
       $transaction: async (cb: any) => cb(mockPrisma),
     };
 
@@ -546,6 +549,223 @@ describe('BookingsService (unit)', () => {
       const result = await service.getBookingById('b-1', ACTOR_RENTER);
       assert.equal(result.vehicle?.plateNormalized, '51K-10001');
       assert.equal(result.vehicle?.pickupAddress, 'Vinhomes Central Park, Bình Thạnh');
+    });
+  });
+
+  describe('completeBooking', () => {
+    const validCheckIn = {
+      id: 'insp-in-1',
+      type: 'CHECK_IN',
+      odometerKm: 15000,
+      fuelPercent: 90,
+      acknowledged: true,
+      finalizedAt: new Date(),
+      photos: [],
+    };
+
+    const validCheckOut = {
+      id: 'insp-out-1',
+      type: 'CHECK_OUT',
+      odometerKm: 15350,
+      fuelPercent: 85,
+      acknowledged: true,
+      finalizedAt: new Date(),
+      photos: [],
+    };
+
+    it('rejects 404 if booking not found', async () => {
+      mockPrisma.booking.findUnique = async () => null;
+
+      await assert.rejects(
+        () => service.completeBooking('non-existent', ACTOR_RENTER),
+        (err: any) =>
+          err instanceof NotFoundException && (err.getResponse() as any)?.code === 'NOT_FOUND',
+      );
+    });
+
+    it('rejects 403 if non-renter tries to complete the trip', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'IN_PROGRESS',
+        inspections: [],
+      });
+
+      await assert.rejects(
+        () => service.completeBooking('b-1', THIRD_PARTY),
+        (err: any) =>
+          err instanceof ForbiddenException && (err.getResponse() as any)?.code === 'FORBIDDEN',
+      );
+    });
+
+    it('returns booking idempotently if already COMPLETED', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'COMPLETED',
+        startAt: new Date(),
+        endAt: new Date(),
+        version: 3,
+        createdAt: new Date(),
+        vehicle: mockVehicle,
+        pricingSnapshot: {
+          currency: 'VND',
+          pricePerDayVnd: BigInt(1400000),
+          rentalDays: 3,
+          subtotalVnd: BigInt(4200000),
+          serviceFeeVnd: BigInt(420000),
+          depositVnd: BigInt(10000000),
+          totalVnd: BigInt(14620000),
+          pricingVersion: 'daily-v1',
+        },
+        inspections: [validCheckIn, validCheckOut],
+      });
+
+      const res = await service.completeBooking('b-1', ACTOR_RENTER);
+      assert.equal(res.status, 'COMPLETED');
+    });
+
+    it('rejects 409 INVALID_TRANSITION if status is not IN_PROGRESS', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'APPROVED',
+        inspections: [],
+      });
+
+      await assert.rejects(
+        () => service.completeBooking('b-1', ACTOR_RENTER),
+        (err: any) =>
+          err instanceof ConflictException &&
+          (err.getResponse() as any)?.code === 'INVALID_TRANSITION',
+      );
+    });
+
+    it('rejects 409 UNRESOLVED_OPERATION if there is a pending keyless operation', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'IN_PROGRESS',
+        inspections: [validCheckIn, validCheckOut],
+      });
+
+      mockPrisma.keylessOperation.findFirst = async () => ({
+        id: 'op-1',
+        bookingId: 'b-1',
+        status: 'PENDING',
+      });
+
+      await assert.rejects(
+        () => service.completeBooking('b-1', ACTOR_RENTER),
+        (err: any) =>
+          err instanceof ConflictException &&
+          (err.getResponse() as any)?.code === 'UNRESOLVED_OPERATION',
+      );
+    });
+
+    it('rejects 422 CHECKLIST_INCOMPLETE if CHECK_OUT inspection is missing or not finalized', async () => {
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'IN_PROGRESS',
+        inspections: [validCheckIn], // No CHECK_OUT
+      });
+
+      await assert.rejects(
+        () => service.completeBooking('b-1', ACTOR_RENTER),
+        (err: any) =>
+          err instanceof UnprocessableEntityException &&
+          (err.getResponse() as any)?.code === 'CHECKLIST_INCOMPLETE',
+      );
+    });
+
+    it('rejects 422 INVALID_ODOMETER if CHECK_OUT odo is less than CHECK_IN odo', async () => {
+      const invalidOdoCheckOut = {
+        ...validCheckOut,
+        odometerKm: 14000, // less than check-in 15000
+      };
+
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'IN_PROGRESS',
+        inspections: [validCheckIn, invalidOdoCheckOut],
+      });
+
+      await assert.rejects(
+        () => service.completeBooking('b-1', ACTOR_RENTER),
+        (err: any) =>
+          err instanceof UnprocessableEntityException &&
+          (err.getResponse() as any)?.code === 'INVALID_ODOMETER',
+      );
+    });
+
+    it('successfully completes booking, releases vehicle calendar, creates TRIP_COMPLETED event and notifies parties', async () => {
+      let releasedCalendar = false;
+      let recordedEvent: any = null;
+      const recordedNotifs: any[] = [];
+
+      mockPrisma.booking.findUnique = async () => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: 'IN_PROGRESS',
+        version: 2,
+        inspections: [validCheckIn, validCheckOut],
+      });
+
+      mockPrisma.booking.update = async (args: any) => ({
+        id: 'b-1',
+        renterId: ACTOR_RENTER,
+        ownerId: ACTOR_OWNER,
+        status: args.data.status,
+        version: 3,
+        vehicle: mockVehicle,
+        pricingSnapshot: {
+          currency: 'VND',
+          pricePerDayVnd: BigInt(1400000),
+          rentalDays: 3,
+          subtotalVnd: BigInt(4200000),
+          serviceFeeVnd: BigInt(420000),
+          depositVnd: BigInt(10000000),
+          totalVnd: BigInt(14620000),
+          pricingVersion: 'daily-v1',
+        },
+        renter: { id: ACTOR_RENTER, name: 'Renter Test', phone: '0901234567' },
+        owner: { id: ACTOR_OWNER, name: 'Owner Test', phone: '0907654321' },
+      });
+
+      mockPrisma.vehicleCalendar.updateMany = async () => {
+        releasedCalendar = true;
+        return { count: 1 };
+      };
+
+      mockPrisma.bookingEvent.create = async (args: any) => {
+        recordedEvent = args.data;
+        return { id: 'evt-completed', ...args.data };
+      };
+
+      mockPrisma.notification.create = async (args: any) => {
+        recordedNotifs.push(args.data);
+        return { id: `notif-${recordedNotifs.length}`, ...args.data };
+      };
+
+      const result = await service.completeBooking('b-1', ACTOR_RENTER);
+      assert.equal(result.status, 'COMPLETED');
+      assert.equal(releasedCalendar, true);
+      assert.equal(recordedEvent.eventType, 'TRIP_COMPLETED');
+      assert.equal(recordedEvent.fromStatus, 'IN_PROGRESS');
+      assert.equal(recordedEvent.toStatus, 'COMPLETED');
+      assert.equal(recordedNotifs.length, 2);
+      const recipientIds = recordedNotifs.map((n) => n.userId);
+      assert.ok(recipientIds.includes(ACTOR_OWNER));
+      assert.ok(recipientIds.includes(ACTOR_RENTER));
     });
   });
 });

@@ -153,4 +153,23 @@ export class BookingsController {
   ): Promise<BookingResponseDto> {
     return this.bookingsService.cancelBooking(id, actorId, dto.reason);
   }
+
+  @Post(':id/complete')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Khách thuê hoàn tất trả xe và kết thúc chuyến đi',
+    description:
+      'Chuyển trạng thái đơn sang COMPLETED, giải phóng lịch xe và gửi thông báo hoàn tất cho 2 bên.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Chuyến đi đã hoàn tất thành công, lịch xe đã được giải phóng',
+    type: BookingResponseDto,
+  })
+  async completeBooking(
+    @CurrentUser('id') actorId: string,
+    @Param('id', ParseUuidPipe) id: string,
+  ): Promise<BookingResponseDto> {
+    return this.bookingsService.completeBooking(id, actorId);
+  }
 }

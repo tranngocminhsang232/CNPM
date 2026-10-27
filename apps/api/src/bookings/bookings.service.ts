@@ -12,6 +12,7 @@ import { PricingService } from '../pricing/pricing.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { QueryBookingsDto, BookingPerspective } from './dto/query-bookings.dto';
 import { BookingResponseDto } from './dto/booking-response.dto';
+import { InspectionType, KeylessOperationStatus } from '@prisma/client';
 
 const PRICING_VERSION = 'daily-v1';
 const MIN_RENTAL_HOURS = 1;
@@ -635,6 +636,136 @@ export class BookingsService {
           bookingId,
           eventId: event.id,
           type: 'BOOKING_CANCELLED',
+        },
+      });
+
+      return this.formatBookingResponse(updated, actorId);
+    });
+  }
+
+  async completeBooking(bookingId: string, actorId: string): Promise<BookingResponseDto> {
+    const booking = await this.prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        inspections: {
+          include: { photos: true },
+        },
+      },
+    });
+
+    if (!booking) {
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Không tìm thấy đơn đặt xe',
+      });
+    }
+
+    if (booking.renterId !== actorId) {
+      throw new ForbiddenException({
+        code: 'FORBIDDEN',
+        message: 'Chỉ người thuê của chuyến đi mới có quyền thực hiện trả xe và hoàn tất chuyến đi',
+      });
+    }
+
+    if (booking.status === 'COMPLETED') {
+      return this.getBookingById(bookingId, actorId);
+    }
+
+    if (booking.status !== 'IN_PROGRESS') {
+      throw new ConflictException({
+        code: 'INVALID_TRANSITION',
+        message: `Chỉ có thể hoàn tất chuyến đi khi đang ở trạng thái IN_PROGRESS (hiện tại là: ${booking.status})`,
+      });
+    }
+
+    // BR-08 / BR-09: Kiểm tra không có thao tác Keyless nào đang dở dang (PENDING / UNKNOWN)
+    const unresolvedOp = await this.prisma.keylessOperation.findFirst({
+      where: {
+        bookingId,
+        status: { in: [KeylessOperationStatus.PENDING, KeylessOperationStatus.UNKNOWN] },
+      },
+    });
+
+    if (unresolvedOp) {
+      throw new ConflictException({
+        code: 'UNRESOLVED_OPERATION',
+        message: 'Đang có một thao tác điều khiển khóa xe chưa hoàn tất, không thể hoàn tất trả xe',
+      });
+    }
+
+    // BR-10 / REQ-CAR-05: Kiểm tra biên bản trả xe CHECK_OUT bắt buộc đã được ký chốt
+    const checkOutInspection = booking.inspections.find(
+      (i) => i.type === InspectionType.CHECK_OUT && i.acknowledged && i.finalizedAt,
+    );
+
+    if (!checkOutInspection) {
+      throw new UnprocessableEntityException({
+        code: 'CHECKLIST_INCOMPLETE',
+        message:
+          'Cần hoàn thành và ký chốt biên bản kiểm tra trả xe (CHECK_OUT) trước khi hoàn tất chuyến đi',
+      });
+    }
+
+    // BR-10: Kiểm tra số km ODO lúc trả không nhỏ hơn lúc nhận
+    const checkInInspection = booking.inspections.find((i) => i.type === InspectionType.CHECK_IN);
+
+    if (checkInInspection && checkOutInspection.odometerKm < checkInInspection.odometerKm) {
+      throw new UnprocessableEntityException({
+        code: 'INVALID_ODOMETER',
+        message: `Số km lúc trả xe (${checkOutInspection.odometerKm} km) không được nhỏ hơn số km lúc nhận xe (${checkInInspection.odometerKm} km)`,
+      });
+    }
+
+    return await this.prisma.$transaction(async (tx) => {
+      const updated = await tx.booking.update({
+        where: { id: bookingId, version: booking.version },
+        data: {
+          status: 'COMPLETED',
+          version: { increment: 1 },
+        },
+        include: {
+          pricingSnapshot: true,
+          vehicle: true,
+          renter: { select: { id: true, name: true, phone: true } },
+          owner: { select: { id: true, name: true, phone: true } },
+        },
+      });
+
+      // Giải phóng lịch xe
+      await tx.vehicleCalendar.updateMany({
+        where: { bookingId, releasedAt: null },
+        data: { releasedAt: new Date() },
+      });
+
+      // Ghi nhận sự kiện
+      const event = await tx.bookingEvent.create({
+        data: {
+          bookingId,
+          actorId,
+          eventType: 'TRIP_COMPLETED',
+          fromStatus: 'IN_PROGRESS',
+          toStatus: 'COMPLETED',
+          reason: 'Khách thuê đã hoàn tất trả xe và chốt biên bản bàn giao thành công',
+        },
+      });
+
+      // Thông báo cho chủ xe
+      await tx.notification.create({
+        data: {
+          userId: booking.ownerId,
+          bookingId,
+          eventId: event.id,
+          type: 'TRIP_COMPLETED',
+        },
+      });
+
+      // Thông báo cho khách thuê
+      await tx.notification.create({
+        data: {
+          userId: booking.renterId,
+          bookingId,
+          eventId: event.id,
+          type: 'TRIP_COMPLETED',
         },
       });
 
