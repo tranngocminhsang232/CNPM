@@ -23,7 +23,7 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-05 | PostgreSQL/storage local | DONE | Docker Compose (Postgres 18 & MinIO/Silo), btree_gist trên dev/test DB, private bucket & upload/download probe pass |
 | G0-06 | Prisma schema | DONE | prisma/schema.prisma bao phủ 18 bảng, enums, timestamptz, bigint, UUID, relations; prisma validate & generate thành công |
 | G0-07 | Migration/constraints | DONE | Migration áp dụng dev/test DB; 18 integration tests pass: GiST exclusion, touching, partial indexes, business checks |
-| G0-08 | Seed/database provider | TODO | Chưa có seed/provider |
+| G0-08 | Seed/database provider | DONE | prisma/seed.ts idempotent (4 users, 13 vehicles, 4 bookings, calendar); PrismaService/Module tích hợp; health readiness phản ánh DB thật |
 | G0-09 | API đọc xe và OpenAPI | TODO | Chưa có endpoint/type sinh |
 | G0-10 | Contract client và UI danh sách | TODO | Chưa có luồng dữ liệu thật |
 | G0-11 | CI và kiểm tra G0 | TODO | Chưa chạy app build/test |
@@ -32,6 +32,29 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-08 — Seed và lớp truy cập database
+Trạng thái: DONE
+Prerequisite: G0-07, G0-02
+Files thay đổi:
+- prisma/seed.ts (Seed dữ liệu tái lập: 4 tài khoản demo theo capability model, 13 xe gồm 12 PUBLISHED và 1 DRAFT, media verified, 4 booking ở các trạng thái, pricing snapshots, lịch bận và owner block; có chặn production)
+- apps/api/src/prisma/prisma.service.ts (Service tích hợp PrismaClient với lifecycle hooks onModuleInit/onModuleDestroy)
+- apps/api/src/prisma/prisma.module.ts (Module Global cung cấp PrismaService cho toàn bộ NestJS)
+- apps/api/src/health/health.controller.ts & health.controller.spec.ts (Cập nhật health/readiness truy vấn DB thật bằng $queryRaw, trả 503 DATABASE_DISCONNECTED khi mất kết nối)
+- apps/api/src/app.module.ts (Đăng ký PrismaModule)
+- package.json & pnpm-workspace.yaml (Thêm tsx, script db:seed và allowBuilds cho esbuild)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-08)
+Lệnh đã chạy và kết quả:
+- pnpm exec prisma db seed: Khởi tạo thành công 4 users, 13 vehicles, 4 bookings, 4 calendar records, 4 snapshots.
+- pnpm exec prisma db seed (lần 2): Xác minh tính idempotent thành công, số lượng bản ghi giữ nguyên tuyệt đối (users: 4, vehicles: 13, bookings: 4, calendar: 4, snapshots: 4).
+- pnpm --filter @carsharing/api run test:all: Toàn bộ 38/38 tests unit, integration và e2e pass 100% (gồm test DB connected và DB disconnected).
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa seed quyền truy cập xe của người khác (theo đúng capability model).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Dùng fixed UUIDs cho seed để đảm bảo tính tái lập cho các suite test E2E.
+Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-08.
+```
 
 ```text
 Ngày: 27/10/2026

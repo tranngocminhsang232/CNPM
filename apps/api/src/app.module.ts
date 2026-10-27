@@ -2,6 +2,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation';
 import { HealthModule } from './health/health.module';
+import { PrismaModule } from './prisma/prisma.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 
 @Module({
@@ -11,6 +12,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
       validate,
       envFilePath: ['.env.local', '.env'],
     }),
+    PrismaModule,
     HealthModule,
   ],
 })
