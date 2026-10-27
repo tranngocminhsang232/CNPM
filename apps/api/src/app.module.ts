@@ -4,6 +4,7 @@ import { validate } from './config/env.validation';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { MediaModule } from './media/media.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
@@ -18,6 +19,7 @@ import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
     PrismaModule,
     AuthModule,
     UsersModule,
+    MediaModule,
     HealthModule,
     VehiclesModule,
   ],

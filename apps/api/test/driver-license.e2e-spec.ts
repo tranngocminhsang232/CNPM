@@ -47,6 +47,12 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
 
     const cookies = loginRes.headers['set-cookie'] as unknown as string[];
     sessionCookies = cookies.map((c) => (c.split(';')[0] as string) || c);
+
+    // Dọn dẹp trạng thái KYC của renter1 trước khi chạy test để bảo đảm tính độc lập
+    const { PrismaService } = await import('../src/prisma/prisma.service');
+    const prisma = app.get(PrismaService);
+    await prisma.driverLicense.deleteMany({ where: { userId } });
+    await prisma.user.update({ where: { id: userId }, data: { kycStatus: 'NONE' } });
   });
 
   after(async () => {

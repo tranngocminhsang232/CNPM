@@ -311,6 +311,139 @@
         "tags": ["Users"]
       }
     },
+    "/api/v1/media/upload-intents": {
+      "post": {
+        "operationId": "MediaController_createUploadIntent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUploadIntentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Sinh presigned URL thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadIntentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Dữ liệu không hợp lệ (MIME hoặc dung lượng sai quy định)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Tạo upload intent và sinh Presigned PUT URL để upload trực tiếp lên S3/MinIO",
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/media/{id}/verify": {
+      "post": {
+        "operationId": "MediaController_verifyMedia",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xác thực file thành công, file được chuyển từ staging sang finalized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaObjectDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "File chưa được tải lên storage thành công"
+          },
+          "403": {
+            "description": "Không có quyền xác thực media của người khác"
+          },
+          "404": {
+            "description": "Không tìm thấy media object"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Xác thực file đã tải lên storage thành công (probe S3) và chuyển trạng thái sang VERIFIED",
+        "tags": ["media"]
+      }
+    },
+    "/api/v1/media/{id}/read-url": {
+      "get": {
+        "operationId": "MediaController_getReadUrl",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sinh URL xem file thành công (TTL 15 phút)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaReadUrlResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Media chưa hoàn tất xác thực"
+          },
+          "403": {
+            "description": "Không có quyền truy cập tài liệu định danh này"
+          },
+          "404": {
+            "description": "Không tìm thấy media object"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "access_token": []
+          }
+        ],
+        "summary": "Lấy Presigned GET URL để xem file media (kiểm tra phân quyền tài liệu nhạy cảm)",
+        "tags": ["media"]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "HealthController_check",
@@ -746,6 +879,121 @@
           }
         },
         "required": ["status"]
+      },
+      "CreateUploadIntentDto": {
+        "type": "object",
+        "properties": {
+          "purpose": {
+            "type": "string",
+            "description": "Mục đích sử dụng media (VEHICLE_PHOTO, INSPECTION_PHOTO, IDENTITY_DOCUMENT)",
+            "example": "IDENTITY_DOCUMENT",
+            "enum": ["VEHICLE_PHOTO", "INSPECTION_PHOTO", "IDENTITY_DOCUMENT"]
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Định dạng MIME hợp lệ (chỉ hỗ trợ image/jpeg hoặc image/png)",
+            "example": "image/jpeg",
+            "enum": ["image/jpeg", "image/png"]
+          },
+          "sizeBytes": {
+            "type": "number",
+            "description": "Dung lượng file tính bằng bytes (tối đa 5.242.880 bytes ~ 5 MiB)",
+            "example": 1048576
+          },
+          "vehicleId": {
+            "type": "string",
+            "description": "ID xe liên quan (nếu là VEHICLE_PHOTO)",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "bookingId": {
+            "type": "string",
+            "description": "ID booking liên quan (nếu là INSPECTION_PHOTO)",
+            "example": "20000000-0000-0000-0000-000000000001"
+          }
+        },
+        "required": ["purpose", "mimeType", "sizeBytes"]
+      },
+      "UploadIntentResponseDto": {
+        "type": "object",
+        "properties": {
+          "mediaId": {
+            "type": "string",
+            "description": "ID định danh duy nhất của media (UUID)",
+            "example": "50000000-0000-0000-0000-000000000001"
+          },
+          "uploadUrl": {
+            "type": "string",
+            "description": "Presigned URL để thực hiện PUT upload trực tiếp lên S3/MinIO"
+          },
+          "headers": {
+            "type": "object",
+            "description": "Headers bắt buộc phải gửi kèm khi PUT lên S3",
+            "example": {
+              "Content-Type": "image/jpeg"
+            }
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Thời điểm hết hạn của presigned URL upload (ISO 8601 UTC)"
+          }
+        },
+        "required": ["mediaId", "uploadUrl", "headers", "expiresAt"]
+      },
+      "MediaObjectDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID media (UUID)",
+            "example": "50000000-0000-0000-0000-000000000001"
+          },
+          "uploaderId": {
+            "type": "string",
+            "description": "ID người tải lên (UUID)",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "purpose": {
+            "type": "string",
+            "description": "Mục đích sử dụng media",
+            "example": "IDENTITY_DOCUMENT"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "Định dạng MIME",
+            "example": "image/jpeg"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "description": "Dung lượng bytes",
+            "example": 1048576
+          },
+          "state": {
+            "type": "string",
+            "description": "Trạng thái media",
+            "example": "VERIFIED",
+            "enum": ["STAGING", "VERIFIED", "REJECTED"]
+          },
+          "verifiedAt": {
+            "type": "object",
+            "description": "Thời điểm xác minh file",
+            "nullable": true
+          }
+        },
+        "required": ["id", "uploaderId", "purpose", "mimeType", "sizeBytes", "state"]
+      },
+      "MediaReadUrlResponseDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Presigned URL để tải hoặc xem ảnh từ private S3 bucket"
+          },
+          "expiresAt": {
+            "type": "string",
+            "description": "Thời điểm hết hạn của presigned URL xem file (ISO 8601 UTC)"
+          }
+        },
+        "required": ["url", "expiresAt"]
       },
       "VehicleSummaryDto": {
         "type": "object",

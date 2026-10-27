@@ -27,6 +27,26 @@ export class EnvironmentVariables {
   @IsString()
   @IsOptional()
   JWT_REFRESH_SECRET: string = 'carsharing_refresh_jwt_secret_dev_local_2026';
+
+  @IsString()
+  @IsOptional()
+  S3_ENDPOINT: string = 'http://localhost:9000';
+
+  @IsString()
+  @IsOptional()
+  S3_REGION: string = 'us-east-1';
+
+  @IsString()
+  @IsOptional()
+  S3_BUCKET_PRIVATE: string = 'car-sharing-private';
+
+  @IsString()
+  @IsOptional()
+  S3_ACCESS_KEY: string = 'minioadmin';
+
+  @IsString()
+  @IsOptional()
+  S3_SECRET_KEY: string = 'minioadmin';
 }
 
 export function validate(config: Record<string, unknown>) {

@@ -17,6 +17,8 @@
     "test:all": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\" \"dist/test/**/*.e2e-spec.js\" \"dist/test/constraints.integration-spec.js\""
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1156.0",
+    "@aws-sdk/s3-request-presigner": "^3.1156.0",
     "@nestjs/common": "12.2.0",
     "@nestjs/config": "12.0.1",
     "@nestjs/core": "12.2.0",

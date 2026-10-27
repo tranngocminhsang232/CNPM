@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-03** (Dịch vụ S3 Presigned URL & Quản lý Media Riêng tư). Task G1-02 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G1-04** (Đăng Ký và Quản Lý Xe Dành Cho Chủ Xe - Owner Vehicle CRUD). Task G1-03 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
 
@@ -19,7 +19,7 @@ Task đề xuất tiếp theo: **G1-03** (Dịch vụ S3 Presigned URL & Quản 
 | --- | --- | --- | --- |
 | G1-01 | Nền tảng Xác thực (Cookies, CSRF, Auth) | DONE | AuthModule, cookie HttpOnly (access 15m, refresh 7d), Double Submit CSRF token (X-CSRF-Token), SessionGuard, CsrfGuard, CurrentUser decorator, Google OIDC callback, capability model (RENTER + OWNER); 68 tests pass (19 unit, 18 constraints, 31 e2e); Playwright smoke pass |
 | G1-02 | Xác thực Bằng lái xe (KYC) | DONE | UsersModule, migration 20261027064407_add_driver_licenses_kyc áp dụng dev/test DB; check constraints PostgreSQL (đúng 12 số GPLX, tuổi >= 18, hạn >= 30 ngày, status PENDING -> VERIFIED/REJECTED, chặn nộp lại khi VERIFIED 409); KycVerifiedGuard; 81 tests pass; Playwright smoke pass |
-| G1-03 | Dịch vụ S3 Presigned URL | TODO | Chưa triển khai |
+| G1-03 | Dịch vụ S3 Presigned URL | DONE | MediaModule, tích hợp @aws-sdk/client-s3 & @aws-sdk/s3-request-presigner, POST /media/upload-intents (presigned PUT, TTL 15m, giới hạn 5MB, JPEG/PNG), upload trực tiếp lên MinIO private bucket, POST /media/:id/verify (S3 HeadObject probe, move staging sang finalized, state VERIFIED), GET /media/:id/read-url (presigned GET URL, chặn tài liệu nhạy cảm GPLX 403, mở ảnh xe công khai); 98 tests pass (33 unit, 18 constraints, 47 e2e) |
 | G1-04 | Đăng ký & quản lý xe chủ xe | TODO | Chưa triển khai |
 | G1-05 | Web UI Auth, KYC & Quản lý xe | TODO | Chưa triển khai |
 | G1-06 | Kiểm tra tích hợp & đóng gói G1 | TODO | Chưa triển khai |
@@ -45,6 +45,34 @@ Task đề xuất tiếp theo: **G1-03** (Dịch vụ S3 Presigned URL & Quản 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-03 — Dịch vụ S3 Presigned URL & Quản lý Media Riêng tư
+Trạng thái: DONE
+Prerequisite: G1-01, G0-05
+Files thay đổi:
+- apps/api/src/config/env.validation.ts (Cấu hình S3_ENDPOINT, S3_REGION, S3_BUCKET_PRIVATE, S3_ACCESS_KEY, S3_SECRET_KEY)
+- apps/api/src/media/dto/media.dto.ts (CreateUploadIntentDto, UploadIntentResponseDto, MediaReadUrlResponseDto, MediaObjectDto, giới hạn MIME JPEG/PNG và size <= 5 MiB)
+- apps/api/src/media/media.service.ts (Tích hợp @aws-sdk/client-s3 và @aws-sdk/s3-request-presigner: createUploadIntent, verifyMedia probe HeadObject S3 & copy staging sang finalized, getReadUrl kiểm soát quyền riêng tư)
+- apps/api/src/auth/guards/optional-session.guard.ts (OptionalSessionGuard nạp request.user nếu có token nhưng không bắt buộc)
+- apps/api/src/media/media.controller.ts (POST /media/upload-intents, POST /media/:id/verify, GET /media/:id/read-url)
+- apps/api/src/media/media.module.ts (Module xuất MediaService và liên kết AuthModule, PrismaModule, ConfigModule)
+- apps/api/src/app.module.ts (Đăng ký MediaModule)
+- apps/api/src/media/media.service.spec.ts (7 ca unit test MediaService pass 100%)
+- apps/api/test/media.e2e-spec.ts (10 ca e2e test luồng presigned PUT, upload MinIO thực tế, probe verify, bảo mật 403 tài liệu nhạy cảm và mở công khai ảnh xe)
+- packages/contracts/openapi.json (Tái xuất OpenAPI chứa đầy đủ endpoints media)
+Lệnh kiểm tra thực tế:
+- pnpm --filter @carsharing/api run test (33 unit tests pass)
+- pnpm --filter @carsharing/api run test:e2e (47 e2e tests pass)
+- pnpm --filter @carsharing/api run test:all (98 tests pass: 33 unit, 18 constraints, 47 e2e)
+- node tools/export-openapi.mjs (Xuất OpenAPI thành công)
+- pnpm --filter @carsharing/contracts run build (Build contracts thành công)
+- pnpm run format (Prettier format toàn workspace)
+Ghi chú bảo mật & giới hạn:
+- Toàn bộ media upload qua Presigned URL trực tiếp lên bucket private của MinIO, backend không làm proxy tải file nhị phân.
+- Quyền riêng tư: Giấy tờ định danh (IDENTITY_DOCUMENT) bắt buộc kiểm tra uploaderId == currentUser.id, trả về 403 Forbidden cho bất kỳ người dùng nào khác.
+```
 
 ```text
 Ngày: 27/10/2026
