@@ -1,6 +1,206 @@
 {
   "openapi": "3.0.0",
   "paths": {
+    "/api/v1/auth/csrf": {
+      "get": {
+        "operationId": "AuthController_getCsrfToken",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Trả về CSRF token và gắn cookie csrf_token",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/CsrfResponseDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lấy mã xác thực CSRF gắn phiên hoặc trước phiên",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công, thiết lập session cookies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AuthResponseDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Sai thông tin đăng nhập (INVALID_CREDENTIALS)"
+          }
+        },
+        "summary": "Đăng nhập người dùng bằng email và mật khẩu",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Đăng ký thành công, tạo phiên và trả về thông tin user",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/AuthResponseDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Email đã tồn tại (EMAIL_IN_USE)"
+          }
+        },
+        "summary": "Đăng ký tài khoản người dùng mới",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/google": {
+      "get": {
+        "operationId": "AuthController_googleAuth",
+        "parameters": [],
+        "responses": {
+          "302": {
+            "description": "Chuyển hướng đến Google hoặc mock callback"
+          }
+        },
+        "summary": "Khởi tạo luồng xác thực Google OAuth2/OIDC",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/google/callback": {
+      "get": {
+        "operationId": "AuthController_googleCallback",
+        "parameters": [
+          {
+            "name": "code",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Thiết lập cookie phiên và chuyển hướng về web"
+          }
+        },
+        "summary": "Xử lý phản hồi từ Google OAuth2/OIDC",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": "Đăng xuất thành công, xóa cookie"
+          }
+        },
+        "summary": "Đăng xuất tài khoản và thu hồi phiên làm việc",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_getProfile[0]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Thông tin tài khoản và năng lực của người dùng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/UserDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa đăng nhập hoặc phiên hết hạn"
+          }
+        },
+        "summary": "Lấy thông tin người dùng hiện tại từ phiên đăng nhập",
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/me": {
+      "get": {
+        "operationId": "AuthController_getProfile[1]",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Thông tin tài khoản và năng lực của người dùng",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/UserDto"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Chưa đăng nhập hoặc phiên hết hạn"
+          }
+        },
+        "summary": "Lấy thông tin người dùng hiện tại từ phiên đăng nhập",
+        "tags": ["Auth"]
+      }
+    },
     "/api/v1/health": {
       "get": {
         "operationId": "HealthController_check",
@@ -203,11 +403,121 @@
     {
       "name": "Vehicles",
       "description": "Tìm kiếm xe và danh mục tùy chọn công khai"
+    },
+    {
+      "name": "Auth",
+      "description": "Xác thực, phân quyền và quản lý phiên người dùng"
     }
   ],
   "servers": [],
   "components": {
     "schemas": {
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID người dùng (UUID)",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "description": "Họ và tên",
+            "example": "Nguyễn Văn Chủ 1"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email tài khoản",
+            "example": "owner1@carsharing.local"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Số điện thoại",
+            "example": "0901111111"
+          },
+          "capabilities": {
+            "description": "Danh sách năng lực (Capability Model): RENTER, OWNER",
+            "example": ["RENTER", "OWNER"],
+            "type": "array",
+            "items": {
+              "type": "array"
+            }
+          }
+        },
+        "required": ["id", "name", "email", "phone", "capabilities"]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "description": "Thông tin tài khoản người dùng",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDto"
+              }
+            ]
+          },
+          "csrfToken": {
+            "type": "string",
+            "description": "Mã xác thực chống CSRF gắn phiên",
+            "example": "a1b2c3d4..."
+          }
+        },
+        "required": ["user", "csrfToken"]
+      },
+      "CsrfResponseDto": {
+        "type": "object",
+        "properties": {
+          "csrfToken": {
+            "type": "string",
+            "description": "CSRF token gắn phiên hoặc trước phiên",
+            "example": "a1b2c3d4..."
+          }
+        },
+        "required": ["csrfToken"]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email đăng nhập",
+            "example": "owner1@carsharing.local"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu tài khoản (tối thiểu 6 ký tự)",
+            "example": "DemoPassword123!"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Họ và tên người dùng (2 - 100 ký tự)",
+            "example": "Nguyễn Văn A"
+          },
+          "email": {
+            "type": "string",
+            "description": "Địa chỉ email đăng ký",
+            "example": "user@example.com"
+          },
+          "password": {
+            "type": "string",
+            "description": "Mật khẩu bảo mật (12 - 128 ký tự)",
+            "example": "StrongPassword2026!#"
+          },
+          "phone": {
+            "type": "string",
+            "description": "Số điện thoại liên hệ (9 - 15 chữ số)",
+            "example": "0901234567"
+          }
+        },
+        "required": ["name", "email", "password", "phone"]
+      },
       "VehicleSummaryDto": {
         "type": "object",
         "properties": {

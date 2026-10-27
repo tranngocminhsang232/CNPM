@@ -19,6 +19,14 @@ export class EnvironmentVariables {
   @IsString()
   @IsOptional()
   CORS_ORIGIN: string = 'http://localhost:3000';
+
+  @IsString()
+  @IsOptional()
+  JWT_ACCESS_SECRET: string = 'carsharing_access_jwt_secret_dev_local_2026';
+
+  @IsString()
+  @IsOptional()
+  JWT_REFRESH_SECRET: string = 'carsharing_refresh_jwt_secret_dev_local_2026';
 }
 
 export function validate(config: Record<string, unknown>) {

@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -12,6 +13,9 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const port = configService.get<number>('API_PORT') ?? 4000;
   const corsOrigin = configService.get<string>('CORS_ORIGIN') ?? 'http://localhost:3000';
+
+  // Thiết lập middleware phân tích cookie HttpOnly
+  app.use(cookieParser());
 
   // Thiết lập tiền tố toàn cục /api/v1 theo hợp đồng
   app.setGlobalPrefix('api/v1');
@@ -47,6 +51,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('Health', 'Kiểm tra trạng thái liveness & readiness của hệ thống')
     .addTag('Vehicles', 'Tìm kiếm xe và danh mục tùy chọn công khai')
+    .addTag('Auth', 'Xác thực, phân quyền và quản lý phiên người dùng')
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

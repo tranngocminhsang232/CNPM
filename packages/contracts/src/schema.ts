@@ -4,6 +4,142 @@
  */
 
 export interface paths {
+  '/api/v1/auth/csrf': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy mã xác thực CSRF gắn phiên hoặc trước phiên */
+    get: operations['AuthController_getCsrfToken'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/login': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Đăng nhập người dùng bằng email và mật khẩu */
+    post: operations['AuthController_login'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/register': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Đăng ký tài khoản người dùng mới */
+    post: operations['AuthController_register'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/google': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Khởi tạo luồng xác thực Google OAuth2/OIDC */
+    get: operations['AuthController_googleAuth'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/google/callback': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Xử lý phản hồi từ Google OAuth2/OIDC */
+    get: operations['AuthController_googleCallback'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/logout': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /** Đăng xuất tài khoản và thu hồi phiên làm việc */
+    post: operations['AuthController_logout'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/me': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
+    get: operations['AuthController_getProfile[0]'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/me': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
+    get: operations['AuthController_getProfile[1]'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/v1/health': {
     parameters: {
       query?: never;
@@ -58,6 +194,86 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    UserDto: {
+      /**
+       * @description ID người dùng (UUID)
+       * @example 00000000-0000-0000-0000-000000000001
+       */
+      id: string;
+      /**
+       * @description Họ và tên
+       * @example Nguyễn Văn Chủ 1
+       */
+      name: string;
+      /**
+       * @description Email tài khoản
+       * @example owner1@carsharing.local
+       */
+      email: string;
+      /**
+       * @description Số điện thoại
+       * @example 0901111111
+       */
+      phone: string;
+      /**
+       * @description Danh sách năng lực (Capability Model): RENTER, OWNER
+       * @example [
+       *       "RENTER",
+       *       "OWNER"
+       *     ]
+       */
+      capabilities: unknown[][];
+    };
+    AuthResponseDto: {
+      /** @description Thông tin tài khoản người dùng */
+      user: components['schemas']['UserDto'];
+      /**
+       * @description Mã xác thực chống CSRF gắn phiên
+       * @example a1b2c3d4...
+       */
+      csrfToken: string;
+    };
+    CsrfResponseDto: {
+      /**
+       * @description CSRF token gắn phiên hoặc trước phiên
+       * @example a1b2c3d4...
+       */
+      csrfToken: string;
+    };
+    LoginDto: {
+      /**
+       * @description Địa chỉ email đăng nhập
+       * @example owner1@carsharing.local
+       */
+      email: string;
+      /**
+       * @description Mật khẩu tài khoản (tối thiểu 6 ký tự)
+       * @example DemoPassword123!
+       */
+      password: string;
+    };
+    RegisterDto: {
+      /**
+       * @description Họ và tên người dùng (2 - 100 ký tự)
+       * @example Nguyễn Văn A
+       */
+      name: string;
+      /**
+       * @description Địa chỉ email đăng ký
+       * @example user@example.com
+       */
+      email: string;
+      /**
+       * @description Mật khẩu bảo mật (12 - 128 ký tự)
+       * @example StrongPassword2026!#
+       */
+      password: string;
+      /**
+       * @description Số điện thoại liên hệ (9 - 15 chữ số)
+       * @example 0901234567
+       */
+      phone: string;
+    };
     VehicleSummaryDto: {
       /** @example 10000000-0000-0000-0000-000000000001 */
       id: string;
@@ -164,6 +380,208 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  AuthController_getCsrfToken: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Trả về CSRF token và gắn cookie csrf_token */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            data?: components['schemas']['CsrfResponseDto'];
+          };
+        };
+      };
+    };
+  };
+  AuthController_login: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['LoginDto'];
+      };
+    };
+    responses: {
+      /** @description Đăng nhập thành công, thiết lập session cookies */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            data?: components['schemas']['AuthResponseDto'];
+          };
+        };
+      };
+      /** @description Sai thông tin đăng nhập (INVALID_CREDENTIALS) */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AuthController_register: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RegisterDto'];
+      };
+    };
+    responses: {
+      /** @description Đăng ký thành công, tạo phiên và trả về thông tin user */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            data?: components['schemas']['AuthResponseDto'];
+          };
+        };
+      };
+      /** @description Email đã tồn tại (EMAIL_IN_USE) */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AuthController_googleAuth: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Chuyển hướng đến Google hoặc mock callback */
+      302: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AuthController_googleCallback: {
+    parameters: {
+      query: {
+        code: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thiết lập cookie phiên và chuyển hướng về web */
+      302: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  AuthController_logout: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Đăng xuất thành công, xóa cookie */
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  'AuthController_getProfile[0]': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin tài khoản và năng lực của người dùng */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            data?: components['schemas']['UserDto'];
+          };
+        };
+      };
+      /** @description Chưa đăng nhập hoặc phiên hết hạn */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  'AuthController_getProfile[1]': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin tài khoản và năng lực của người dùng */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': {
+            data?: components['schemas']['UserDto'];
+          };
+        };
+      };
+      /** @description Chưa đăng nhập hoặc phiên hết hạn */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
   HealthController_check: {
     parameters: {
       query?: never;

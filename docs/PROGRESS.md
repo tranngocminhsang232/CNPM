@@ -11,7 +11,20 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G1-01** (Nền tảng Xác thực: Session Cookies, CSRF, AuthModule) thuộc Milestone G1. Toàn bộ 13/13 tasks của Milestone G0 đã hoàn tất và được nghiệm thu đầy đủ.
+Task đề xuất tiếp theo: **G1-02** (Xác thực Bằng lái xe: KYC Driver License Flow). Task G1-01 đã hoàn tất và được ghi nhận.
+
+### Bảng tiến độ Milestone G1 (Xác thực, KYC & Quản lý Xe)
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G1-01 | Nền tảng Xác thực (Cookies, CSRF, Auth) | DONE | AuthModule, cookie HttpOnly (access 15m, refresh 7d), Double Submit CSRF token (X-CSRF-Token), SessionGuard, CsrfGuard, CurrentUser decorator, Google OIDC callback, capability model (RENTER + OWNER); 68 tests pass (19 unit, 18 constraints, 31 e2e); Playwright smoke pass |
+| G1-02 | Xác thực Bằng lái xe (KYC) | TODO | Chưa triển khai |
+| G1-03 | Dịch vụ S3 Presigned URL | TODO | Chưa triển khai |
+| G1-04 | Đăng ký & quản lý xe chủ xe | TODO | Chưa triển khai |
+| G1-05 | Web UI Auth, KYC & Quản lý xe | TODO | Chưa triển khai |
+| G1-06 | Kiểm tra tích hợp & đóng gói G1 | TODO | Chưa triển khai |
+
+### Bảng tiến độ Milestone G0 (Baseline Kiến Trúc & Dữ Liệu - Hoàn tất 100%)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -32,6 +45,50 @@ Task đề xuất tiếp theo: **G1-01** (Nền tảng Xác thực: Session Cook
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G1-01 — Nền tảng Xác thực (Session Cookies, CSRF, AuthModule)
+Trạng thái: DONE
+Prerequisite: G0-12
+Files thay đổi:
+- apps/api/package.json (Thêm cookie-parser, bcryptjs, jsonwebtoken và type definitions)
+- apps/api/src/config/env.validation.ts (Bổ sung JWT_ACCESS_SECRET và JWT_REFRESH_SECRET)
+- apps/api/src/auth/dto/auth.dto.ts (Định nghĩa LoginDto, RegisterDto, UserDto, AuthResponseDto, CsrfResponseDto với Swagger annotations)
+- apps/api/src/auth/decorators/public-csrf.decorator.ts (@PublicCsrf cho phép miễn kiểm tra CSRF trước khi có phiên)
+- apps/api/src/auth/decorators/current-user.decorator.ts (@CurrentUser trích xuất thông tin user từ request context)
+- apps/api/src/auth/auth.service.ts (Service xác thực: bcrypt băm mật khẩu, ký JWT access 15m/refresh 7d, lưu RefreshSession vào PostgreSQL, sinh CSRF token an toàn, capability model RENTER+OWNER)
+- apps/api/src/auth/guards/session.guard.ts (Guard bảo vệ route bằng cookie HttpOnly hoặc Authorization Bearer header)
+- apps/api/src/auth/guards/csrf.guard.ts (Guard chống tấn công CSRF qua cơ chế Double Submit Token header X-CSRF-Token cho POST/PUT/PATCH/DELETE)
+- apps/api/src/auth/auth.controller.ts (Controller cung cấp GET /auth/csrf, POST /auth/login, POST /auth/register, GET /auth/google, GET /auth/google/callback, POST /auth/logout, GET /auth/me và GET /me)
+- apps/api/src/auth/auth.module.ts (Module Auth xuất AuthService, SessionGuard, CsrfGuard)
+- apps/api/src/app.module.ts (Đăng ký AuthModule vào ứng dụng)
+- apps/api/src/main.ts (Cấu hình app.use(cookieParser()) và Swagger tag Auth)
+- prisma/seed.ts (Cập nhật mật khẩu chuẩn bcrypt cho 4 tài khoản seed: DemoPassword123!)
+- tools/export-openapi.mjs (Cập nhật xuất OpenAPI bao gồm các route Auth)
+- packages/contracts/openapi.json & src/schema.ts (Cập nhật hợp đồng OpenAPI và types tự động)
+- packages/contracts/src/index.ts (Xuất các type User, AuthResponse, CsrfResponse, LoginResponse, RegisterResponse)
+- apps/api/src/auth/auth.service.spec.ts (Unit tests kiểm tra toàn bộ logic nghiệp vụ AuthService)
+- apps/api/test/auth.e2e-spec.ts (12 ca test E2E kiểm tra đăng ký, đăng nhập, bảo vệ CSRF, cookie HttpOnly, Google callback, logout và thu hồi phiên)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G1-01)
+Lệnh đã chạy và kết quả:
+- pnpm --filter @carsharing/api run build: Biên dịch NestJS API đạt 0 lỗi.
+- node tools/export-openapi.mjs: Xuất schema OpenAPI v1.1 bao gồm đầy đủ 7 endpoint Auth vào packages/contracts/openapi.json.
+- pnpm --filter @carsharing/contracts run generate && build: Tái sinh types TypeScript và biên dịch contracts thành công.
+- pnpm --filter @carsharing/api run test:all: Toàn bộ 68/68 tests (19 unit, 18 DB constraints, 31 e2e) pass 100% trong 5.9 giây (exit 0).
+  + GET /api/v1/auth/csrf cấp mã CSRF và đặt cookie csrf_token.
+  + POST /api/v1/auth/login đăng nhập thành công tài khoản seed owner1@carsharing.local với mật khẩu DemoPassword123!, trả về đúng UserDto với capability ['RENTER', 'OWNER'], đặt cookie HttpOnly access_token và refresh_token.
+  + POST /api/v1/auth/login từ chối mật khẩu sai với HTTP 401 INVALID_CREDENTIALS không lộ trạng thái tài khoản.
+  + GET /api/v1/auth/me trả về 401 khi chưa có cookie, trả về 200 thông tin user khi có cookie phiên hợp lệ.
+  + POST /api/v1/auth/logout chặn request thiếu X-CSRF-Token (HTTP 403 CSRF_INVALID), đăng xuất thành công khi có đủ token và xóa sạch cookie phiên.
+  + POST /api/v1/auth/register tạo tài khoản mới thành công, chặn email trùng với HTTP 409 EMAIL_IN_USE.
+- pnpm run test:smoke: Playwright browser smoke test trên Chromium pass 100% trong 8.8 giây (exit 0).
+- pnpm run typecheck: Kiểm tra kiểu tĩnh toàn bộ 3 packages trong workspace đạt 0 lỗi (exit 0).
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa nộp ảnh giấy phép lái xe KYC (thuộc G1-02).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Thực hiện đúng ADR-03, ADR-04 và ADR-16.
+Commit hoặc điểm lưu diff nếu có: Sẽ commit sau khi lưu log tiến độ.
+```
 
 ```text
 Ngày: 27/10/2026

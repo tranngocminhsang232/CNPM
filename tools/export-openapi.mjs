@@ -23,6 +23,7 @@ async function run() {
     .setVersion('1.0')
     .addTag('Health', 'Kiểm tra trạng thái liveness & readiness của hệ thống')
     .addTag('Vehicles', 'Tìm kiếm xe và danh mục tùy chọn công khai')
+    .addTag('Auth', 'Xác thực, phân quyền và quản lý phiên người dùng')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

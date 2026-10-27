@@ -58,34 +58,36 @@ async function main() {
   console.log('--- Starting Seed Execution ---');
 
   // 1. Seed 4 Demo Accounts (Capability model: users can both host and rent)
+  const DEMO_PASSWORD_HASH = '$2b$10$.6lgaajgP3o8EukxmC45GeMvjZJBRFpoW.dnlZ0cZAoUN55uWUYKW'; // DemoPassword123!
+
   const usersData = [
     {
       id: DEMO_IDS.USERS.OWNER_1,
       name: 'Nguyễn Văn Chủ 1',
       emailNormalized: 'owner1@carsharing.local',
       phone: '0901111111',
-      passwordHash: '$2b$10$localDemoPasswordHashOwner1PlaceholderSaltV1',
+      passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.OWNER_2,
       name: 'Trần Thị Chủ 2',
       emailNormalized: 'owner2@carsharing.local',
       phone: '0902222222',
-      passwordHash: '$2b$10$localDemoPasswordHashOwner2PlaceholderSaltV1',
+      passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.RENTER_1,
       name: 'Lê Hoàng Thuê 1',
       emailNormalized: 'renter1@carsharing.local',
       phone: '0903333333',
-      passwordHash: '$2b$10$localDemoPasswordHashRenter1PlaceholderSaltV1',
+      passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.RENTER_2,
       name: 'Phạm Minh Thuê 2',
       emailNormalized: 'renter2@carsharing.local',
       phone: '0904444444',
-      passwordHash: '$2b$10$localDemoPasswordHashRenter2PlaceholderSaltV1',
+      passwordHash: DEMO_PASSWORD_HASH,
     },
   ];
 
