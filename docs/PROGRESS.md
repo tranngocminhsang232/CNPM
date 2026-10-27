@@ -57,7 +57,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
 Ca chưa chạy và lý do: Chưa giả lập danh sách xe và chưa hardcode số liệu dashboard (theo đúng yêu cầu G0-04).
 Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Địa chỉ nội bộ backend (http://localhost:4000) được giữ bí mật phía server Next.js qua API_INTERNAL_URL.
-Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-04
+Commit hoặc điểm lưu diff nếu có: Commit `6e5ef8c` ("feat(web): scaffold Next.js App Router with same-origin health rewrite (G0-04)")
 Task đề xuất tiếp theo: G0-05 — PostgreSQL và object storage local
 ```
 
