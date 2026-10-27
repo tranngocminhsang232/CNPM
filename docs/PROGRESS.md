@@ -21,7 +21,7 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 | G0-03 | Request và error contract | DONE | RequestIdMiddleware, TransformInterceptor, HttpExceptionFilter, 19 ca test unit & e2e pass |
 | G0-04 | Next.js và cùng origin | DONE | Next.js 16 App Router, cùng origin rewrite /api/v1/health, build/typecheck & gọi health thực tế |
 | G0-05 | PostgreSQL/storage local | DONE | Docker Compose (Postgres 18 & MinIO/Silo), btree_gist trên dev/test DB, private bucket & upload/download probe pass |
-| G0-06 | Prisma schema | TODO | Chưa có schema |
+| G0-06 | Prisma schema | DONE | prisma/schema.prisma bao phủ 18 bảng, enums, timestamptz, bigint, UUID, relations; prisma validate & generate thành công |
 | G0-07 | Migration/constraints | TODO | Chưa chạy PostgreSQL tests |
 | G0-08 | Seed/database provider | TODO | Chưa có seed/provider |
 | G0-09 | API đọc xe và OpenAPI | TODO | Chưa có endpoint/type sinh |
@@ -32,6 +32,29 @@ Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). 
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-06 — Schema Prisma và quan hệ
+Trạng thái: DONE
+Prerequisite: G0-01, G0-05
+Files thay đổi:
+- prisma/schema.prisma (Định nghĩa toàn bộ 18 models và 12 enums theo DATABASE_DESIGN.md; UUID PK, @@map/@map snake_case, timestamptz(6), bigint VND, relations, onDelete phù hợp)
+- package.json & apps/api/package.json (Thêm dependencies prisma@6.19.3 và @prisma/client@6.19.3)
+- pnpm-workspace.yaml (Thêm allowBuilds cho prisma, @prisma/client, @prisma/engines)
+- pnpm-lock.yaml (Cập nhật lockfile)
+- docs/PROGRESS.md (Cập nhật tiến độ hoàn thành G0-06)
+Lệnh đã chạy và kết quả:
+- pnpm exec prisma format: Định dạng schema.prisma thành công trong 127ms.
+- pnpm exec prisma validate: Schema hợp lệ 100% không có lỗi cú pháp hay quan hệ (exit 0).
+- pnpm exec prisma generate: Sinh thành công Prisma Client v6.19.3 cho TypeScript types (exit 0).
+- pnpm --filter @carsharing/api run typecheck: tsc --noEmit kiểm tra thành công với Prisma client mới (exit 0).
+- pnpm --filter @carsharing/api run test: Toàn bộ 11 tests unit & smoke tests pass (exit 0).
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
+Ca chưa chạy và lý do: Chưa chạy migration trên database (đây là nhiệm vụ của task G0-07 tiếp theo).
+Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Không tạo FK vòng giữa booking và pricing_snapshot (pricing_snapshot có unique FK booking_id theo đúng kiến trúc).
+Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-06.
+```
 
 ```text
 Ngày: 27/10/2026

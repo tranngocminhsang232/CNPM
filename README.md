@@ -19,6 +19,7 @@ Bước triển khai tiếp theo là G0: tạo Next.js/NestJS workspace, môi tr
 ## Hướng dẫn Khởi chạy Môi trường Hạ tầng Local (Docker Compose)
 
 Hạ tầng lưu trữ và cơ sở dữ liệu được định nghĩa tại `infra/compose.yaml`:
+
 - **PostgreSQL 18** (Alpine): Host port `5433` (tránh xung đột với PostgreSQL host port 5432).
   - Dev Database: `carsharing_dev` (có sẵn extension `btree_gist`)
   - Test Database: `carsharing_test` (có sẵn extension `btree_gist`)
@@ -46,4 +47,3 @@ docker compose -f infra/compose.yaml down
 # CẢNH BÁO: Chỉ thêm cờ -v khi muốn XÓA HOÀN TOÀN toàn bộ database và bucket local:
 # docker compose -f infra/compose.yaml down -v
 ```
-
