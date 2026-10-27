@@ -417,6 +417,110 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Tra cứu danh sách đơn đặt xe (Khách thuê hoặc Chủ xe)
+     * @description Lấy danh sách các đơn đặt xe thuộc quyền sở hữu của người dùng hiện tại theo góc nhìn renter hoặc owner.
+     */
+    get: operations['BookingsController_getBookings'];
+    put?: never;
+    /**
+     * Tạo yêu cầu đặt xe mới (Idempotent)
+     * @description Tạo đơn đặt xe với trạng thái REQUESTED, khóa lịch xe tự động, lưu snapshot biểu phí bất biến. Yêu cầu tài khoản đã KYC và có header Idempotency-Key.
+     */
+    post: operations['BookingsController_createBooking'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Xem chi tiết đơn đặt xe
+     * @description Chỉ khách thuê hoặc chủ xe liên quan mới có quyền xem thông tin chi tiết đơn này.
+     */
+    get: operations['BookingsController_getBookingById'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/approve': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Chủ xe phê duyệt đơn đặt xe
+     * @description Chuyển trạng thái đơn từ REQUESTED sang APPROVED.
+     */
+    post: operations['BookingsController_approveBooking'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/reject': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Chủ xe từ chối đơn đặt xe
+     * @description Chuyển trạng thái đơn sang REJECTED, tự động giải phóng lịch xe và hoàn lại voucher nếu có.
+     */
+    post: operations['BookingsController_rejectBooking'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)
+     * @description Chuyển trạng thái đơn sang CANCELLED, giải phóng lịch xe và hoàn trả voucher nếu có.
+     */
+    post: operations['BookingsController_cancelBooking'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1213,6 +1317,144 @@ export interface components {
        * @example true
        */
       valid: boolean;
+    };
+    CreateBookingDto: {
+      /**
+       * @description Mã định danh xe muốn thuê (UUID)
+       * @example 10000000-0000-0000-0000-000000000001
+       */
+      vehicleId: string;
+      /**
+       * @description Thời điểm nhận xe (ISO 8601 UTC)
+       * @example 2026-11-10T08:00:00.000Z
+       */
+      startAt: string;
+      /**
+       * @description Thời điểm trả xe (ISO 8601 UTC)
+       * @example 2026-11-12T18:00:00.000Z
+       */
+      endAt: string;
+      /**
+       * @description Tổng tiền dự kiến (VND) để bảo vệ chống trượt giá
+       * @example 3380000
+       */
+      expectedTotalVnd: number;
+      /**
+       * @description Phiên bản biểu phí áp dụng
+       * @default daily-v1
+       * @example daily-v1
+       */
+      pricingVersion: string;
+      /**
+       * @description Gói bảo hiểm lựa chọn (BASIC, STANDARD, PREMIUM)
+       * @default BASIC
+       * @enum {string}
+       */
+      insurancePackage: 'BASIC' | 'STANDARD' | 'PREMIUM';
+      /**
+       * @description Mã khuyến mãi áp dụng giảm giá (nếu có)
+       * @example WELCOME2026
+       */
+      voucherCode?: string;
+    };
+    BookingVehicleSummaryDto: {
+      /** @example 10000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example VinFast */
+      brand: string;
+      /** @example VF8 Plus */
+      model: string;
+      /** @example 2024 */
+      year: number;
+      /** @example 51K-10001 */
+      plateNormalized?: Record<string, never> | null;
+      /** @example TP. Hồ Chí Minh */
+      city: string;
+      /** @example Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Quận Bình Thạnh */
+      pickupAddress?: Record<string, never> | null;
+      /** @example 1400000 */
+      pricePerDayVnd: number;
+      coverImageUrl?: Record<string, never> | null;
+      /** @example true */
+      keylessSupported: boolean;
+    };
+    PricingSnapshotDto: {
+      /** @example VND */
+      currency: string;
+      /** @example 1400000 */
+      pricePerDayVnd: number;
+      /** @example 2 */
+      rentalDays: number;
+      /** @example 2800000 */
+      subtotalVnd: number;
+      /** @example 280000 */
+      serviceFeeVnd: number;
+      /** @example 10000000 */
+      depositVnd: number;
+      /** @example 13080000 */
+      totalVnd: number;
+      /** @example daily-v1 */
+      pricingVersion: string;
+    };
+    BookingUserSummaryDto: {
+      /** @example 00000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example Nguyễn Văn Chủ 1 */
+      name: string;
+      /** @example 0901111111 */
+      phone: string;
+    };
+    BookingResponseDto: {
+      /** @example 20000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example 10000000-0000-0000-0000-000000000001 */
+      vehicleId: string;
+      /** @example 00000000-0000-0000-0000-000000000003 */
+      renterId: string;
+      /** @example 00000000-0000-0000-0000-000000000001 */
+      ownerId: string;
+      /** @example 2026-11-10T08:00:00.000Z */
+      startAt: string;
+      /** @example 2026-11-12T18:00:00.000Z */
+      endAt: string;
+      /**
+       * @example REQUESTED
+       * @enum {string}
+       */
+      status:
+        | 'REQUESTED'
+        | 'APPROVED'
+        | 'REJECTED'
+        | 'IN_PROGRESS'
+        | 'COMPLETED'
+        | 'CANCELLED'
+        | 'EXPIRED';
+      /** @example 2026-11-10T08:15:00.000Z */
+      requestExpiresAt: string;
+      completedAt?: Record<string, never> | null;
+      reason?: Record<string, never> | null;
+      /** @example 1 */
+      version: number;
+      /** @example 2026-10-27T10:00:00.000Z */
+      createdAt: string;
+      vehicle?: components['schemas']['BookingVehicleSummaryDto'];
+      pricingSnapshot?: components['schemas']['PricingSnapshotDto'] | null;
+      renter?: components['schemas']['BookingUserSummaryDto'];
+      owner?: components['schemas']['BookingUserSummaryDto'];
+    };
+    RejectBookingDto: {
+      /**
+       * @description Lý do từ chối yêu cầu đặt xe (1 - 500 ký tự)
+       * @example Chủ xe bận đột xuất vào khung giờ này không thể bàn giao xe
+       */
+      reason: string;
+    };
+    CancelBookingDto: {
+      /**
+       * @description Lý do hủy đơn đặt xe (1 - 500 ký tự)
+       * @example Khách đổi lịch công tác nên cần hủy chuyến
+       */
+      reason: string;
     };
   };
   responses: never;
@@ -2098,6 +2340,173 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  BookingsController_getBookings: {
+    parameters: {
+      query?: {
+        /** @description Góc nhìn tra cứu: renter (khách thuê) hoặc owner (chủ xe) */
+        perspective?: 'renter' | 'owner';
+        /** @description Lọc theo trạng thái đơn thuê (REQUESTED, APPROVED, REJECTED, IN_PROGRESS, COMPLETED, CANCELLED, EXPIRED) */
+        status?:
+          | 'REQUESTED'
+          | 'APPROVED'
+          | 'REJECTED'
+          | 'IN_PROGRESS'
+          | 'COMPLETED'
+          | 'CANCELLED'
+          | 'EXPIRED';
+        /** @description Số thứ tự trang */
+        page?: number;
+        /** @description Số lượng bản ghi mỗi trang */
+        pageSize?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Danh sách đơn đặt xe kèm phân trang */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  BookingsController_createBooking: {
+    parameters: {
+      query?: never;
+      header: {
+        'idempotency-key': string;
+        /** @description Khóa chống trùng lặp (16 - 128 ký tự ASCII) */
+        'Idempotency-Key': string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateBookingDto'];
+      };
+    };
+    responses: {
+      /** @description Replay yêu cầu đặt xe trùng lặp (Idempotent) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+      /** @description Tạo đơn đặt xe mới thành công */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_getBookingById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin chi tiết đơn thuê, xe, biểu phí và hai bên tham gia */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_approveBooking: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Phê duyệt thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_rejectBooking: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RejectBookingDto'];
+      };
+    };
+    responses: {
+      /** @description Từ chối thành công, lịch xe đã được mở lại */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
+      };
+    };
+  };
+  BookingsController_cancelBooking: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CancelBookingDto'];
+      };
+    };
+    responses: {
+      /** @description Hủy đơn thành công, lịch xe đã được mở lại */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BookingResponseDto'];
+        };
       };
     };
   };

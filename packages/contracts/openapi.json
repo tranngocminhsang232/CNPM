@@ -1091,6 +1091,297 @@
         "summary": "Kiểm tra tính hợp lệ và mức giảm giá của voucher khuyến mãi",
         "tags": ["promotions"]
       }
+    },
+    "/api/v1/bookings": {
+      "post": {
+        "description": "Tạo đơn đặt xe với trạng thái REQUESTED, khóa lịch xe tự động, lưu snapshot biểu phí bất biến. Yêu cầu tài khoản đã KYC và có header Idempotency-Key.",
+        "operationId": "BookingsController_createBooking",
+        "parameters": [
+          {
+            "name": "idempotency-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Khóa chống trùng lặp (16 - 128 ký tự ASCII)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Replay yêu cầu đặt xe trùng lặp (Idempotent)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "Tạo đơn đặt xe mới thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Tạo yêu cầu đặt xe mới (Idempotent)",
+        "tags": ["Bookings"]
+      },
+      "get": {
+        "description": "Lấy danh sách các đơn đặt xe thuộc quyền sở hữu của người dùng hiện tại theo góc nhìn renter hoặc owner.",
+        "operationId": "BookingsController_getBookings",
+        "parameters": [
+          {
+            "name": "perspective",
+            "required": false,
+            "in": "query",
+            "description": "Góc nhìn tra cứu: renter (khách thuê) hoặc owner (chủ xe)",
+            "schema": {
+              "default": "renter",
+              "type": "string",
+              "enum": ["renter", "owner"]
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "description": "Lọc theo trạng thái đơn thuê (REQUESTED, APPROVED, REJECTED, IN_PROGRESS, COMPLETED, CANCELLED, EXPIRED)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "REQUESTED",
+                "APPROVED",
+                "REJECTED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED",
+                "EXPIRED"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Số thứ tự trang",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "pageSize",
+            "required": false,
+            "in": "query",
+            "description": "Số lượng bản ghi mỗi trang",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách đơn đặt xe kèm phân trang"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Tra cứu danh sách đơn đặt xe (Khách thuê hoặc Chủ xe)",
+        "tags": ["Bookings"]
+      }
+    },
+    "/api/v1/bookings/{id}": {
+      "get": {
+        "description": "Chỉ khách thuê hoặc chủ xe liên quan mới có quyền xem thông tin chi tiết đơn này.",
+        "operationId": "BookingsController_getBookingById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin chi tiết đơn thuê, xe, biểu phí và hai bên tham gia",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Xem chi tiết đơn đặt xe",
+        "tags": ["Bookings"]
+      }
+    },
+    "/api/v1/bookings/{id}/approve": {
+      "post": {
+        "description": "Chuyển trạng thái đơn từ REQUESTED sang APPROVED.",
+        "operationId": "BookingsController_approveBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phê duyệt thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Chủ xe phê duyệt đơn đặt xe",
+        "tags": ["Bookings"]
+      }
+    },
+    "/api/v1/bookings/{id}/reject": {
+      "post": {
+        "description": "Chuyển trạng thái đơn sang REJECTED, tự động giải phóng lịch xe và hoàn lại voucher nếu có.",
+        "operationId": "BookingsController_rejectBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Từ chối thành công, lịch xe đã được mở lại",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Chủ xe từ chối đơn đặt xe",
+        "tags": ["Bookings"]
+      }
+    },
+    "/api/v1/bookings/{id}/cancel": {
+      "post": {
+        "description": "Chuyển trạng thái đơn sang CANCELLED, giải phóng lịch xe và hoàn trả voucher nếu có.",
+        "operationId": "BookingsController_cancelBooking",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelBookingDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Hủy đơn thành công, lịch xe đã được mở lại",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookingResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)",
+        "tags": ["Bookings"]
+      }
     }
   },
   "info": {
@@ -1115,6 +1406,18 @@
     {
       "name": "Users",
       "description": "Hồ sơ người dùng và xác thực giấy phép lái xe (KYC)"
+    },
+    {
+      "name": "Pricing",
+      "description": "Động cơ tính toán biểu phí thuê xe"
+    },
+    {
+      "name": "Promotions",
+      "description": "Quản lý và áp dụng mã khuyến mãi"
+    },
+    {
+      "name": "Bookings",
+      "description": "Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi"
     }
   ],
   "servers": [],
@@ -2293,6 +2596,276 @@
           "subtotalAfterDiscountVnd",
           "valid"
         ]
+      },
+      "CreateBookingDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001",
+            "description": "Mã định danh xe muốn thuê (UUID)"
+          },
+          "startAt": {
+            "type": "string",
+            "example": "2026-11-10T08:00:00.000Z",
+            "description": "Thời điểm nhận xe (ISO 8601 UTC)"
+          },
+          "endAt": {
+            "type": "string",
+            "example": "2026-11-12T18:00:00.000Z",
+            "description": "Thời điểm trả xe (ISO 8601 UTC)"
+          },
+          "expectedTotalVnd": {
+            "type": "number",
+            "example": 3380000,
+            "description": "Tổng tiền dự kiến (VND) để bảo vệ chống trượt giá"
+          },
+          "pricingVersion": {
+            "type": "string",
+            "example": "daily-v1",
+            "default": "daily-v1",
+            "description": "Phiên bản biểu phí áp dụng"
+          },
+          "insurancePackage": {
+            "type": "string",
+            "enum": ["BASIC", "STANDARD", "PREMIUM"],
+            "default": "BASIC",
+            "description": "Gói bảo hiểm lựa chọn (BASIC, STANDARD, PREMIUM)"
+          },
+          "voucherCode": {
+            "type": "string",
+            "example": "WELCOME2026",
+            "description": "Mã khuyến mãi áp dụng giảm giá (nếu có)"
+          }
+        },
+        "required": ["vehicleId", "startAt", "endAt", "expectedTotalVnd"]
+      },
+      "BookingVehicleSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "brand": {
+            "type": "string",
+            "example": "VinFast"
+          },
+          "model": {
+            "type": "string",
+            "example": "VF8 Plus"
+          },
+          "year": {
+            "type": "number",
+            "example": 2024
+          },
+          "plateNormalized": {
+            "type": "object",
+            "example": "51K-10001",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "pickupAddress": {
+            "type": "object",
+            "example": "Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Quận Bình Thạnh",
+            "nullable": true
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000
+          },
+          "coverImageUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": ["id", "brand", "model", "year", "city", "pricePerDayVnd", "keylessSupported"]
+      },
+      "PricingSnapshotDto": {
+        "type": "object",
+        "properties": {
+          "currency": {
+            "type": "string",
+            "example": "VND"
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000
+          },
+          "rentalDays": {
+            "type": "number",
+            "example": 2
+          },
+          "subtotalVnd": {
+            "type": "number",
+            "example": 2800000
+          },
+          "serviceFeeVnd": {
+            "type": "number",
+            "example": 280000
+          },
+          "depositVnd": {
+            "type": "number",
+            "example": 10000000
+          },
+          "totalVnd": {
+            "type": "number",
+            "example": 13080000
+          },
+          "pricingVersion": {
+            "type": "string",
+            "example": "daily-v1"
+          }
+        },
+        "required": [
+          "currency",
+          "pricePerDayVnd",
+          "rentalDays",
+          "subtotalVnd",
+          "serviceFeeVnd",
+          "depositVnd",
+          "totalVnd",
+          "pricingVersion"
+        ]
+      },
+      "BookingUserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn Chủ 1"
+          },
+          "phone": {
+            "type": "string",
+            "example": "0901111111"
+          }
+        },
+        "required": ["id", "name", "phone"]
+      },
+      "BookingResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "20000000-0000-0000-0000-000000000001"
+          },
+          "vehicleId": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "renterId": {
+            "type": "string",
+            "example": "00000000-0000-0000-0000-000000000003"
+          },
+          "ownerId": {
+            "type": "string",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "startAt": {
+            "type": "string",
+            "example": "2026-11-10T08:00:00.000Z"
+          },
+          "endAt": {
+            "type": "string",
+            "example": "2026-11-12T18:00:00.000Z"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "REQUESTED",
+              "APPROVED",
+              "REJECTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED",
+              "EXPIRED"
+            ],
+            "example": "REQUESTED"
+          },
+          "requestExpiresAt": {
+            "type": "string",
+            "example": "2026-11-10T08:15:00.000Z"
+          },
+          "completedAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "reason": {
+            "type": "object",
+            "nullable": true
+          },
+          "version": {
+            "type": "number",
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "example": "2026-10-27T10:00:00.000Z"
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/BookingVehicleSummaryDto"
+          },
+          "pricingSnapshot": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PricingSnapshotDto"
+              }
+            ]
+          },
+          "renter": {
+            "$ref": "#/components/schemas/BookingUserSummaryDto"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/BookingUserSummaryDto"
+          }
+        },
+        "required": [
+          "id",
+          "vehicleId",
+          "renterId",
+          "ownerId",
+          "startAt",
+          "endAt",
+          "status",
+          "requestExpiresAt",
+          "version",
+          "createdAt"
+        ]
+      },
+      "RejectBookingDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "Chủ xe bận đột xuất vào khung giờ này không thể bàn giao xe",
+            "description": "Lý do từ chối yêu cầu đặt xe (1 - 500 ký tự)"
+          }
+        },
+        "required": ["reason"]
+      },
+      "CancelBookingDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "Khách đổi lịch công tác nên cần hủy chuyến",
+            "description": "Lý do hủy đơn đặt xe (1 - 500 ký tự)"
+          }
+        },
+        "required": ["reason"]
       }
     }
   }

@@ -78,3 +78,15 @@ export type ValidatePromotionPayload = components['schemas']['ValidatePromotionD
 export type ValidatePromotionResponse = {
   data: ValidatedPromotion;
 };
+
+export type Booking = components['schemas']['BookingResponseDto'];
+export type CreateBookingPayload = components['schemas']['CreateBookingDto'];
+export type RejectBookingPayload = components['schemas']['RejectBookingDto'];
+export type CancelBookingPayload = components['schemas']['CancelBookingDto'];
+export type BookingResponse = {
+  data: Booking;
+};
+export type BookingsListResponse = {
+  data: Booking[];
+  meta: PaginationMeta;
+};

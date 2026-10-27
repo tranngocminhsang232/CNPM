@@ -30,9 +30,19 @@ import type {
   VehicleDetail,
   VehicleOptions,
   VehicleSummary,
+  Booking,
+  BookingResponse,
+  BookingsListResponse,
+  CreateBookingPayload,
+  RejectBookingPayload,
+  CancelBookingPayload,
 } from '@carsharing/contracts';
 
 export type {
+  Booking,
+  CreateBookingPayload,
+  RejectBookingPayload,
+  CancelBookingPayload,
   CalculatePricingPayload,
   DriverLicense,
   MediaObject,
@@ -385,5 +395,111 @@ export async function validatePromotionApi(
     body: JSON.stringify(payload),
   });
   const json = await handleResponse<ValidatePromotionResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Booking APIs
+// -----------------------------------------------------------------------------
+
+export async function createBookingApi(
+  payload: CreateBookingPayload,
+  idempotencyKey: string,
+  csrfToken: string,
+): Promise<Booking> {
+  const res = await fetch('/api/v1/bookings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+      'Idempotency-Key': idempotencyKey,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
+export async function fetchBookingsApi(params?: {
+  perspective?: 'renter' | 'owner';
+  status?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<BookingsListResponse> {
+  const searchParams = new URLSearchParams();
+  if (params?.perspective) searchParams.set('perspective', params.perspective);
+  if (params?.status) searchParams.set('status', params.status);
+  if (params?.page) searchParams.set('page', String(params.page));
+  if (params?.pageSize) searchParams.set('pageSize', String(params.pageSize));
+
+  const query = searchParams.toString();
+  const url = query ? `/api/v1/bookings?${query}` : '/api/v1/bookings';
+
+  const res = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  return handleResponse<BookingsListResponse>(res);
+}
+
+export async function fetchBookingDetailApi(id: string): Promise<Booking> {
+  const res = await fetch(`/api/v1/bookings/${id}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
+export async function approveBookingApi(id: string, csrfToken: string): Promise<Booking> {
+  const res = await fetch(`/api/v1/bookings/${id}/approve`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+  });
+  const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
+export async function rejectBookingApi(
+  id: string,
+  reason: string,
+  csrfToken: string,
+): Promise<Booking> {
+  const res = await fetch(`/api/v1/bookings/${id}/reject`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({ reason }),
+  });
+  const json = await handleResponse<BookingResponse>(res);
+  return json.data;
+}
+
+export async function cancelBookingApi(
+  id: string,
+  reason: string,
+  csrfToken: string,
+): Promise<Booking> {
+  const res = await fetch(`/api/v1/bookings/${id}/cancel`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify({ reason }),
+  });
+  const json = await handleResponse<BookingResponse>(res);
   return json.data;
 }

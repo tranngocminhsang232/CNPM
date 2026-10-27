@@ -11,13 +11,13 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G3-01** (Động Cơ Đặt Xe & Quản Lý Vòng Đời Trạng Thái - Booking Lifecycle & State Machine). Milestone G2 đã hoàn tất 100%.
+Task đề xuất tiếp theo: **G3-02** (Đặt Cọc Giữ Chỗ & Cổng Thanh Toán Sandbox - Payment Gateway, Escrow & Webhook). Task G3-01 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Booking & Payment)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
-| G3-01 | Động cơ đặt xe & quản lý vòng đời | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-01 | Động cơ đặt xe & quản lý vòng đời | DONE | BookingsModule, BookingsService, BookingsController (POST /bookings, GET /bookings, GET /bookings/:id, POST /bookings/:id/approve, POST /bookings/:id/reject, POST /bookings/:id/cancel); Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409; KYC verification check (403); chặn tự thuê xe chính mình (403); kiểm tra trượt giá (409); Prisma transaction nguyên tử (Booking REQUESTED, PricingSnapshot bất biến, VehicleCalendar BOOKING GiST exclusion, IdempotencyRecord, BookingEvent, Notification, PromotionUsage); che giấu biển số và địa chỉ đón xe cho đến khi APPROVED; 204 tests backend pass 100% (85 unit, 18 constraints, 101 e2e); OpenAPI & contracts cập nhật; web api client đồng bộ |
 | G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
 | G3-03 | Web UI đặt xe & quản lý chuyến đi | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
 | G3-04 | Kiểm tra tích hợp & đóng gói G3 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
@@ -64,6 +64,32 @@ Task đề xuất tiếp theo: **G3-01** (Động Cơ Đặt Xe & Quản Lý Vò
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G3-01 — Động Cơ Đặt Xe & Quản Lý Vòng Đời Trạng Thái (Booking Lifecycle & State Machine)
+Trạng thái: DONE
+Prerequisite: G2-05
+Files thay đổi:
+- apps/api/src/bookings/dto/create-booking.dto.ts (CreateBookingDto với regex UUID chuẩn 128-bit hex, ngày giờ UTC, expectedTotalVnd chống trượt giá, insurancePackage, voucherCode)
+- apps/api/src/bookings/dto/booking-action.dto.ts (RejectBookingDto và CancelBookingDto có lý do reason 1-500 ký tự)
+- apps/api/src/bookings/dto/query-bookings.dto.ts (QueryBookingsDto tra cứu perspective renter/owner, lọc status, phân trang)
+- apps/api/src/bookings/dto/booking-response.dto.ts (BookingResponseDto, BookingVehicleSummaryDto, PricingSnapshotDto, BookingUserSummaryDto; quy tắc bảo mật: che giấu biển số và địa chỉ đón xe khi REQUESTED, hiển thị khi APPROVED)
+- apps/api/src/bookings/bookings.service.ts (Logic tạo booking idempotent, computeBookingHash sha256, kiểm tra KYC VERIFIED, chặn tự thuê xe 403, kiểm tra giá tươi 409 PRICE_CHANGED, Prisma $transaction nguyên tử: Booking REQUESTED, PricingSnapshot bất biến, VehicleCalendar BOOKING GiST exclusion, IdempotencyRecord, BookingEvent, Notification, PromotionUsage; các action approve, reject, cancel và release lịch xe)
+- apps/api/src/bookings/bookings.controller.ts (POST /bookings @HttpCode 201/200, GET /bookings, GET /bookings/:id, POST /bookings/:id/approve @HttpCode 200, POST /bookings/:id/reject @HttpCode 200, POST /bookings/:id/cancel @HttpCode 200; SessionGuard, CsrfGuard, KycVerifiedGuard)
+- apps/api/src/bookings/bookings.module.ts (Đăng ký BookingsModule vào AppModule)
+- apps/api/src/bookings/bookings.service.spec.ts (22 unit tests bao phủ toàn bộ luồng tính toán, hash, idempotent replay, validation, self-booking, state transitions)
+- apps/api/test/bookings.e2e-spec.ts (16 e2e tests kiểm tra toàn diện API: 401 unauthenticated, 403 KYC_REQUIRED, 400 thiếu header Idempotency-Key, 403 SELF_BOOKING_FORBIDDEN, 409 PRICE_CHANGED, 201 Created booking REQUESTED, 200 Replay idempotent, 409 IDEMPOTENCY_MISMATCH, 409 VEHICLE_UNAVAILABLE trùng lịch GiST, 200 GET list, 403 GET third-party, 403 approve non-owner, 200 approve transitions APPROVED & reveals plate/address, 409 approve already approved, 200 cancel releases calendar, 200 reject releases calendar & frees slot for rebooking)
+- tools/export-openapi.mjs & packages/contracts (Xuất OpenAPI spec, sinh schema.ts và export Booking, CreateBookingPayload, RejectBookingPayload, CancelBookingPayload, BookingResponse, BookingsListResponse)
+- apps/web/src/lib/api.ts (Cung cấp các hàm createBookingApi, fetchBookingsApi, fetchBookingDetailApi, approveBookingApi, rejectBookingApi, cancelBookingApi)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> Thành công, Next.js 16 Turbopack build và NestJS build 0 lỗi
+- pnpm run test -> 204/204 backend tests pass 100% trong 27.5s (85 unit, 18 constraints, 101 e2e)
+- pnpm run test:smoke -> 3/3 Playwright browser tests pass 100% trong 13.9s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Task G3-01. Động cơ đặt xe và state machine quản lý vòng đời chuyến đi vận hành chuẩn xác, bảo đảm tính toàn vẹn dữ liệu, chống xung đột lịch xe bằng PostgreSQL GiST exclusion và bảo vệ tính bất biến của biểu phí.
+```
 
 ```text
 Ngày: 27/10/2026

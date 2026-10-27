@@ -25,6 +25,9 @@ async function run() {
     .addTag('Vehicles', 'Tìm kiếm xe và danh mục tùy chọn công khai')
     .addTag('Auth', 'Xác thực, phân quyền và quản lý phiên người dùng')
     .addTag('Users', 'Hồ sơ người dùng và xác thực giấy phép lái xe (KYC)')
+    .addTag('Pricing', 'Động cơ tính toán biểu phí thuê xe')
+    .addTag('Promotions', 'Quản lý và áp dụng mã khuyến mãi')
+    .addTag('Bookings', 'Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
