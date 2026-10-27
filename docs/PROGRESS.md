@@ -53,7 +53,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
 Ca chưa chạy và lý do: Chưa chạy migration trên database (đây là nhiệm vụ của task G0-07 tiếp theo).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Không tạo FK vòng giữa booking và pricing_snapshot (pricing_snapshot có unique FK booking_id theo đúng kiến trúc).
-Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-06.
+Commit hoặc điểm lưu diff nếu có: Commit `a1d96b8` ("feat(database): define Prisma schema for 18 models and relations (G0-06)")
 ```
 
 ```text
