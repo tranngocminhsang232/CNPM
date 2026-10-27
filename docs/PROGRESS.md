@@ -11,16 +11,25 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G3-04** (Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G3 - Milestone G3 Integration & Packaging). Task G3-03 đã hoàn tất và được kiểm thử thực tế.
+Task đề xuất tiếp theo: **G4-01** (Quy Trình Bàn Giao & Checklist 4 Góc Xe - Handover & Inspection Engine). Milestone G3 đã hoàn tất 100% và được kiểm thử toàn diện.
 
-### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Booking & Payment)
+### Bảng tiến độ Milestone G4 (Bàn Giao Xe, Khóa Ảo Keyless & Vận Hành Chuyến Đi)
+
+| Task | Nội dung | Trạng thái | Bằng chứng |
+| --- | --- | --- | --- |
+| G4-01 | Quy trình bàn giao & checklist 4 góc xe | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-02 | Bộ điều khiển khóa ảo Keyless & simulator | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-03 | Web UI bàn giao, chụp checklist & khóa xe | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+| G4-04 | Kiểm tra tích hợp & đóng gói G4 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G4_TASKS.md |
+
+### Bảng tiến độ Milestone G3 (Quy Trình Đặt Xe & Thanh Toán - Hoàn tất 100%)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G3-01 | Động cơ đặt xe & quản lý vòng đời | DONE | BookingsModule, BookingsService, BookingsController (POST /bookings, GET /bookings, GET /bookings/:id, POST /bookings/:id/approve, POST /bookings/:id/reject, POST /bookings/:id/cancel); Header Idempotency-Key bắt buộc, canonical sha256 hash replay 200 OK / mismatch 409; KYC verification check (403); chặn tự thuê xe chính mình (403); kiểm tra trượt giá (409); Prisma transaction nguyên tử (Booking REQUESTED, PricingSnapshot bất biến, VehicleCalendar BOOKING GiST exclusion, IdempotencyRecord, BookingEvent, Notification, PromotionUsage); che giấu biển số và địa chỉ đón xe cho đến khi APPROVED; 204 tests backend pass 100% (85 unit, 18 constraints, 101 e2e); OpenAPI & contracts cập nhật; web api client đồng bộ |
 | G3-02 | Đặt cọc giữ chỗ & cổng thanh toán | DONE | Model Payment, enum PaymentType (DEPOSIT, RENTAL_FEE, FULL_PAYMENT), PaymentStatus (PENDING, SUCCESS, FAILED, CANCELLED); Migration 20261027091500_add_payments; check constraint PostgreSQL payments_amount_positive (amount_vnd > 0); PaymentsService (HMAC-SHA512 checksum canonical, createPaymentIntent, processWebhook, simulatePayment, getPaymentByRef); PaymentsController (POST /payments/create-intent, POST /payments/webhook @PublicCsrf, POST /payments/simulate @PublicCsrf, GET /payments/:ref); xử lý webhook idempotency replay; ghi nhận sự kiện PAYMENT_RECEIVED và notification; 231 tests backend pass 100% (98 unit, 18 constraints, 115 e2e); OpenAPI & contracts cập nhật; web client (createPaymentIntentApi, simulatePaymentApi, fetchPaymentByRefApi) |
 | G3-03 | Web UI đặt xe & quản lý chuyến đi | DONE | BookingStatusBadge (6 trạng thái REQUESTED, APPROVED, IN_PROGRESS, COMPLETED, CANCELLED, REJECTED); PaymentModal (mô phỏng cổng thanh toán VNPay/VietQR sandbox, hiển thị QR và mã giao dịch TX-, mô phỏng SUCCESS/FAILED); PricingCalculator điều hướng sang /checkout; /checkout (bóc tách cước xe, bảo hiểm, voucher, chính sách cọc thế chấp, 1-click tạo booking kèm Idempotency-Key và mở modal thanh toán cọc); /bookings (bảng điều khiển chuyến đi khách thuê, lọc tab trạng thái, thẻ chuyến đi kèm ảnh cover, ẩn/hiện biển số, modal hủy chuyến); /bookings/[id] (chi tiết chuyến đi toàn diện, bảng biểu phí snapshot bất biến, liên hệ chủ/khách, tự động hiện biển số và địa chỉ đón xe khi được duyệt); /owner/bookings (hộp thư duyệt yêu cầu thuê xe của chủ xe, nút phê duyệt 1-click và modal từ chối có lý do); Header đồng bộ có UserNav trên toàn bộ các trang; Playwright E2E browser test booking-flow.spec.ts pass (3.9s); tổng 4 Playwright suites pass 100% (15.2s); typecheck 0 lỗi |
-| G3-04 | Kiểm tra tích hợp & đóng gói G3 | TODO | Lập kế hoạch chi tiết tại docs/tasks/G3_TASKS.md |
+| G3-04 | Kiểm tra tích hợp & đóng gói G3 | DONE | Pipeline kiểm thử toàn diện xanh 100%: pnpm run typecheck (0 lỗi trên cả 3 packages), pnpm run build (NestJS & Next.js 16 Turbopack build sạch 100%), pnpm run test (toàn bộ 231 backend tests pass trong 46s gồm 98 unit, 18 constraints, 115 e2e), pnpm run test:smoke (4/4 Playwright browser test suites pass trong 19.6s trên Chromium), pnpm run format:check (100% chuẩn Prettier); biên soạn 4 task cards chi tiết Milestone G4 tại docs/tasks/G4_TASKS.md |
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá - Hoàn tất 100%)
 
@@ -64,6 +73,24 @@ Task đề xuất tiếp theo: **G3-04** (Kiểm Tra Tích Hợp Toàn Diện, C
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G3-04 — Kiểm Tra Tích Hợp Toàn Diện, CI/CD Pipeline & Đóng Gói Milestone G3 (Milestone G3 Integration & Packaging)
+Trạng thái: DONE
+Prerequisite: G3-01, G3-02, G3-03
+Files thay đổi:
+- docs/PROGRESS.md (Cập nhật bảng tiến độ Milestone G3 đạt 100% DONE, bổ sung bảng theo dõi Milestone G4, ghi nhận nhật ký G3-04)
+- docs/tasks/G4_TASKS.md (Biên soạn 4 task cards chi tiết cho Milestone G4: G4-01 Quy trình bàn giao & checklist 4 góc xe, G4-02 Bộ điều khiển khóa ảo Keyless & simulator, G4-03 Web UI bàn giao & chìa khóa ảo, G4-04 Đóng gói Milestone G4)
+- apps/web/next-env.d.ts (Chuẩn hóa code style theo Prettier)
+Lệnh thực hiện:
+- pnpm run typecheck -> 3/3 packages 0 lỗi TypeScript
+- pnpm run build -> apps/api nest build và apps/web Next.js Turbopack build thành công (10 routes static/dynamic tối ưu)
+- pnpm run test -> 231/231 backend tests pass 100% trong 46s (98 unit, 18 constraints, 115 e2e)
+- pnpm run test:smoke -> 4/4 Playwright browser test suites pass 100% trong 19.6s trên Chromium
+- pnpm run format:check -> All matched files use Prettier code style (100% compliant)
+Kết quả: Hoàn thành toàn diện Milestone G3 (100% DONE). Toàn bộ luồng đặt xe nguyên tử, thanh toán đặt cọc qua cổng giả lập sandbox, webhook chữ ký số HMAC-SHA512, ký quỹ an toàn và giao diện web checkout / quản lý hành trình 2 vai trò renter-owner vận hành hoàn hảo, sẵn sàng triển khai Milestone G4.
+```
 
 ```text
 Ngày: 27/10/2026
