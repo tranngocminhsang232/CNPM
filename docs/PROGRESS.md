@@ -11,7 +11,7 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-04** (Khởi tạo Next.js và kết nối cùng origin). Task G0-03 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G0-05** (PostgreSQL và object storage local). Task G0-04 đã hoàn tất và được ghi nhận.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
@@ -19,7 +19,7 @@ Task đề xuất tiếp theo: **G0-04** (Khởi tạo Next.js và kết nối c
 | G0-01 | Workspace và baseline | DONE | package.json, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig.base.json, .env.example, git baseline |
 | G0-02 | NestJS và health | DONE | apps/api scaffold, GET /api/v1/health liveness, build/typecheck & unit/e2e smoke test pass |
 | G0-03 | Request và error contract | DONE | RequestIdMiddleware, TransformInterceptor, HttpExceptionFilter, 19 ca test unit & e2e pass |
-| G0-04 | Next.js và cùng origin | TODO | Chưa có web |
+| G0-04 | Next.js và cùng origin | DONE | Next.js 16 App Router, cùng origin rewrite /api/v1/health, build/typecheck & gọi health thực tế |
 | G0-05 | PostgreSQL/storage local | TODO | Chưa có compose/config đã chạy |
 | G0-06 | Prisma schema | TODO | Chưa có schema |
 | G0-07 | Migration/constraints | TODO | Chưa chạy PostgreSQL tests |
@@ -32,6 +32,34 @@ Task đề xuất tiếp theo: **G0-04** (Khởi tạo Next.js và kết nối c
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-04 — Khởi tạo Next.js và kết nối cùng origin
+Trạng thái: DONE
+Prerequisite: G0-01, G0-02
+Files thay đổi:
+- apps/web/package.json (scaffold @carsharing/web, ghim Next.js 16.4.3, React 19.3.1, Tailwind CSS v4, scripts dev/build/start/typecheck)
+- apps/web/tsconfig.json (kế thừa tsconfig.base.json, paths @/*, strict)
+- apps/web/next.config.ts (cấu hình rewrite cùng origin /api/v1/:path* tới backend qua biến server API_INTERNAL_URL)
+- apps/web/postcss.config.mjs (cấu hình @tailwindcss/postcss)
+- apps/web/src/app/globals.css (Tailwind v4 imports và style nền tảng)
+- apps/web/src/app/layout.tsx (shell tiếng Việt lang="vi", responsive metadata)
+- apps/web/src/app/page.tsx (trang chủ tiếng Việt, trạng thái kết nối loading/connected/error, uptime, timestamp thực tế)
+- pnpm-lock.yaml (cập nhật lockfile)
+- docs/PROGRESS.md (cập nhật tiến độ)
+Lệnh đã chạy và kết quả:
+- pnpm install: Cài đặt thành công Next.js 16.4.3, React 19.3.1, Tailwind 4.3.3
+- pnpm --filter @carsharing/web run typecheck: tsc --noEmit thành công (exit 0)
+- pnpm --filter @carsharing/web run build: next build thành công với Turbopack (exit 0)
+- next start & node apps/api/dist/main: Khởi động song song hai app, gọi Invoke-RestMethod http://localhost:3000/api/v1/health (cùng origin cổng 3000) phản hồi HTTP 200 { data: { status: 'ok', timestamp: '...', uptime: 48 } }
+- Gọi http://localhost:3000 trả về HTML tiếng Việt hoàn chỉnh
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
+Ca chưa chạy và lý do: Chưa giả lập danh sách xe và chưa hardcode số liệu dashboard (theo đúng yêu cầu G0-04).
+Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Địa chỉ nội bộ backend (http://localhost:4000) được giữ bí mật phía server Next.js qua API_INTERNAL_URL.
+Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-04
+Task đề xuất tiếp theo: G0-05 — PostgreSQL và object storage local
+```
 
 ```text
 Ngày: 27/10/2026
