@@ -1,8 +1,9 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { QueryVehiclesDto, VehicleSortOption } from './dto/query-vehicles.dto';
 import { VehicleOptionsDto } from './dto/vehicle-options.dto';
 import { VehicleSummaryDto, PaginationMetaDto } from './dto/vehicle-summary.dto';
+import { VehicleDetailDto } from './dto/vehicle-detail.dto';
 import { Prisma } from '@prisma/client';
 
 @Injectable()
@@ -69,6 +70,18 @@ export class VehiclesService {
       status: 'PUBLISHED', // Strictly PUBLISHED vehicles only
     };
 
+    if (query.q) {
+      const term = query.q.trim();
+      where.OR = [
+        { brand: { contains: term, mode: 'insensitive' } },
+        { model: { contains: term, mode: 'insensitive' } },
+      ];
+    }
+
+    if (query.brand) {
+      where.brand = { equals: query.brand.trim(), mode: 'insensitive' };
+    }
+
     if (query.city) {
       where.city = { equals: query.city.trim(), mode: 'insensitive' };
     }
@@ -97,6 +110,19 @@ export class VehiclesService {
 
     if (query.keylessOnly) {
       where.keylessSupported = true;
+    }
+
+    if (query.amenities && query.amenities.length > 0) {
+      where.AND = [
+        ...(Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : []),
+        ...query.amenities.map((code) => ({
+          amenities: {
+            some: {
+              amenityCode: code.toUpperCase(),
+            },
+          },
+        })),
+      ];
     }
 
     // Rule: Exclude vehicles that have an overdue IN_PROGRESS trip (endAt < now)
@@ -140,6 +166,12 @@ export class VehiclesService {
         break;
       case VehicleSortOption.PRICE_DESC:
         orderBy.push({ pricePerDayVnd: 'desc' }, { id: 'asc' });
+        break;
+      case VehicleSortOption.POPULARITY_DESC:
+        orderBy.push({ bookings: { _count: 'desc' } }, { id: 'asc' });
+        break;
+      case VehicleSortOption.RATING_DESC:
+        orderBy.push({ bookings: { _count: 'desc' } }, { createdAt: 'desc' }, { id: 'asc' });
         break;
       case VehicleSortOption.NEWEST:
       default:
@@ -230,6 +262,73 @@ export class VehiclesService {
         pageSize,
         total,
         totalPages,
+      },
+    };
+  }
+
+  async getVehicleById(id: string): Promise<VehicleDetailDto> {
+    const vehicle = await this.prisma.vehicle.findFirst({
+      where: {
+        id,
+        status: 'PUBLISHED',
+      },
+      include: {
+        owner: true,
+        amenities: true,
+        photos: {
+          include: { media: true },
+          orderBy: { position: 'asc' },
+        },
+        bookings: {
+          include: { reviews: true },
+        },
+      },
+    });
+
+    if (!vehicle) {
+      throw new NotFoundException({
+        code: 'NOT_FOUND',
+        message: 'Không tìm thấy xe hoặc xe chưa được công khai',
+      });
+    }
+
+    // Photo URLs from verified media
+    const photoUrls: string[] = vehicle.photos
+      .filter((p) => p.media && p.media.state === 'VERIFIED')
+      .map((p) => {
+        const key = p.media.finalKey || p.media.stagingKey;
+        return `http://localhost:4000/api/v1/media/${key}`;
+      });
+
+    const completedBookings = vehicle.bookings.filter((b) => b.status === 'COMPLETED');
+    const reviews = completedBookings.flatMap((b) => b.reviews);
+    const reviewCount = reviews.length;
+    const ratingAverage =
+      reviewCount > 0
+        ? Number((reviews.reduce((acc, r) => acc + r.score, 0) / reviewCount).toFixed(1))
+        : 5.0;
+
+    return {
+      id: vehicle.id,
+      brand: vehicle.brand,
+      model: vehicle.model,
+      year: vehicle.year,
+      city: vehicle.city,
+      carType: vehicle.carType,
+      transmission: vehicle.transmission,
+      seats: vehicle.seats,
+      description: vehicle.description,
+      amenities: vehicle.amenities.map((a) => a.amenityCode),
+      photoUrls,
+      keylessSupported: vehicle.keylessSupported,
+      pricePerDayVnd: Number(vehicle.pricePerDayVnd),
+      ratingAverage,
+      reviewCount,
+      totalTrips: completedBookings.length,
+      owner: {
+        id: vehicle.owner.id,
+        name: vehicle.owner.name,
+        joinedAt: vehicle.owner.createdAt.toISOString(),
       },
     };
   }

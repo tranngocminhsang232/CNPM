@@ -2,6 +2,7 @@ export * from './schema';
 import type { components, operations } from './schema';
 
 export type VehicleSummary = components['schemas']['VehicleSummaryDto'];
+export type VehicleDetail = components['schemas']['VehicleDetailDto'];
 export type PaginationMeta = components['schemas']['PaginationMetaDto'];
 export type VehicleOptions = components['schemas']['VehicleOptionsDto'];
 export type AmenityOption = components['schemas']['AmenityOptionDto'];
@@ -30,6 +31,9 @@ export type GetVehiclesResponse = {
 };
 export type GetVehicleOptionsResponse = {
   data: VehicleOptions;
+};
+export type GetVehicleDetailResponse = {
+  data: VehicleDetail;
 };
 export type LoginResponse = {
   data: AuthResponse;

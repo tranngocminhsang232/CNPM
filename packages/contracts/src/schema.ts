@@ -276,6 +276,23 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/vehicles/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Lấy thông tin chi tiết xe công khai theo ID */
+    get: operations['VehiclesController_getVehicleById'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   '/api/v1/owner/vehicles': {
     parameters: {
       query?: never;
@@ -462,9 +479,9 @@ export interface components {
        */
       status: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
       /** @description Thời điểm duyệt xác minh */
-      verifiedAt?: Record<string, never> | null;
+      verifiedAt?: string | null;
       /** @description Lý do từ chối xác thực */
-      rejectionReason?: Record<string, never> | null;
+      rejectionReason?: string | null;
     };
     SubmitDriverLicenseDto: {
       /**
@@ -587,7 +604,7 @@ export interface components {
        */
       state: 'STAGING' | 'VERIFIED' | 'REJECTED';
       /** @description Thời điểm xác minh file */
-      verifiedAt?: Record<string, never> | null;
+      verifiedAt?: string | null;
     };
     MediaReadUrlResponseDto: {
       /** @description Presigned URL để tải hoặc xem ảnh từ private S3 bucket */
@@ -657,6 +674,77 @@ export interface components {
       total: number;
       /** @example 2 */
       totalPages: number;
+    };
+    VehicleOwnerSummaryDto: {
+      /** @example 00000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example Nguyễn Văn Chủ 1 */
+      name: string;
+      /** @example 2026-01-01T00:00:00.000Z */
+      joinedAt: string;
+    };
+    VehicleDetailDto: {
+      /** @example 10000000-0000-0000-0000-000000000001 */
+      id: string;
+      /** @example VinFast */
+      brand: string;
+      /** @example VF8 Plus */
+      model: string;
+      /** @example 2024 */
+      year: number;
+      /** @example TP. Hồ Chí Minh */
+      city: string;
+      /**
+       * @example SUV
+       * @enum {string}
+       */
+      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
+      /**
+       * @example AUTO
+       * @enum {string}
+       */
+      transmission: 'AUTO' | 'MANUAL';
+      /** @example 5 */
+      seats: number;
+      /** @example Xe mới, bảo dưỡng định kỳ chính hãng, động cơ điện êm ái. */
+      description: string;
+      /**
+       * @example [
+       *       "GPS",
+       *       "BLUETOOTH",
+       *       "BACKUP_CAMERA"
+       *     ]
+       */
+      amenities: string[];
+      /**
+       * @example [
+       *       "http://localhost:4000/api/v1/media/vehicles/photo1.jpg"
+       *     ]
+       */
+      photoUrls: string[];
+      /** @example true */
+      keylessSupported: boolean;
+      /**
+       * @description Giá thuê một ngày (VND)
+       * @example 1400000
+       */
+      pricePerDayVnd: number;
+      /**
+       * @description Điểm đánh giá trung bình
+       * @example 5
+       */
+      ratingAverage: number;
+      /**
+       * @description Tổng số lượt đánh giá
+       * @example 12
+       */
+      reviewCount: number;
+      /**
+       * @description Tổng số chuyến đi đã hoàn thành
+       * @example 15
+       */
+      totalTrips: number;
+      owner: components['schemas']['VehicleOwnerSummaryDto'];
     };
     AmenityOptionDto: {
       /** @example GPS */
@@ -1345,6 +1433,10 @@ export interface operations {
   VehiclesController_getVehicles: {
     parameters: {
       query?: {
+        /** @description Từ khóa tìm kiếm theo hãng (brand) hoặc mẫu xe (model) */
+        q?: string;
+        /** @description Hãng sản xuất (brand) */
+        brand?: string;
         /** @description Tỉnh / thành phố tìm kiếm */
         city?: string;
         /** @description Thời điểm bắt đầu thuê (ISO 8601) */
@@ -1363,8 +1455,10 @@ export interface operations {
         maxPrice?: number;
         /** @description Chỉ tìm xe hỗ trợ tự mở khóa Keyless */
         keylessOnly?: boolean;
+        /** @description Lọc theo danh sách tiện nghi (mảng hoặc phân cách bởi dấu phẩy, e.g. GPS,BACKUP_CAMERA) */
+        amenities?: string[];
         /** @description Sắp xếp kết quả */
-        sort?: 'price_asc' | 'price_desc' | 'newest' | 'rating_desc';
+        sort?: 'price_asc' | 'price_desc' | 'newest' | 'rating_desc' | 'popularity_desc';
         /** @description Số trang (1-indexed) */
         page?: number;
         /** @description Số xe trên một trang */
@@ -1390,6 +1484,35 @@ export interface operations {
       };
       /** @description Tham số tìm kiếm hoặc khoảng ngày không hợp lệ */
       400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  VehiclesController_getVehicleById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin chi tiết xe công khai (không lộ biển số và địa chỉ đón trả chi tiết) */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleDetailDto'];
+        };
+      };
+      /** @description Không tìm thấy xe hoặc xe chưa được công khai */
+      404: {
         headers: {
           [name: string]: unknown;
         };

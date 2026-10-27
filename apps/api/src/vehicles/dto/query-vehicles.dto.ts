@@ -9,6 +9,7 @@ import {
   Max,
   IsBoolean,
   IsISO8601,
+  IsArray,
 } from 'class-validator';
 import { CarType, Transmission } from '@prisma/client';
 
@@ -17,9 +18,23 @@ export enum VehicleSortOption {
   PRICE_DESC = 'price_desc',
   NEWEST = 'newest',
   RATING_DESC = 'rating_desc',
+  POPULARITY_DESC = 'popularity_desc',
 }
 
 export class QueryVehiclesDto {
+  @ApiPropertyOptional({
+    description: 'Từ khóa tìm kiếm theo hãng (brand) hoặc mẫu xe (model)',
+    example: 'VinFast',
+  })
+  @IsOptional()
+  @IsString()
+  q?: string;
+
+  @ApiPropertyOptional({ description: 'Hãng sản xuất (brand)', example: 'Toyota' })
+  @IsOptional()
+  @IsString()
+  brand?: string;
+
   @ApiPropertyOptional({ description: 'Tỉnh / thành phố tìm kiếm', example: 'TP. Hồ Chí Minh' })
   @IsOptional()
   @IsString()
@@ -77,6 +92,27 @@ export class QueryVehiclesDto {
   @Transform(({ value }) => value === 'true' || value === true || value === 1 || value === '1')
   @IsBoolean()
   keylessOnly?: boolean;
+
+  @ApiPropertyOptional({
+    description:
+      'Lọc theo danh sách tiện nghi (mảng hoặc phân cách bởi dấu phẩy, e.g. GPS,BACKUP_CAMERA)',
+    example: ['GPS', 'BACKUP_CAMERA'],
+  })
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (!value) return undefined;
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+    return undefined;
+  })
+  @IsArray()
+  @IsString({ each: true })
+  amenities?: string[];
 
   @ApiPropertyOptional({
     enum: VehicleSortOption,

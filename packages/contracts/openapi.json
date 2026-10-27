@@ -481,6 +481,26 @@
         "operationId": "VehiclesController_getVehicles",
         "parameters": [
           {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Từ khóa tìm kiếm theo hãng (brand) hoặc mẫu xe (model)",
+            "schema": {
+              "example": "VinFast",
+              "type": "string"
+            }
+          },
+          {
+            "name": "brand",
+            "required": false,
+            "in": "query",
+            "description": "Hãng sản xuất (brand)",
+            "schema": {
+              "example": "Toyota",
+              "type": "string"
+            }
+          },
+          {
             "name": "city",
             "required": false,
             "in": "query",
@@ -571,6 +591,19 @@
             }
           },
           {
+            "name": "amenities",
+            "required": false,
+            "in": "query",
+            "description": "Lọc theo danh sách tiện nghi (mảng hoặc phân cách bởi dấu phẩy, e.g. GPS,BACKUP_CAMERA)",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "example": ["GPS", "BACKUP_CAMERA"]
+            }
+          },
+          {
             "name": "sort",
             "required": false,
             "in": "query",
@@ -578,7 +611,7 @@
             "schema": {
               "default": "newest",
               "type": "string",
-              "enum": ["price_asc", "price_desc", "newest", "rating_desc"]
+              "enum": ["price_asc", "price_desc", "newest", "rating_desc", "popularity_desc"]
             }
           },
           {
@@ -628,6 +661,38 @@
           }
         },
         "summary": "Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED)",
+        "tags": ["Vehicles"]
+      }
+    },
+    "/api/v1/vehicles/{id}": {
+      "get": {
+        "operationId": "VehiclesController_getVehicleById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin chi tiết xe công khai (không lộ biển số và địa chỉ đón trả chi tiết)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleDetailDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không tìm thấy xe hoặc xe chưa được công khai"
+          }
+        },
+        "summary": "Lấy thông tin chi tiết xe công khai theo ID",
         "tags": ["Vehicles"]
       }
     },
@@ -1032,12 +1097,12 @@
             "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"]
           },
           "verifiedAt": {
-            "type": "object",
+            "type": "string",
             "description": "Thời điểm duyệt xác minh",
             "nullable": true
           },
           "rejectionReason": {
-            "type": "object",
+            "type": "string",
             "description": "Lý do từ chối xác thực",
             "nullable": true
           }
@@ -1196,7 +1261,7 @@
             "enum": ["STAGING", "VERIFIED", "REJECTED"]
           },
           "verifiedAt": {
-            "type": "object",
+            "type": "string",
             "description": "Thời điểm xác minh file",
             "nullable": true
           }
@@ -1327,6 +1392,127 @@
           }
         },
         "required": ["page", "pageSize", "total", "totalPages"]
+      },
+      "VehicleOwnerSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "00000000-0000-0000-0000-000000000001"
+          },
+          "name": {
+            "type": "string",
+            "example": "Nguyễn Văn Chủ 1"
+          },
+          "joinedAt": {
+            "type": "string",
+            "example": "2026-01-01T00:00:00.000Z"
+          }
+        },
+        "required": ["id", "name", "joinedAt"]
+      },
+      "VehicleDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "10000000-0000-0000-0000-000000000001"
+          },
+          "brand": {
+            "type": "string",
+            "example": "VinFast"
+          },
+          "model": {
+            "type": "string",
+            "example": "VF8 Plus"
+          },
+          "year": {
+            "type": "number",
+            "example": 2024
+          },
+          "city": {
+            "type": "string",
+            "example": "TP. Hồ Chí Minh"
+          },
+          "carType": {
+            "type": "string",
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
+            "example": "SUV"
+          },
+          "transmission": {
+            "type": "string",
+            "enum": ["AUTO", "MANUAL"],
+            "example": "AUTO"
+          },
+          "seats": {
+            "type": "number",
+            "example": 5
+          },
+          "description": {
+            "type": "string",
+            "example": "Xe mới, bảo dưỡng định kỳ chính hãng, động cơ điện êm ái."
+          },
+          "amenities": {
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "photoUrls": {
+            "example": ["http://localhost:4000/api/v1/media/vehicles/photo1.jpg"],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "keylessSupported": {
+            "type": "boolean",
+            "example": true
+          },
+          "pricePerDayVnd": {
+            "type": "number",
+            "example": 1400000,
+            "description": "Giá thuê một ngày (VND)"
+          },
+          "ratingAverage": {
+            "type": "number",
+            "example": 5,
+            "description": "Điểm đánh giá trung bình"
+          },
+          "reviewCount": {
+            "type": "number",
+            "example": 12,
+            "description": "Tổng số lượt đánh giá"
+          },
+          "totalTrips": {
+            "type": "number",
+            "example": 15,
+            "description": "Tổng số chuyến đi đã hoàn thành"
+          },
+          "owner": {
+            "$ref": "#/components/schemas/VehicleOwnerSummaryDto"
+          }
+        },
+        "required": [
+          "id",
+          "brand",
+          "model",
+          "year",
+          "city",
+          "carType",
+          "transmission",
+          "seats",
+          "description",
+          "amenities",
+          "photoUrls",
+          "keylessSupported",
+          "pricePerDayVnd",
+          "ratingAverage",
+          "reviewCount",
+          "totalTrips",
+          "owner"
+        ]
       },
       "AmenityOptionDto": {
         "type": "object",

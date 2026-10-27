@@ -3,6 +3,7 @@ import type {
   CreateVehiclePayload,
   DriverLicense,
   DriverLicenseResponse,
+  GetVehicleDetailResponse,
   GetVehicleOptionsResponse,
   GetVehiclesResponse,
   LoginResponse,
@@ -19,6 +20,7 @@ import type {
   UploadIntentResponseWrapper,
   User,
   UserProfileResponse,
+  VehicleDetail,
   VehicleOptions,
   VehicleSummary,
 } from '@carsharing/contracts';
@@ -31,14 +33,25 @@ export type {
   PaginationMeta,
   UploadIntentResponse,
   User,
+  VehicleDetail,
   VehicleOptions,
   VehicleSummary,
 };
 
 export interface VehicleSearchParams {
+  q?: string;
+  brand?: string;
   city?: string;
   carType?: string;
+  transmission?: string;
+  seats?: number;
+  minPrice?: number;
+  maxPrice?: number;
   keylessOnly?: boolean;
+  amenities?: string[];
+  sort?: string;
+  startAt?: string;
+  endAt?: string;
   page?: number;
   pageSize?: number;
 }
@@ -71,9 +84,21 @@ export async function fetchVehicles(
   params: VehicleSearchParams = {},
 ): Promise<GetVehiclesResponse> {
   const query = new URLSearchParams();
+  if (params.q) query.set('q', params.q);
+  if (params.brand && params.brand !== 'ALL') query.set('brand', params.brand);
   if (params.city && params.city !== 'ALL') query.set('city', params.city);
   if (params.carType && params.carType !== 'ALL') query.set('carType', params.carType);
+  if (params.transmission && params.transmission !== 'ALL')
+    query.set('transmission', params.transmission);
+  if (params.seats) query.set('seats', String(params.seats));
+  if (params.minPrice !== undefined) query.set('minPrice', String(params.minPrice));
+  if (params.maxPrice !== undefined) query.set('maxPrice', String(params.maxPrice));
   if (params.keylessOnly) query.set('keylessOnly', 'true');
+  if (params.amenities && params.amenities.length > 0)
+    query.set('amenities', params.amenities.join(','));
+  if (params.sort) query.set('sort', params.sort);
+  if (params.startAt) query.set('startAt', params.startAt);
+  if (params.endAt) query.set('endAt', params.endAt);
   if (params.page) query.set('page', String(params.page));
   if (params.pageSize) query.set('pageSize', String(params.pageSize));
 
@@ -86,6 +111,15 @@ export async function fetchVehicles(
   });
 
   return handleResponse<GetVehiclesResponse>(res);
+}
+
+export async function fetchVehicleById(id: string): Promise<VehicleDetail> {
+  const res = await fetch(`/api/v1/vehicles/${id}`, {
+    headers: { Accept: 'application/json' },
+    cache: 'no-store',
+  });
+  const json = await handleResponse<GetVehicleDetailResponse>(res);
+  return json.data;
 }
 
 export async function fetchVehicleOptions(): Promise<GetVehicleOptionsResponse> {

@@ -11,13 +11,13 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G2-01** (Bộ Lọc & Tìm Kiếm Xe Nâng Cao). Milestone G1 đã hoàn tất 100% (6/6 tasks) và được nghiệm thu toàn diện.
+Task đề xuất tiếp theo: **G2-02** (Động Cơ Tính Giá & Snapshot Chi Phí Thuê Xe). Task G2-01 đã hoàn tất và được ghi nhận.
 
 ### Bảng tiến độ Milestone G2 (Tìm Kiếm Nâng Cao & Động Cơ Tính Giá)
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
-| G2-01 | Bộ lọc & tìm kiếm xe nâng cao | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
+| G2-01 | Bộ lọc & tìm kiếm xe nâng cao | DONE | Mở rộng QueryVehiclesDto (q, brand, amenities, sort: price_asc, price_desc, popularity_desc, rating_desc); VehiclesService hỗ trợ lọc keyword, brand, mảng tiện nghi bắt buộc, sorting quan hệ đếm bookings; GET /vehicles/:id trả về chi tiết xe công khai (bảo mật tuyệt đối: không lộ biển số plateNormalized và địa chỉ pickupAddress); 132 tests backend pass (46 unit, 18 constraints, 68 e2e); OpenAPI và contracts tái sinh và build thành công |
 | G2-02 | Động cơ tính giá & snapshot chi phí | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 | G2-03 | Hệ thống mã khuyến mãi & giảm giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
 | G2-04 | Web UI chi tiết xe & dự toán giá | TODO | Lập kế hoạch chi tiết tại docs/tasks/G2_TASKS.md |
@@ -55,6 +55,32 @@ Task đề xuất tiếp theo: **G2-01** (Bộ Lọc & Tìm Kiếm Xe Nâng Cao)
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G2-01 — Bộ Lọc & Tìm Kiếm Xe Nâng Cao (Search & Filter Engine)
+Trạng thái: DONE
+Prerequisite: G1-06
+Files thay đổi:
+- apps/api/src/vehicles/dto/query-vehicles.dto.ts (Bổ sung tham số tìm kiếm từ khóa q, hãng xe brand, mảng tiện nghi amenities, sort đa chiều POPULARITY_DESC và RATING_DESC)
+- apps/api/src/vehicles/dto/vehicle-detail.dto.ts (Tạo VehicleDetailDto và VehicleOwnerSummaryDto cho endpoint xem chi tiết xe công khai)
+- apps/api/src/common/pipes/parse-uuid.pipe.ts (Tạo ParseUuidPipe kiểm tra 128-bit hex UUID tương thích toàn diện với cả seed UUID và RFC4122 v4 UUID)
+- apps/api/src/common/index.ts (Xuất ParseUuidPipe)
+- apps/api/src/vehicles/vehicles.service.ts (Hiện thực logic tìm kiếm OR chứa từ khóa brand/model, lọc brand chính xác, lọc mảng amenities bắt buộc qua quan hệ some, sắp xếp theo đếm quan hệ bookings, và phương thức getVehicleById bảo mật 100%: không lộ plateNormalized, pickupAddress, email, phone)
+- apps/api/src/vehicles/vehicles.controller.ts (Thêm endpoint GET /api/v1/vehicles/:id có ParseUuidPipe, OpenAPI schema VehicleDetailDto)
+- apps/api/src/vehicles/vehicles.service.spec.ts (6 unit tests kiểm tra tìm kiếm q, amenities, sort, validate ngày, 404 cho xe không tồn tại và kiểm tra rò rỉ bảo mật)
+- apps/api/test/vehicles-search.e2e-spec.ts (11 e2e tests kiểm tra toàn bộ luồng tìm kiếm nâng cao: keyword q, brand, price range, amenities, price_asc, price_desc, popularity_desc, GET /vehicles/:id thành công, chặn xe DRAFT 404, UUID không tồn tại 404, UUID sai định dạng 400)
+- tools/export-openapi.mjs & packages/contracts (Tái sinh openapi.json, sinh schema.ts và xuất types VehicleDetail, GetVehicleDetailResponse)
+- apps/web/src/lib/api.ts (Mở rộng VehicleSearchParams và export fetchVehicleById)
+Lệnh thực hiện:
+- pnpm --filter @carsharing/api test -> 46/46 unit tests pass
+- pnpm --filter @carsharing/api test:constraints -> 18/18 PostgreSQL integration tests pass
+- pnpm --filter @carsharing/api test:e2e -> 68/68 e2e tests pass (132 tests backend pass 100%)
+- pnpm --filter @carsharing/web test:smoke -> 2/2 browser tests pass (9.4s)
+- pnpm run typecheck -> 0 lỗi TypeScript trên 3 packages
+- pnpm run format:check -> All matched files use Prettier code style
+Kết quả: Hoàn thành toàn diện Task G2-01. Bộ lọc tìm kiếm xe hoạt động chính xác với đầy đủ tiêu chí, endpoint chi tiết xe GET /vehicles/:id bảo mật tuyệt đối thông tin nhạy cảm.
+```
 
 ```text
 Ngày: 27/10/2026
