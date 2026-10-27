@@ -1,7 +1,8 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { HttpExceptionFilter, TransformInterceptor } from './common';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -16,6 +17,21 @@ async function bootstrap() {
 
   // Bật graceful shutdown hooks
   app.enableShutdownHooks();
+
+  // Cấu hình ValidationPipe toàn cục
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  // Cấu hình Response Transform Interceptor ({ data, meta? })
+  app.useGlobalInterceptors(new TransformInterceptor());
+
+  // Cấu hình Global Exception Filter ({ error, requestId })
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   // Cấu hình CORS
   app.enableCors({

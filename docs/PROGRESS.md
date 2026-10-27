@@ -11,14 +11,14 @@ Baseline bàn giao ngày 27/10/2026. Cập nhật sau từng task; ghi lệnh/k�
 
 ## Task hiện tại
 
-Task đề xuất tiếp theo: **G0-03** (Nền xử lý request và lỗi API). Task G0-02 đã hoàn tất và được ghi nhận.
+Task đề xuất tiếp theo: **G0-04** (Khởi tạo Next.js và kết nối cùng origin). Task G0-03 đã hoàn tất và được ghi nhận.
 
 | Task | Nội dung | Trạng thái | Bằng chứng |
 | --- | --- | --- | --- |
 | G0-00 | Môi trường và phiên bản | DONE | Đã kiểm tra thực tế máy host & ghim bộ phiên bản tại docs/TECH_STACK.md |
 | G0-01 | Workspace và baseline | DONE | package.json, pnpm-lock.yaml, pnpm-workspace.yaml, tsconfig.base.json, .env.example, git baseline |
 | G0-02 | NestJS và health | DONE | apps/api scaffold, GET /api/v1/health liveness, build/typecheck & unit/e2e smoke test pass |
-| G0-03 | Request và error contract | TODO | Chưa có implementation |
+| G0-03 | Request và error contract | DONE | RequestIdMiddleware, TransformInterceptor, HttpExceptionFilter, 19 ca test unit & e2e pass |
 | G0-04 | Next.js và cùng origin | TODO | Chưa có web |
 | G0-05 | PostgreSQL/storage local | TODO | Chưa có compose/config đã chạy |
 | G0-06 | Prisma schema | TODO | Chưa có schema |
@@ -32,6 +32,35 @@ Task đề xuất tiếp theo: **G0-03** (Nền xử lý request và lỗi API).
 TODO: chưa bắt đầu. IN_PROGRESS: đang thực hiện. BLOCKED: thiếu điều kiện cụ thể, ghi rõ. DONE: toàn bộ điều kiện bắt buộc đạt và có bằng chứng. Không đổi DONE chỉ vì đã viết xong file.
 
 ## Nhật ký mỗi task
+
+```text
+Ngày: 27/10/2026
+Task: G0-03 — Nền xử lý request và lỗi API
+Trạng thái: DONE
+Prerequisite: G0-02
+Files thay đổi:
+- apps/api/src/common/middleware/request-id.middleware.ts (sinh/validate requestId an toàn, gắn header X-Request-Id)
+- apps/api/src/common/interceptors/transform.interceptor.ts (chuẩn hóa envelope { data, meta? }, chống double wrap, bỏ qua 204/redirect)
+- apps/api/src/common/filters/http-exception.filter.ts (chuẩn hóa lỗi { error: { code, message, details? }, requestId }, phân biệt 400 validation, 404, 409, 422; ẩn stack trace và dữ liệu nhạy cảm ở 500)
+- apps/api/src/common/index.ts (barrel export cho common)
+- apps/api/src/app.module.ts (đăng ký RequestIdMiddleware cho mọi route)
+- apps/api/src/main.ts (đăng ký ValidationPipe, TransformInterceptor, HttpExceptionFilter toàn cục)
+- apps/api/package.json (bổ sung scripts test, test:e2e, test:all)
+- apps/api/src/common/middleware/request-id.middleware.spec.ts (unit test 3 ca: UUID generation, header preserve, sanitization)
+- apps/api/src/common/interceptors/transform.interceptor.spec.ts (unit test 3 ca: wrapping, prevent double-wrap, 204 skip)
+- apps/api/src/common/filters/http-exception.filter.spec.ts (unit test 3 ca: format HttpException, validation details, 500 secret masking)
+- apps/api/test/request-error.e2e-spec.ts (e2e test 7 ca: success envelope, requestId echo, 404 unknown, 400 validation, 409 conflict, 500 crash masking, 204 no-content)
+- docs/PROGRESS.md (cập nhật tiến độ)
+Lệnh đã chạy và kết quả:
+- pnpm --filter @carsharing/api run build: nest build thành công (exit 0)
+- pnpm --filter @carsharing/api run typecheck: tsc --noEmit thành công (exit 0)
+- pnpm --filter @carsharing/api run test:all: 19 ca test (unit & e2e) chạy qua node test runner đều PASS 100% (exit 0)
+- pnpm run format:check: Toàn bộ workspace khớp quy tắc định dạng Prettier (exit 0)
+Ca chưa chạy và lý do: Chưa tạo auth giả để đi tiếp các module bảo vệ (theo đúng yêu cầu G0-03).
+Quyết định mới/ảnh hưởng hợp đồng: Không đổi hợp đồng. Cấu trúc response tuân thủ tuyệt đối API_CONTRACT.md: thành công { data, meta? }, lỗi { error: { code, message, details? }, requestId }.
+Commit hoặc điểm lưu diff nếu có: Sẵn sàng commit local cho G0-03
+Task đề xuất tiếp theo: G0-04 — Khởi tạo Next.js và kết nối cùng origin
+```
 
 ```text
 Ngày: 27/10/2026

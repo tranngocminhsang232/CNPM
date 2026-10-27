@@ -11,8 +11,9 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "tsc -p tsconfig.json && node --test dist/src/health/health.controller.spec.js",
-    "test:e2e": "tsc -p tsconfig.json && node --test dist/test/health.e2e-spec.js"
+    "test": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\"",
+    "test:e2e": "tsc -p tsconfig.json && node --test \"dist/test/**/*.e2e-spec.js\"",
+    "test:all": "tsc -p tsconfig.json && node --test \"dist/src/**/*.spec.js\" \"dist/test/**/*.e2e-spec.js\""
   },
   "dependencies": {
     "@nestjs/common": "12.2.0",
