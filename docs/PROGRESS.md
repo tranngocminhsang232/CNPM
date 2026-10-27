@@ -59,7 +59,7 @@ Lệnh đã chạy và kết quả:
 - pnpm run format:check: Toàn bộ workspace khớp quy tắc Prettier (exit 0).
 Ca chưa chạy và lý do: Chưa kết luận API concurrency đã đạt vì booking API chưa viết (theo đúng tiêu chí G0-07).
 Quyết định mới/ảnh hưởng hợp đồng: Không thay đổi hợp đồng. Bổ sung script test:constraints để kiểm tra tự động định kỳ trên database test thật.
-Commit hoặc điểm lưu diff nếu có: Sẽ cập nhật sau commit G0-07.
+Commit hoặc điểm lưu diff nếu có: Commit `d061e25` ("feat(database): apply initial migration with postgres constraints and add integration tests (G0-07)")
 ```
 
 ```text
