@@ -1981,6 +1981,125 @@
         "summary": "Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)",
         "tags": ["Keyless"]
       }
+    },
+    "/api/v1/bookings/{id}/reviews": {
+      "post": {
+        "description": "Chỉ gửi được sau khi chuyến đi đã COMPLETED. Điểm 1-5 sao, nhận xét tối đa 2.000 ký tự. Mỗi bên tham gia chỉ gửi đúng 1 đánh giá bất biến.",
+        "operationId": "ReviewsController_createReview",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReviewDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gửi đánh giá thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không phải người tham gia chuyến đi"
+          },
+          "404": {
+            "description": "Chuyến đi không tồn tại"
+          },
+          "409": {
+            "description": "Chuyến đi chưa COMPLETED hoặc đã đánh giá rồi"
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Gửi đánh giá cho chuyến đi (Khách thuê hoặc Chủ xe)",
+        "tags": ["Reviews"]
+      },
+      "get": {
+        "operationId": "ReviewsController_getBookingReviews",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách đánh giá",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ReviewResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "cookie": []
+          }
+        ],
+        "summary": "Tra cứu danh sách đánh giá của chuyến đi",
+        "tags": ["Reviews"]
+      }
+    },
+    "/api/v1/vehicles/{id}/reviews": {
+      "get": {
+        "description": "Tổng hợp điểm trung bình và các nhận xét từ khách thuê đã trải nghiệm xe.",
+        "operationId": "ReviewsController_getVehicleReviews",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Tổng hợp đánh giá xe",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleReviewsSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Tra cứu danh sách và điểm đánh giá trung bình của xe (Công khai)",
+        "tags": ["Reviews"]
+      }
     }
   },
   "info": {
@@ -3976,6 +4095,113 @@
           "provider",
           "createdAt"
         ]
+      },
+      "CreateReviewDto": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "description": "Điểm đánh giá từ 1 đến 5 sao",
+            "example": 5,
+            "minimum": 1,
+            "maximum": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Nhận xét chi tiết (tối đa 2.000 ký tự)",
+            "example": "Xe chạy rất êm, sạch sẽ, chủ xe nhiệt tình và giao xe đúng giờ!",
+            "maxLength": 2000
+          }
+        },
+        "required": ["score", "comment"]
+      },
+      "ReviewUserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID người dùng"
+          },
+          "name": {
+            "type": "string",
+            "description": "Họ tên hiển thị"
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "ReviewResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID đánh giá"
+          },
+          "bookingId": {
+            "type": "string",
+            "description": "ID chuyến đi"
+          },
+          "authorId": {
+            "type": "string",
+            "description": "ID người viết đánh giá"
+          },
+          "targetUserId": {
+            "type": "string",
+            "description": "ID người nhận đánh giá"
+          },
+          "score": {
+            "type": "number",
+            "description": "Điểm số từ 1 đến 5",
+            "example": 5
+          },
+          "comment": {
+            "type": "string",
+            "description": "Nội dung nhận xét"
+          },
+          "createdAt": {
+            "type": "string",
+            "description": "Thời điểm tạo đánh giá"
+          },
+          "author": {
+            "description": "Thông tin người viết",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReviewUserSummaryDto"
+              }
+            ]
+          },
+          "targetUser": {
+            "description": "Thông tin người nhận",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ReviewUserSummaryDto"
+              }
+            ]
+          }
+        },
+        "required": ["id", "bookingId", "authorId", "targetUserId", "score", "comment", "createdAt"]
+      },
+      "VehicleReviewsSummaryDto": {
+        "type": "object",
+        "properties": {
+          "averageScore": {
+            "type": "number",
+            "description": "Điểm đánh giá trung bình (làm tròn 1 chữ số thập phân)",
+            "example": 4.8
+          },
+          "totalReviews": {
+            "type": "number",
+            "description": "Tổng số lượt đánh giá",
+            "example": 12
+          },
+          "reviews": {
+            "description": "Danh sách đánh giá",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ReviewResponseDto"
+            }
+          }
+        },
+        "required": ["averageScore", "totalReviews", "reviews"]
       }
     }
   }

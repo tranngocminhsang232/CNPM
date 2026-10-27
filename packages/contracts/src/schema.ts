@@ -779,6 +779,47 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings/{id}/reviews': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /** Tra cứu danh sách đánh giá của chuyến đi */
+    get: operations['ReviewsController_getBookingReviews'];
+    put?: never;
+    /**
+     * Gửi đánh giá cho chuyến đi (Khách thuê hoặc Chủ xe)
+     * @description Chỉ gửi được sau khi chuyến đi đã COMPLETED. Điểm 1-5 sao, nhận xét tối đa 2.000 ký tự. Mỗi bên tham gia chỉ gửi đúng 1 đánh giá bất biến.
+     */
+    post: operations['ReviewsController_createReview'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/vehicles/{id}/reviews': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Tra cứu danh sách và điểm đánh giá trung bình của xe (Công khai)
+     * @description Tổng hợp điểm trung bình và các nhận xét từ khách thuê đã trải nghiệm xe.
+     */
+    get: operations['ReviewsController_getVehicleReviews'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -2055,6 +2096,61 @@ export interface components {
        * @example false
        */
       isReplay?: boolean;
+    };
+    CreateReviewDto: {
+      /**
+       * @description Điểm đánh giá từ 1 đến 5 sao
+       * @example 5
+       */
+      score: number;
+      /**
+       * @description Nhận xét chi tiết (tối đa 2.000 ký tự)
+       * @example Xe chạy rất êm, sạch sẽ, chủ xe nhiệt tình và giao xe đúng giờ!
+       */
+      comment: string;
+    };
+    ReviewUserSummaryDto: {
+      /** @description ID người dùng */
+      id: string;
+      /** @description Họ tên hiển thị */
+      name: string;
+    };
+    ReviewResponseDto: {
+      /** @description ID đánh giá */
+      id: string;
+      /** @description ID chuyến đi */
+      bookingId: string;
+      /** @description ID người viết đánh giá */
+      authorId: string;
+      /** @description ID người nhận đánh giá */
+      targetUserId: string;
+      /**
+       * @description Điểm số từ 1 đến 5
+       * @example 5
+       */
+      score: number;
+      /** @description Nội dung nhận xét */
+      comment: string;
+      /** @description Thời điểm tạo đánh giá */
+      createdAt: string;
+      /** @description Thông tin người viết */
+      author?: components['schemas']['ReviewUserSummaryDto'];
+      /** @description Thông tin người nhận */
+      targetUser?: components['schemas']['ReviewUserSummaryDto'];
+    };
+    VehicleReviewsSummaryDto: {
+      /**
+       * @description Điểm đánh giá trung bình (làm tròn 1 chữ số thập phân)
+       * @example 4.8
+       */
+      averageScore: number;
+      /**
+       * @description Tổng số lượt đánh giá
+       * @example 12
+       */
+      totalReviews: number;
+      /** @description Danh sách đánh giá */
+      reviews: components['schemas']['ReviewResponseDto'][];
     };
   };
   responses: never;
@@ -3571,6 +3667,97 @@ export interface operations {
           [name: string]: unknown;
         };
         content?: never;
+      };
+    };
+  };
+  ReviewsController_getBookingReviews: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Danh sách đánh giá */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReviewResponseDto'][];
+        };
+      };
+    };
+  };
+  ReviewsController_createReview: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateReviewDto'];
+      };
+    };
+    responses: {
+      /** @description Gửi đánh giá thành công */
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['ReviewResponseDto'];
+        };
+      };
+      /** @description Không phải người tham gia chuyến đi */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Chuyến đi không tồn tại */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Chuyến đi chưa COMPLETED hoặc đã đánh giá rồi */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  ReviewsController_getVehicleReviews: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Tổng hợp đánh giá xe */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleReviewsSummaryDto'];
+        };
       };
     };
   };

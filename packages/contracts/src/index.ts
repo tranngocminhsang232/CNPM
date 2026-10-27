@@ -120,3 +120,16 @@ export type SettleDepositPayload = components['schemas']['SettleDepositDto'];
 export type DepositSettlementResponse = {
   data: DepositSettlement;
 };
+
+export type Review = components['schemas']['ReviewResponseDto'];
+export type CreateReviewPayload = components['schemas']['CreateReviewDto'];
+export type VehicleReviewsSummary = components['schemas']['VehicleReviewsSummaryDto'];
+export type ReviewResponse = {
+  data: Review;
+};
+export type ReviewsListResponse = {
+  data: Review[];
+};
+export type VehicleReviewsResponse = {
+  data: VehicleReviewsSummary;
+};

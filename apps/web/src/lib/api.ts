@@ -51,6 +51,12 @@ import type {
   DepositSettlement,
   SettleDepositPayload,
   DepositSettlementResponse,
+  Review,
+  CreateReviewPayload,
+  VehicleReviewsSummary,
+  ReviewResponse,
+  ReviewsListResponse,
+  VehicleReviewsResponse,
 } from '@carsharing/contracts';
 
 export type {
@@ -733,5 +739,49 @@ export async function fetchDepositSettlementApi(bookingId: string): Promise<Depo
     },
   });
   const json = await handleResponse<DepositSettlementResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Two-Way Review APIs (G5-03)
+// -----------------------------------------------------------------------------
+
+export async function createReviewApi(
+  bookingId: string,
+  payload: CreateReviewPayload,
+  csrfToken: string,
+): Promise<Review> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/reviews`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<ReviewResponse>(res);
+  return json.data;
+}
+
+export async function fetchBookingReviewsApi(bookingId: string): Promise<Review[]> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/reviews`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<ReviewsListResponse>(res);
+  return json.data;
+}
+
+export async function fetchVehicleReviewsApi(vehicleId: string): Promise<VehicleReviewsSummary> {
+  const res = await fetch(`/api/v1/vehicles/${vehicleId}/reviews`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<VehicleReviewsResponse>(res);
   return json.data;
 }
