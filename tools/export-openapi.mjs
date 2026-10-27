@@ -30,6 +30,7 @@ async function run() {
     .addTag('Bookings', 'Quản lý yêu cầu đặt xe, duyệt, từ chối và vòng đời chuyến đi')
     .addTag('Payments', 'Cổng thanh toán sandbox, ký số HMAC-SHA512 và ký quỹ chuyến đi')
     .addTag('Inspections', 'Quy trình kiểm tra xe, biên bản bàn giao 4 góc xe và công tơ mét')
+    .addTag('Keyless', 'Điều khiển khóa ảo Keyless từ xa qua kết nối viễn thông IoT và đối soát')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

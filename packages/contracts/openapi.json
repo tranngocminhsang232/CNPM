@@ -1696,6 +1696,176 @@
         "summary": "Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT)",
         "tags": ["Inspections"]
       }
+    },
+    "/api/v1/bookings/{id}/keyless-operations": {
+      "post": {
+        "description": "Gửi lệnh mở hoặc khóa xe qua kết nối viễn thông IoT. Yêu cầu Idempotency-Key bắt buộc, xác thực người thuê, xe hỗ trợ Keyless, khung giờ thuê hợp lệ và biên bản kiểm tra nhận xe CHECK_IN đã chốt.",
+        "operationId": "KeylessController_triggerOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "idempotency-key",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Khóa chống lặp duy nhất cho mỗi thao tác người dùng (độ dài 16-128 ký tự)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TriggerKeylessDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lệnh điều khiển đã được xử lý thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeylessOperationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Thiếu Idempotency-Key hoặc dữ liệu không hợp lệ"
+          },
+          "403": {
+            "description": "Không có quyền điều khiển xe (chỉ người thuê)"
+          },
+          "404": {
+            "description": "Chuyến đi không tồn tại"
+          },
+          "409": {
+            "description": "Xung đột thao tác chưa hoàn tất (UNRESOLVED_OPERATION) hoặc lệch Idempotency-Key"
+          },
+          "422": {
+            "description": "Xe không hỗ trợ Keyless, ngoài giờ thuê, hoặc chưa chốt biên bản CHECK_IN"
+          }
+        },
+        "summary": "Kích hoạt thao tác điều khiển khóa xe ảo Keyless (UNLOCK / LOCK)",
+        "tags": ["Keyless"]
+      }
+    },
+    "/api/v1/bookings/{id}/keyless-operations/{opId}": {
+      "get": {
+        "description": "Chỉ khách thuê hoặc chủ xe của booking mới có quyền tra cứu.",
+        "operationId": "KeylessController_getOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "opId",
+            "required": true,
+            "in": "path",
+            "description": "ID lệnh điều khiển xe",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Thông tin chi tiết lệnh điều khiển",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeylessOperationResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền truy cập"
+          },
+          "404": {
+            "description": "Lệnh điều khiển không tồn tại"
+          }
+        },
+        "summary": "Tra cứu trạng thái của một lệnh điều khiển khóa xe",
+        "tags": ["Keyless"]
+      }
+    },
+    "/api/v1/bookings/{id}/keyless-operations/{opId}/reconcile": {
+      "post": {
+        "description": "Gửi truy vấn kiểm tra tới bộ mô phỏng phần cứng để giải phóng lệnh bị treo và cập nhật trạng thái chuyến đi nếu cần.",
+        "operationId": "KeylessController_reconcileOperation",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID chuyến đi booking",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "opId",
+            "required": true,
+            "in": "path",
+            "description": "ID lệnh điều khiển xe",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lệnh điều khiển đã được đối soát thành công",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KeylessOperationResponseDto"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Không có quyền đối soát"
+          },
+          "404": {
+            "description": "Lệnh điều khiển không tồn tại"
+          }
+        },
+        "summary": "Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)",
+        "tags": ["Keyless"]
+      }
     }
   },
   "info": {
@@ -1740,6 +1910,10 @@
     {
       "name": "Inspections",
       "description": "Quy trình kiểm tra xe, biên bản bàn giao 4 góc xe và công tơ mét"
+    },
+    {
+      "name": "Keyless",
+      "description": "Điều khiển khóa ảo Keyless từ xa qua kết nối viễn thông IoT và đối soát"
     }
   ],
   "servers": [],
@@ -3476,6 +3650,105 @@
           "performedBy",
           "createdAt",
           "photos"
+        ]
+      },
+      "TriggerKeylessDto": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "Hành động điều khiển khóa xe (LOCK hoặc UNLOCK)",
+            "enum": ["LOCK", "UNLOCK"],
+            "example": "UNLOCK"
+          },
+          "simulateResult": {
+            "type": "string",
+            "description": "Cờ thử nghiệm giả lập kết quả phần cứng (chỉ áp dụng ở môi trường dev/test: SUCCESS, FAILED, UNKNOWN)",
+            "enum": ["SUCCESS", "FAILED", "UNKNOWN"],
+            "example": "SUCCESS"
+          }
+        },
+        "required": ["action"]
+      },
+      "KeylessOperationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID định danh duy nhất của lệnh điều khiển",
+            "format": "uuid"
+          },
+          "bookingId": {
+            "type": "string",
+            "description": "ID chuyến đi booking",
+            "format": "uuid"
+          },
+          "actorId": {
+            "type": "string",
+            "description": "ID người gửi lệnh điều khiển (@CurrentUser)",
+            "format": "uuid"
+          },
+          "action": {
+            "type": "string",
+            "description": "Hành động điều khiển xe",
+            "enum": ["LOCK", "UNLOCK"]
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "Khóa chống trùng lặp Idempotency-Key"
+          },
+          "status": {
+            "type": "string",
+            "description": "Trạng thái lệnh điều khiển",
+            "enum": ["PENDING", "SUCCESS", "FAILED", "UNKNOWN"]
+          },
+          "provider": {
+            "type": "string",
+            "description": "Nhà cung cấp phần cứng điều khiển xe (SIMULATOR)",
+            "example": "SIMULATOR"
+          },
+          "deviceResult": {
+            "type": "object",
+            "description": "Chi tiết phản hồi từ phần cứng xe dạng JSON"
+          },
+          "resolvedAt": {
+            "type": "object",
+            "description": "Thời điểm hoàn tất xử lý lệnh",
+            "format": "date-time"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Thời điểm tạo lệnh"
+          },
+          "bookingStatus": {
+            "type": "string",
+            "description": "Trạng thái hiện tại của chuyến đi booking sau khi xử lý lệnh",
+            "enum": [
+              "REQUESTED",
+              "APPROVED",
+              "REJECTED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED",
+              "EXPIRED"
+            ]
+          },
+          "isReplay": {
+            "type": "boolean",
+            "description": "Cờ báo hiệu kết quả replayed do trùng khớp Idempotency-Key",
+            "example": false
+          }
+        },
+        "required": [
+          "id",
+          "bookingId",
+          "actorId",
+          "action",
+          "idempotencyKey",
+          "status",
+          "provider",
+          "createdAt"
         ]
       }
     }

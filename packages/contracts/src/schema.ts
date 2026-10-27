@@ -659,6 +659,66 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  '/api/v1/bookings/{id}/keyless-operations': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Kích hoạt thao tác điều khiển khóa xe ảo Keyless (UNLOCK / LOCK)
+     * @description Gửi lệnh mở hoặc khóa xe qua kết nối viễn thông IoT. Yêu cầu Idempotency-Key bắt buộc, xác thực người thuê, xe hỗ trợ Keyless, khung giờ thuê hợp lệ và biên bản kiểm tra nhận xe CHECK_IN đã chốt.
+     */
+    post: operations['KeylessController_triggerOperation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/keyless-operations/{opId}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Tra cứu trạng thái của một lệnh điều khiển khóa xe
+     * @description Chỉ khách thuê hoặc chủ xe của booking mới có quyền tra cứu.
+     */
+    get: operations['KeylessController_getOperation'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/bookings/{id}/keyless-operations/{opId}/reconcile': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    /**
+     * Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)
+     * @description Gửi truy vấn kiểm tra tới bộ mô phỏng phần cứng để giải phóng lệnh bị treo và cập nhật trạng thái chuyến đi nếu cần.
+     */
+    post: operations['KeylessController_reconcileOperation'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1779,6 +1839,83 @@ export interface components {
       createdAt: string;
       /** @description Danh sách ảnh 4 góc xe */
       photos: components['schemas']['InspectionPhotoDto'][];
+    };
+    TriggerKeylessDto: {
+      /**
+       * @description Hành động điều khiển khóa xe (LOCK hoặc UNLOCK)
+       * @example UNLOCK
+       * @enum {string}
+       */
+      action: 'LOCK' | 'UNLOCK';
+      /**
+       * @description Cờ thử nghiệm giả lập kết quả phần cứng (chỉ áp dụng ở môi trường dev/test: SUCCESS, FAILED, UNKNOWN)
+       * @example SUCCESS
+       * @enum {string}
+       */
+      simulateResult?: 'SUCCESS' | 'FAILED' | 'UNKNOWN';
+    };
+    KeylessOperationResponseDto: {
+      /**
+       * Format: uuid
+       * @description ID định danh duy nhất của lệnh điều khiển
+       */
+      id: string;
+      /**
+       * Format: uuid
+       * @description ID chuyến đi booking
+       */
+      bookingId: string;
+      /**
+       * Format: uuid
+       * @description ID người gửi lệnh điều khiển (@CurrentUser)
+       */
+      actorId: string;
+      /**
+       * @description Hành động điều khiển xe
+       * @enum {string}
+       */
+      action: 'LOCK' | 'UNLOCK';
+      /** @description Khóa chống trùng lặp Idempotency-Key */
+      idempotencyKey: string;
+      /**
+       * @description Trạng thái lệnh điều khiển
+       * @enum {string}
+       */
+      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'UNKNOWN';
+      /**
+       * @description Nhà cung cấp phần cứng điều khiển xe (SIMULATOR)
+       * @example SIMULATOR
+       */
+      provider: string;
+      /** @description Chi tiết phản hồi từ phần cứng xe dạng JSON */
+      deviceResult?: Record<string, never>;
+      /**
+       * Format: date-time
+       * @description Thời điểm hoàn tất xử lý lệnh
+       */
+      resolvedAt?: Record<string, never>;
+      /**
+       * Format: date-time
+       * @description Thời điểm tạo lệnh
+       */
+      createdAt: string;
+      /**
+       * @description Trạng thái hiện tại của chuyến đi booking sau khi xử lý lệnh
+       * @enum {string}
+       */
+      bookingStatus?:
+        | 'REQUESTED'
+        | 'APPROVED'
+        | 'REJECTED'
+        | 'IN_PROGRESS'
+        | 'COMPLETED'
+        | 'CANCELLED'
+        | 'EXPIRED';
+      /**
+       * @description Cờ báo hiệu kết quả replayed do trùng khớp Idempotency-Key
+       * @example false
+       */
+      isReplay?: boolean;
     };
   };
   responses: never;
@@ -3076,6 +3213,150 @@ export interface operations {
         };
       };
       /** @description Biên bản chưa được tạo */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  KeylessController_triggerOperation: {
+    parameters: {
+      query?: never;
+      header: {
+        'idempotency-key': string;
+        /** @description Khóa chống lặp duy nhất cho mỗi thao tác người dùng (độ dài 16-128 ký tự) */
+        'Idempotency-Key': string;
+      };
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['TriggerKeylessDto'];
+      };
+    };
+    responses: {
+      /** @description Lệnh điều khiển đã được xử lý thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KeylessOperationResponseDto'];
+        };
+      };
+      /** @description Thiếu Idempotency-Key hoặc dữ liệu không hợp lệ */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Không có quyền điều khiển xe (chỉ người thuê) */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Chuyến đi không tồn tại */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Xung đột thao tác chưa hoàn tất (UNRESOLVED_OPERATION) hoặc lệch Idempotency-Key */
+      409: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Xe không hỗ trợ Keyless, ngoài giờ thuê, hoặc chưa chốt biên bản CHECK_IN */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  KeylessController_getOperation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+        /** @description ID lệnh điều khiển xe */
+        opId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Thông tin chi tiết lệnh điều khiển */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KeylessOperationResponseDto'];
+        };
+      };
+      /** @description Không có quyền truy cập */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Lệnh điều khiển không tồn tại */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  KeylessController_reconcileOperation: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description ID chuyến đi booking */
+        id: string;
+        /** @description ID lệnh điều khiển xe */
+        opId: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Lệnh điều khiển đã được đối soát thành công */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['KeylessOperationResponseDto'];
+        };
+      };
+      /** @description Không có quyền đối soát */
+      403: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+      /** @description Lệnh điều khiển không tồn tại */
       404: {
         headers: {
           [name: string]: unknown;

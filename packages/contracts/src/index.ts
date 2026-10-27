@@ -108,3 +108,9 @@ export type InspectionResponse = {
 export type InspectionsListResponse = {
   data: Inspection[];
 };
+
+export type TriggerKeylessPayload = components['schemas']['TriggerKeylessDto'];
+export type KeylessOperation = components['schemas']['KeylessOperationResponseDto'];
+export type KeylessOperationResponse = {
+  data: KeylessOperation;
+};

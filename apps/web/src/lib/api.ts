@@ -45,6 +45,9 @@ import type {
   SaveInspectionPayload,
   InspectionResponse,
   InspectionsListResponse,
+  TriggerKeylessPayload,
+  KeylessOperation,
+  KeylessOperationResponse,
 } from '@carsharing/contracts';
 
 export type {
@@ -73,6 +76,8 @@ export type {
   Inspection,
   InspectionPhoto,
   SaveInspectionPayload,
+  TriggerKeylessPayload,
+  KeylessOperation,
 };
 
 export interface VehicleSearchParams {
@@ -623,5 +628,62 @@ export async function fetchInspectionByTypeApi(
   });
   if (res.status === 404) return null;
   const json = await handleResponse<InspectionResponse>(res);
+  return json.data;
+}
+
+// -----------------------------------------------------------------------------
+// Keyless Operations APIs (G4-02)
+// -----------------------------------------------------------------------------
+
+export async function triggerKeylessOperationApi(
+  bookingId: string,
+  payload: TriggerKeylessPayload,
+  idempotencyKey: string,
+  csrfToken: string,
+): Promise<KeylessOperation> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/keyless-operations`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'x-csrf-token': csrfToken,
+      'Idempotency-Key': idempotencyKey,
+    },
+    body: JSON.stringify(payload),
+  });
+  const json = await handleResponse<KeylessOperationResponse>(res);
+  return json.data;
+}
+
+export async function fetchKeylessOperationApi(
+  bookingId: string,
+  operationId: string,
+): Promise<KeylessOperation> {
+  const res = await fetch(`/api/v1/bookings/${bookingId}/keyless-operations/${operationId}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const json = await handleResponse<KeylessOperationResponse>(res);
+  return json.data;
+}
+
+export async function reconcileKeylessOperationApi(
+  bookingId: string,
+  operationId: string,
+  csrfToken: string,
+): Promise<KeylessOperation> {
+  const res = await fetch(
+    `/api/v1/bookings/${bookingId}/keyless-operations/${operationId}/reconcile`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'x-csrf-token': csrfToken,
+      },
+    },
+  );
+  const json = await handleResponse<KeylessOperationResponse>(res);
   return json.data;
 }
