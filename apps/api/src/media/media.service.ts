@@ -3,10 +3,12 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
+  OnModuleInit,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   CopyObjectCommand,
+  CreateBucketCommand,
   DeleteObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
@@ -29,7 +31,7 @@ import {
 } from './dto/media.dto';
 
 @Injectable()
-export class MediaService {
+export class MediaService implements OnModuleInit {
   private readonly s3Client: S3Client;
   private readonly bucket: string;
 
@@ -61,6 +63,16 @@ export class MediaService {
       },
       forcePathStyle: true,
     });
+  }
+
+  async onModuleInit(): Promise<void> {
+    try {
+      await this.s3Client.send(new CreateBucketCommand({ Bucket: this.bucket }));
+    } catch (err: any) {
+      if (err?.name !== 'BucketAlreadyOwnedByYou' && err?.name !== 'BucketAlreadyExists') {
+        // Log or silently ignore benign bucket initialization error in non-S3 environments
+      }
+    }
   }
 
   async createUploadIntent(
