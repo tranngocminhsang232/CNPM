@@ -9,7 +9,15 @@ test-results/
 pnpm-lock.yaml
 *.docx
 *.png
+*.jpg
+*.jpeg
+*.svg
+*.ico
 .git/
 .document-review/
 backups/
 docs/
+**/next-env.d.ts
+packages/contracts/src/schema.ts
+packages/contracts/openapi.json
+
