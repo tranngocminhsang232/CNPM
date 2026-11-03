@@ -35,3 +35,11 @@ Thumbs.db
 .idea/
 *.log
 pnpm-debug.log*
+
+# Reports & Documentation (kept local, excluded from public repo)
+*.docx
+*.pdf
+backups/
+image.png
+docs/
+
