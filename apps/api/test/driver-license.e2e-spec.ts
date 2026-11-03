@@ -78,7 +78,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
       .set('Cookie', sessionCookies)
       .send({
         licenseNumber: '079199012345',
-        fullName: 'Lê Hoàng Thuê 1',
+        fullName: 'Thuê 1',
         dateOfBirth: '1995-05-15',
         licenseClass: 'B2',
         expiryDate: futureExpiry,
@@ -98,7 +98,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
       .set('X-CSRF-Token', csrfToken)
       .send({
         licenseNumber: '12345', // chỉ có 5 số (yêu cầu đúng 12 số)
-        fullName: 'Lê Hoàng Thuê 1',
+        fullName: 'Thuê 1',
         dateOfBirth: '1995-05-15',
         licenseClass: 'B2',
         expiryDate: futureExpiry,
@@ -116,7 +116,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
       .set('X-CSRF-Token', csrfToken)
       .send({
         licenseNumber: '079199012345',
-        fullName: 'Lê Hoàng Thuê 1',
+        fullName: 'Thuê 1',
         dateOfBirth: '1995-05-15',
         licenseClass: 'B2',
         expiryDate: soonExpiry,
@@ -136,7 +136,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
       .set('X-CSRF-Token', csrfToken)
       .send({
         licenseNumber: '079199012345',
-        fullName: 'Lê Hoàng Thuê 1',
+        fullName: 'Thuê 1',
         dateOfBirth: '1995-05-15',
         licenseClass: 'B2',
         expiryDate: futureExpiry,
@@ -145,7 +145,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
 
     assert.equal(res.body.data.licenseNumber, '079199012345');
     assert.equal(res.body.data.status, 'PENDING');
-    assert.equal(res.body.data.fullName, 'LÊ HOÀNG THUÊ 1');
+    assert.equal(res.body.data.fullName, 'THUÊ 1');
   });
 
   it('6. POST /api/v1/users/:id/driver-license/verify approves driver license with 200 VERIFIED', async () => {
@@ -172,7 +172,7 @@ describe('Driver License KYC API (e2e) - G1-02', () => {
       .set('X-CSRF-Token', csrfToken)
       .send({
         licenseNumber: '079199012345',
-        fullName: 'Lê Hoàng Thuê 1',
+        fullName: 'Thuê 1',
         dateOfBirth: '1995-05-15',
         licenseClass: 'B2',
         expiryDate: futureExpiry,

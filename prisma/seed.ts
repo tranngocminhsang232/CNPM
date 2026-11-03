@@ -71,28 +71,28 @@ async function main() {
   const usersData = [
     {
       id: DEMO_IDS.USERS.OWNER_1,
-      name: 'Nguyễn Văn Chủ 1',
+      name: 'Chủ 1',
       emailNormalized: 'owner1@carsharing.local',
       phone: '0901111111',
       passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.OWNER_2,
-      name: 'Trần Thị Chủ 2',
+      name: 'Chủ 2',
       emailNormalized: 'owner2@carsharing.local',
       phone: '0902222222',
       passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.RENTER_1,
-      name: 'Lê Hoàng Thuê 1',
+      name: 'Thuê 1',
       emailNormalized: 'renter1@carsharing.local',
       phone: '0903333333',
       passwordHash: DEMO_PASSWORD_HASH,
     },
     {
       id: DEMO_IDS.USERS.RENTER_2,
-      name: 'Phạm Minh Thuê 2',
+      name: 'Thuê 2',
       emailNormalized: 'renter2@carsharing.local',
       phone: '0904444444',
       passwordHash: DEMO_PASSWORD_HASH,

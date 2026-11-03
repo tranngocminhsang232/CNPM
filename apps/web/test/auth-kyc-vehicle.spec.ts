@@ -23,7 +23,7 @@ test.describe('Milestone G1 Web Integration Flow (Auth, KYC & Owner Vehicles)', 
     await renterQuickBtn.click();
 
     // Modal closes and UserNav updates with user name and KYC badge
-    await expect(page.locator('#nav-user-name')).toHaveText('Lê Hoàng Thuê 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Thuê 1', { timeout: 10000 });
     await expect(page.locator('#nav-kyc-badge')).toBeVisible();
 
     // 4. Navigate to KYC profile page
@@ -48,7 +48,7 @@ test.describe('Milestone G1 Web Integration Flow (Auth, KYC & Owner Vehicles)', 
     // 6. Login as owner1
     await page.locator('#nav-login-btn').click();
     await page.locator('#quick-login-owner1').click();
-    await expect(page.locator('#nav-user-name')).toHaveText('Nguyễn Văn Chủ 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Chủ 1', { timeout: 10000 });
 
     // 7. Navigate to Owner Vehicles management
     await page.locator('#user-menu-trigger').click();

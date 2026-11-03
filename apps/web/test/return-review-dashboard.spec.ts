@@ -3,8 +3,8 @@ import { PrismaClient } from '@prisma/client';
 
 const TEST_BOOKING_ID = '20000000-0000-4000-8000-000000000099';
 const VEHICLE_ID = '10000000-0000-0000-0000-000000000004'; // Mazda CX-5
-const RENTER_ID = '00000000-0000-0000-0000-000000000003'; // Lê Hoàng Thuê 1
-const OWNER_ID = '00000000-0000-0000-0000-000000000001'; // Nguyễn Văn Chủ 1
+const RENTER_ID = '00000000-0000-0000-0000-000000000003'; // Thuê 1
+const OWNER_ID = '00000000-0000-0000-0000-000000000001'; // Chủ 1
 
 async function cleanupTestBooking() {
   const prisma = new PrismaClient();

@@ -71,7 +71,7 @@ describe('UsersService (Unit) - G1-02', () => {
       .split('T')[0];
     const result = await usersService.submitDriverLicense('user-new-id', {
       licenseNumber: '079199012345',
-      fullName: 'Nguyễn Văn Mới',
+      fullName: 'Mới 1',
       dateOfBirth: '1998-08-20',
       licenseClass: 'B2',
       expiryDate: futureExpiry as string,
@@ -88,7 +88,7 @@ describe('UsersService (Unit) - G1-02', () => {
       async () => {
         await usersService.submitDriverLicense('user-new-id', {
           licenseNumber: '079199012345',
-          fullName: 'Nguyễn Văn Mới',
+          fullName: 'Mới 1',
           dateOfBirth: '1998-08-20',
           licenseClass: 'B2',
           expiryDate: soonExpiry as string,
@@ -112,7 +112,7 @@ describe('UsersService (Unit) - G1-02', () => {
       async () => {
         await usersService.submitDriverLicense('user-new-id', {
           licenseNumber: '079199012345',
-          fullName: 'Nguyễn Văn Trẻ',
+          fullName: 'Mới 2',
           dateOfBirth: tooYoungDob as string,
           licenseClass: 'B1',
           expiryDate: futureExpiry as string,

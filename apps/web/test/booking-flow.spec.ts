@@ -46,7 +46,7 @@ test.describe('Milestone G3 Web Flow (Checkout, Escrow Payment & Trip Management
     await expect(renterQuickBtn).toBeVisible();
     await renterQuickBtn.click();
 
-    await expect(page.locator('#nav-user-name')).toHaveText('Lê Hoàng Thuê 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Thuê 1', { timeout: 10000 });
 
     // 2. Navigate to vehicle detail page (VinFast VF8 Eco)
     await page.goto('/vehicles/10000000-0000-0000-0000-000000000001');
@@ -107,7 +107,7 @@ test.describe('Milestone G3 Web Flow (Checkout, Escrow Payment & Trip Management
     // 8. Login as owner1 (vehicle host)
     await page.locator('#nav-login-btn').click();
     await page.locator('#quick-login-owner1').click();
-    await expect(page.locator('#nav-user-name')).toHaveText('Nguyễn Văn Chủ 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Chủ 1', { timeout: 10000 });
 
     // 9. Navigate to Owner Bookings Inbox
     await page.locator('#user-menu-trigger').click();
@@ -134,7 +134,7 @@ test.describe('Milestone G3 Web Flow (Checkout, Escrow Payment & Trip Management
     // 11. Login as renter1 again
     await page.locator('#nav-login-btn').click();
     await page.locator('#quick-login-renter1').click();
-    await expect(page.locator('#nav-user-name')).toHaveText('Lê Hoàng Thuê 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Thuê 1', { timeout: 10000 });
 
     // 12. Return to the booking details page
     await page.goto(`/bookings/${bookingId}`);

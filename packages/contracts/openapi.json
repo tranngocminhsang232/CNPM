@@ -2246,7 +2246,7 @@
           "name": {
             "type": "string",
             "description": "Họ và tên",
-            "example": "Nguyễn Văn Chủ 1"
+            "example": "Chủ 1"
           },
           "email": {
             "type": "string",
@@ -2327,7 +2327,7 @@
           "name": {
             "type": "string",
             "description": "Họ và tên người dùng (2 - 100 ký tự)",
-            "example": "Nguyễn Văn A"
+            "example": "Mới 1"
           },
           "email": {
             "type": "string",
@@ -2697,7 +2697,7 @@
           },
           "name": {
             "type": "string",
-            "example": "Nguyễn Văn Chủ 1"
+            "example": "Chủ 1"
           },
           "joinedAt": {
             "type": "string",
@@ -3561,7 +3561,7 @@
           },
           "name": {
             "type": "string",
-            "example": "Nguyễn Văn Chủ 1"
+            "example": "Chủ 1"
           },
           "phone": {
             "type": "string",

@@ -19,8 +19,8 @@ describe('ReviewsService (unit) - G5-03 Two-Way Reviews Engine', () => {
     renterId: ACTOR_RENTER,
     ownerId: ACTOR_OWNER,
     status: 'COMPLETED',
-    renter: { id: ACTOR_RENTER, name: 'Nguyễn Văn Renter' },
-    owner: { id: ACTOR_OWNER, name: 'Trần Văn Owner' },
+    renter: { id: ACTOR_RENTER, name: 'Thuê 1' },
+    owner: { id: ACTOR_OWNER, name: 'Chủ 1' },
   };
 
   beforeEach(() => {
@@ -218,7 +218,7 @@ describe('ReviewsService (unit) - G5-03 Two-Way Reviews Engine', () => {
       const res = await service.getBookingReviews(BOOKING_ID, ACTOR_RENTER);
       assert.equal(res.length, 1);
       assert.equal(res[0]!.score, 5);
-      assert.equal(res[0]!.author?.name, 'Nguyễn Văn Renter');
+      assert.equal(res[0]!.author?.name, 'Thuê 1');
     });
   });
 

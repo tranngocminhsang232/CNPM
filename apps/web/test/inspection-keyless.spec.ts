@@ -3,8 +3,8 @@ import { PrismaClient } from '@prisma/client';
 
 const TEST_BOOKING_ID = '20000000-0000-4000-8000-000000000088';
 const VEHICLE_ID = '10000000-0000-0000-0000-000000000004'; // Mazda CX-5 2.0 Premium (keylessSupported: true)
-const RENTER_ID = '00000000-0000-0000-0000-000000000003'; // Lê Hoàng Thuê 1
-const OWNER_ID = '00000000-0000-0000-0000-000000000001'; // Nguyễn Văn Chủ 1
+const RENTER_ID = '00000000-0000-0000-0000-000000000003'; // Thuê 1
+const OWNER_ID = '00000000-0000-0000-0000-000000000001'; // Chủ 1
 
 async function resetTestBooking() {
   const prisma = new PrismaClient();
@@ -109,7 +109,7 @@ test.describe('Milestone G4 Web Flow (Handover Checklist & Virtual Keyless Opera
     await expect(renterQuickBtn).toBeVisible();
     await renterQuickBtn.click();
 
-    await expect(page.locator('#nav-user-name')).toHaveText('Lê Hoàng Thuê 1', { timeout: 10000 });
+    await expect(page.locator('#nav-user-name')).toHaveText('Thuê 1', { timeout: 10000 });
 
     // 2. Navigate to test booking details page
     await page.goto(`/bookings/${TEST_BOOKING_ID}`);

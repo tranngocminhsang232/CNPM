@@ -883,7 +883,7 @@ export interface components {
       id: string;
       /**
        * @description Họ và tên
-       * @example Nguyễn Văn Chủ 1
+       * @example Chủ 1
        */
       name: string;
       /**
@@ -942,7 +942,7 @@ export interface components {
     RegisterDto: {
       /**
        * @description Họ và tên người dùng (2 - 100 ký tự)
-       * @example Nguyễn Văn A
+       * @example Mới 1
        */
       name: string;
       /**
@@ -1203,7 +1203,7 @@ export interface components {
     VehicleOwnerSummaryDto: {
       /** @example 00000000-0000-0000-0000-000000000001 */
       id: string;
-      /** @example Nguyễn Văn Chủ 1 */
+      /** @example Chủ 1 */
       name: string;
       /** @example 2026-01-01T00:00:00.000Z */
       joinedAt: string;
@@ -1751,7 +1751,7 @@ export interface components {
     BookingUserSummaryDto: {
       /** @example 00000000-0000-0000-0000-000000000001 */
       id: string;
-      /** @example Nguyễn Văn Chủ 1 */
+      /** @example Chủ 1 */
       name: string;
       /** @example 0901111111 */
       phone: string;

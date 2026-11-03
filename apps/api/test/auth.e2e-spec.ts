@@ -59,7 +59,7 @@ describe('Auth API (e2e) - G1-01', () => {
       .expect(200);
 
     assert.equal(res.body.data.user.email, 'owner1@carsharing.local');
-    assert.equal(res.body.data.user.name, 'Nguyễn Văn Chủ 1');
+    assert.equal(res.body.data.user.name, 'Chủ 1');
     assert.deepEqual(res.body.data.user.capabilities, ['RENTER', 'OWNER'], 'Capability model');
     assert.ok(res.body.data.csrfToken);
 
@@ -114,7 +114,7 @@ describe('Auth API (e2e) - G1-01', () => {
       .expect(200);
 
     assert.equal(res.body.data.email, 'owner1@carsharing.local');
-    assert.equal(res.body.data.name, 'Nguyễn Văn Chủ 1');
+    assert.equal(res.body.data.name, 'Chủ 1');
     assert.deepEqual(res.body.data.capabilities, ['RENTER', 'OWNER']);
   });
 
@@ -132,7 +132,7 @@ describe('Auth API (e2e) - G1-01', () => {
     const res = await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        name: 'Trần Văn Mới',
+        name: 'Mới 1',
         email: uniqueEmail,
         password: 'ValidPassword123!',
         phone: '0912345678',
@@ -140,14 +140,14 @@ describe('Auth API (e2e) - G1-01', () => {
       .expect(201);
 
     assert.equal(res.body.data.user.email, uniqueEmail);
-    assert.equal(res.body.data.user.name, 'Trần Văn Mới');
+    assert.equal(res.body.data.user.name, 'Mới 1');
     assert.deepEqual(res.body.data.user.capabilities, ['RENTER', 'OWNER']);
 
     // Registering the exact same email again must return 409 EMAIL_IN_USE
     const duplicateRes = await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        name: 'Trần Văn Mới 2',
+        name: 'Mới 2',
         email: uniqueEmail,
         password: 'ValidPassword123!',
         phone: '0912345679',

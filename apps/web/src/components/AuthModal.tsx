@@ -12,19 +12,19 @@ interface AuthModalProps {
 const DEMO_ACCOUNTS = [
   {
     role: 'Người thuê',
-    name: 'Lê Hoàng Thuê 1',
+    name: 'Thuê 1',
     email: 'renter1@carsharing.local',
     badge: 'Khách thuê',
   },
   {
     role: 'Chủ xe 1',
-    name: 'Nguyễn Văn Chủ 1',
+    name: 'Chủ 1',
     email: 'owner1@carsharing.local',
     badge: 'Chủ xe',
   },
   {
     role: 'Chủ xe 2',
-    name: 'Trần Thị Chủ 2',
+    name: 'Chủ 2',
     email: 'owner2@carsharing.local',
     badge: 'Chủ xe',
   },

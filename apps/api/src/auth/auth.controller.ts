@@ -145,7 +145,7 @@ export class AuthController {
       code === 'mock_google_code_seed_owner'
         ? {
             email: 'owner1@carsharing.local',
-            name: 'Nguyễn Văn Chủ 1 (Google)',
+            name: 'Chủ 1 (Google)',
             subject: 'google-sub-mock-123456',
           }
         : {

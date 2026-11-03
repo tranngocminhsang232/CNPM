@@ -66,7 +66,7 @@ export class BookingUserSummaryDto {
   @ApiProperty({ example: '00000000-0000-0000-0000-000000000001' })
   id!: string;
 
-  @ApiProperty({ example: 'Nguyễn Văn Chủ 1' })
+  @ApiProperty({ example: 'Chủ 1' })
   name!: string;
 
   @ApiProperty({ example: '0901111111' })

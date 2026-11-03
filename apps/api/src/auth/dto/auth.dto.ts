@@ -26,7 +26,7 @@ export class LoginDto {
 export class RegisterDto {
   @ApiProperty({
     description: 'Họ và tên người dùng (2 - 100 ký tự)',
-    example: 'Nguyễn Văn A',
+    example: 'Mới 1',
   })
   @IsString({ message: 'Họ tên phải là chuỗi' })
   @Length(2, 100, { message: 'Họ tên phải từ 2 đến 100 ký tự' })
@@ -67,7 +67,7 @@ export class UserDto {
   })
   id!: string;
 
-  @ApiProperty({ description: 'Họ và tên', example: 'Nguyễn Văn Chủ 1' })
+  @ApiProperty({ description: 'Họ và tên', example: 'Chủ 1' })
   name!: string;
 
   @ApiProperty({ description: 'Email tài khoản', example: 'owner1@carsharing.local' })

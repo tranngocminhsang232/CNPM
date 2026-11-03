@@ -134,12 +134,12 @@ pnpm --filter @carsharing/web run dev        # Web Frontend tại http://localho
 
 Hệ thống đã chuẩn bị sẵn 4 tài khoản thử nghiệm với mật khẩu chung là `DemoPassword123!` (hoặc sử dụng nút **Đăng nhập nhanh 1-click** ngay trên giao diện Web):
 
-| Vai trò thử nghiệm        | Họ và tên        | Email đăng nhập            | Trạng thái KYC            |
-| :------------------------ | :--------------- | :------------------------- | :------------------------ |
-| **Khách thuê 1 (Renter)** | Lê Hoàng Thuê 1  | `renter1@carsharing.local` | Đã xác thực (VERIFIED)    |
-| **Khách thuê 2 (Renter)** | Phạm Minh Thuê 2 | `renter2@carsharing.local` | Chưa xác thực (NONE)      |
-| **Chủ xe 1 (Owner)**      | Nguyễn Văn Chủ 1 | `owner1@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
-| **Chủ xe 2 (Owner)**      | Trần Thị Chủ 2   | `owner2@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
+| Vai trò thử nghiệm        | Họ và tên | Email đăng nhập            | Trạng thái KYC            |
+| :------------------------ | :-------- | :------------------------- | :------------------------ |
+| **Khách thuê 1 (Renter)** | Thuê 1    | `renter1@carsharing.local` | Đã xác thực (VERIFIED)    |
+| **Khách thuê 2 (Renter)** | Thuê 2    | `renter2@carsharing.local` | Chưa xác thực (NONE)      |
+| **Chủ xe 1 (Owner)**      | Chủ 1     | `owner1@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
+| **Chủ xe 2 (Owner)**      | Chủ 2     | `owner2@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
 
 ---
 

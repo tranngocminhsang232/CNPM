@@ -5,7 +5,7 @@ export class VehicleOwnerSummaryDto {
   @ApiProperty({ example: '00000000-0000-0000-0000-000000000001' })
   id!: string;
 
-  @ApiProperty({ example: 'Nguyễn Văn Chủ 1' })
+  @ApiProperty({ example: 'Chủ 1' })
   name!: string;
 
   @ApiProperty({ example: '2026-01-01T00:00:00.000Z' })

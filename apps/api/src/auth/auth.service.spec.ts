@@ -18,7 +18,7 @@ describe('AuthService (Unit)', () => {
           if (where.emailNormalized === 'owner1@carsharing.local') {
             return {
               id: '00000000-0000-0000-0000-000000000001',
-              name: 'Nguyễn Văn Chủ 1',
+              name: 'Chủ 1',
               emailNormalized: 'owner1@carsharing.local',
               phone: '0901111111',
               passwordHash: DEMO_PASSWORD_HASH,
@@ -27,7 +27,7 @@ describe('AuthService (Unit)', () => {
           if (where.id === '00000000-0000-0000-0000-000000000001') {
             return {
               id: '00000000-0000-0000-0000-000000000001',
-              name: 'Nguyễn Văn Chủ 1',
+              name: 'Chủ 1',
               emailNormalized: 'owner1@carsharing.local',
               phone: '0901111111',
             };
@@ -74,7 +74,7 @@ describe('AuthService (Unit)', () => {
     assert.ok(result.refreshToken, 'Refresh token should be generated');
     assert.ok(result.csrfToken, 'CSRF token should be generated');
     assert.equal(result.user.email, 'owner1@carsharing.local');
-    assert.equal(result.user.name, 'Nguyễn Văn Chủ 1');
+    assert.equal(result.user.name, 'Chủ 1');
     assert.deepEqual(result.user.capabilities, ['RENTER', 'OWNER'], 'Capability model check');
   });
 
@@ -130,7 +130,7 @@ describe('AuthService (Unit)', () => {
     await assert.rejects(
       async () => {
         await authService.register({
-          name: 'Nguyễn Văn Trùng',
+          name: 'Mới 1',
           email: 'owner1@carsharing.local',
           password: 'StrongPassword2026!#',
           phone: '0912345678',

@@ -142,7 +142,7 @@ describe('VehiclesService (Unit) - G2-01 Search & Filter Engine', () => {
       ],
       owner: {
         id: '00000000-0000-0000-0000-000000000001',
-        name: 'Nguyễn Văn Chủ 1',
+        name: 'Chủ 1',
         emailNormalized: 'owner1@carsharing.local', // Private!
         phone: '0901111111', // Private!
         createdAt: new Date('2026-01-01T00:00:00Z'),
@@ -165,7 +165,7 @@ describe('VehiclesService (Unit) - G2-01 Search & Filter Engine', () => {
     assert.equal(result.reviewCount, 2);
     assert.equal(result.totalTrips, 1);
     assert.equal(result.photoUrls.length, 1);
-    assert.equal(result.owner.name, 'Nguyễn Văn Chủ 1');
+    assert.equal(result.owner.name, 'Chủ 1');
 
     // Strict privacy verification: NO plate, NO pickupAddress, NO owner email/phone
     assert.equal((result as any).plateNormalized, undefined);
