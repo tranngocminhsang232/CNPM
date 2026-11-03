@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "pnpm -r --filter \"@carsharing/*\" --parallel run dev",
     "build": "pnpm -r run build",
+    "pretypecheck": "pnpm --filter @carsharing/contracts run build",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm --filter @carsharing/api run test:all",
     "test:smoke": "pnpm --filter @carsharing/web run test:smoke",

@@ -85,11 +85,11 @@ jobs:
       - name: Check code formatting (Prettier)
         run: pnpm run format:check
 
-      - name: Typecheck all workspaces
-        run: pnpm run typecheck
-
       - name: Build all packages
         run: pnpm run build
+
+      - name: Typecheck all workspaces
+        run: pnpm run typecheck
 
       - name: Run unit, constraint & e2e test suites
         run: pnpm run test
