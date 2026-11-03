@@ -17,7 +17,7 @@ Hệ thống được thiết kế theo kiến trúc **Monorepo** với đầy �
 ├── prisma/            # Schema CSDL, Migrations PostgreSQL và Seed dữ liệu mẫu
 ├── infra/             # Docker Compose (PostgreSQL 18 & MinIO S3 Storage)
 ├── tools/             # Script hỗ trợ sinh OpenAPI contract và nạp dữ liệu ảnh
-└── *.bat              # Kịch bản khởi chạy tự động 1-click dành cho Windows
+└── *.bat / *.sh       # Kịch bản khởi chạy tự động dành cho Windows, macOS và Linux
 ```
 
 ---
@@ -62,14 +62,36 @@ Hệ thống được thiết kế theo kiến trúc **Monorepo** với đầy �
 
 ---
 
-## ⚡ Hướng Dẫn Khởi Chạy Nhanh 1-Click (Windows)
+## ⚡ Hướng Dẫn Khởi Chạy Nhanh (Windows, macOS, Linux)
 
-Dự án đã tích hợp sẵn các kịch bản tự động hóa ở thư mục gốc:
+Dự án đã tích hợp sẵn các bộ kịch bản tự động hóa cho tất cả các hệ điều hành:
 
-- **`start-dev.bat`**: Tự động bật Docker Desktop, khởi động PostgreSQL & MinIO, đồng bộ CSDL, chạy Backend + Frontend và tự động mở trình duyệt tại `http://localhost:3000`.
+### 🪟 Dành cho Windows:
+
+Nhấp đúp chuột để chạy trực tiếp:
+
+- **`start-dev.bat`**: Tự động kiểm tra Docker Desktop, khởi động PostgreSQL & MinIO, đồng bộ CSDL, chạy Backend + Frontend và tự động mở trình duyệt tại `http://localhost:3000`.
 - **`stop-dev.bat`**: Dừng an toàn toàn bộ Backend, Frontend và Docker containers.
 - **`start-studio.bat`**: Mở giao diện đồ họa quản trị CSDL (Prisma Studio) tại `http://localhost:5555`.
 - **`reset-db.bat`**: Khôi phục CSDL về trạng thái dữ liệu mẫu ban đầu (4 tài khoản Demo, 13 xe).
+
+### 🍎 Dành cho macOS & 🐧 Linux:
+
+Mở Terminal tại thư mục dự án và thực thi lệnh (các file đã được cấp sẵn quyền thực thi `chmod +x`):
+
+```bash
+# Khởi động toàn bộ hệ thống (Docker, CSDL, Backend, Frontend & mở trình duyệt)
+./start-dev.sh
+
+# Dừng an toàn hệ thống
+./stop-dev.sh
+
+# Mở giao diện đồ họa quản trị cơ sở dữ liệu (Prisma Studio)
+./start-studio.sh
+
+# Khôi phục dữ liệu mẫu ban đầu
+./reset-db.sh
+```
 
 ---
 
