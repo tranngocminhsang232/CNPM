@@ -128,10 +128,7 @@ export class MediaController {
 
   @Get('staging/:filename')
   @ApiOperation({ summary: 'Xem media staging' })
-  async getStagingImage(
-    @Param('filename') filename: string,
-    @Res() res: Response,
-  ): Promise<void> {
+  async getStagingImage(@Param('filename') filename: string, @Res() res: Response): Promise<void> {
     await this.mediaService.streamMedia(`staging/${filename}`, res);
   }
 }

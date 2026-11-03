@@ -150,7 +150,11 @@ async function main() {
   }
 
   // Create default-car.jpg fallback
-  const firstCarCover = path.join(webPublicDir, '10000000-0000-0000-0000-000000000001', 'cover.jpg');
+  const firstCarCover = path.join(
+    webPublicDir,
+    '10000000-0000-0000-0000-000000000001',
+    'cover.jpg',
+  );
   if (fs.existsSync(firstCarCover)) {
     fs.copyFileSync(firstCarCover, path.join(webPublicDir, 'default-car.jpg'));
     fs.copyFileSync(firstCarCover, path.join(apiAssetsDir, 'default-car.jpg'));

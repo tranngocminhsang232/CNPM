@@ -76,11 +76,13 @@ Dự án đã tích hợp sẵn các kịch bản tự động hóa ở thư m�
 ## 💻 Hướng Dẫn Khởi Chạy Thủ Công (Terminal)
 
 ### 1. Yêu cầu môi trường
+
 - **Node.js**: Phiên bản `>= 24.0.0`
 - **pnpm**: Phiên bản `>= 10.0.0`
 - **Docker Desktop**: Đang chạy
 
 ### 2. Cài đặt và chuẩn bị
+
 ```bash
 # Cài đặt toàn bộ dependencies cho monorepo
 pnpm install
@@ -94,6 +96,7 @@ pnpm db:seed
 ```
 
 ### 3. Khởi chạy ứng dụng
+
 ```bash
 # Khởi chạy đồng thời cả Backend và Frontend
 pnpm run dev
@@ -109,12 +112,12 @@ pnpm --filter @carsharing/web run dev        # Web Frontend tại http://localho
 
 Hệ thống đã chuẩn bị sẵn 4 tài khoản thử nghiệm với mật khẩu chung là `DemoPassword123!` (hoặc sử dụng nút **Đăng nhập nhanh 1-click** ngay trên giao diện Web):
 
-| Vai trò thử nghiệm | Họ và tên | Email đăng nhập | Trạng thái KYC |
-| :--- | :--- | :--- | :--- |
-| **Khách thuê 1 (Renter)** | Lê Hoàng Thuê 1 | `renter1@carsharing.local` | Đã xác thực (VERIFIED) |
-| **Khách thuê 2 (Renter)** | Phạm Minh Thuê 2 | `renter2@carsharing.local` | Chưa xác thực (NONE) |
-| **Chủ xe 1 (Owner)** | Nguyễn Văn Chủ 1 | `owner1@carsharing.local` | Đã xác thực (Sở hữu 6 xe) |
-| **Chủ xe 2 (Owner)** | Trần Thị Chủ 2 | `owner2@carsharing.local` | Đã xác thực (Sở hữu 6 xe) |
+| Vai trò thử nghiệm        | Họ và tên        | Email đăng nhập            | Trạng thái KYC            |
+| :------------------------ | :--------------- | :------------------------- | :------------------------ |
+| **Khách thuê 1 (Renter)** | Lê Hoàng Thuê 1  | `renter1@carsharing.local` | Đã xác thực (VERIFIED)    |
+| **Khách thuê 2 (Renter)** | Phạm Minh Thuê 2 | `renter2@carsharing.local` | Chưa xác thực (NONE)      |
+| **Chủ xe 1 (Owner)**      | Nguyễn Văn Chủ 1 | `owner1@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
+| **Chủ xe 2 (Owner)**      | Trần Thị Chủ 2   | `owner2@carsharing.local`  | Đã xác thực (Sở hữu 6 xe) |
 
 ---
 

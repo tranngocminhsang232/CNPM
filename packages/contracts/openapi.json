@@ -22,9 +22,7 @@
           }
         },
         "summary": "Lấy mã xác thực CSRF gắn phiên hoặc trước phiên",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/login": {
@@ -61,9 +59,7 @@
           }
         },
         "summary": "Đăng nhập người dùng bằng email và mật khẩu",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/register": {
@@ -100,9 +96,7 @@
           }
         },
         "summary": "Đăng ký tài khoản người dùng mới",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/google": {
@@ -115,9 +109,7 @@
           }
         },
         "summary": "Khởi tạo luồng xác thực Google OAuth2/OIDC",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/google/callback": {
@@ -139,9 +131,7 @@
           }
         },
         "summary": "Xử lý phản hồi từ Google OAuth2/OIDC",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/logout": {
@@ -154,9 +144,7 @@
           }
         },
         "summary": "Đăng xuất tài khoản và thu hồi phiên làm việc",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/auth/me": {
@@ -183,9 +171,7 @@
           }
         },
         "summary": "Lấy thông tin người dùng hiện tại từ phiên đăng nhập",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/me": {
@@ -212,9 +198,7 @@
           }
         },
         "summary": "Lấy thông tin người dùng hiện tại từ phiên đăng nhập",
-        "tags": [
-          "Auth"
-        ]
+        "tags": ["Auth"]
       }
     },
     "/api/v1/users/me/driver-license": {
@@ -239,9 +223,7 @@
           }
         },
         "summary": "Xem thông tin giấy phép lái xe hiện tại của tôi",
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       },
       "post": {
         "operationId": "UsersController_submitDriverLicense",
@@ -279,9 +261,7 @@
           }
         },
         "summary": "Nộp thông tin giấy phép lái xe (GPLX) để xác thực KYC",
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/api/v1/users/{id}/driver-license/verify": {
@@ -328,9 +308,7 @@
           }
         },
         "summary": "Duyệt hoặc từ chối giấy phép lái xe (Admin / Mock Verification)",
-        "tags": [
-          "Users"
-        ]
+        "tags": ["Users"]
       }
     },
     "/api/v1/media/upload-intents": {
@@ -371,9 +349,7 @@
           }
         ],
         "summary": "Tạo upload intent và sinh Presigned PUT URL để upload trực tiếp lên S3/MinIO",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}/verify": {
@@ -419,9 +395,7 @@
           }
         ],
         "summary": "Xác thực file đã tải lên storage thành công (probe S3) và chuyển trạng thái sang VERIFIED",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}/read-url": {
@@ -467,9 +441,7 @@
           }
         ],
         "summary": "Lấy Presigned GET URL để xem file media (kiểm tra phân quyền tài liệu nhạy cảm)",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/vehicles/{id}/{filename}": {
@@ -499,9 +471,7 @@
           }
         },
         "summary": "Xem ảnh xe công khai",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/finalized/{purpose}/{filename}": {
@@ -531,9 +501,7 @@
           }
         },
         "summary": "Xem media đã xác thực công khai",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/staging/{filename}": {
@@ -555,9 +523,7 @@
           }
         },
         "summary": "Xem media staging",
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/health": {
@@ -569,9 +535,7 @@
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/api/v1/vehicle-options": {
@@ -591,9 +555,7 @@
           }
         },
         "summary": "Lấy danh mục các tùy chọn tìm kiếm xe (thành phố, loại xe, hộp số, tiện nghi)",
-        "tags": [
-          "Vehicles"
-        ]
+        "tags": ["Vehicles"]
       }
     },
     "/api/v1/vehicles": {
@@ -657,13 +619,7 @@
             "description": "Phân khúc xe",
             "schema": {
               "type": "string",
-              "enum": [
-                "SEDAN",
-                "SUV",
-                "HATCHBACK",
-                "MPV",
-                "CROSSOVER"
-              ]
+              "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
             }
           },
           {
@@ -673,10 +629,7 @@
             "description": "Hộp số",
             "schema": {
               "type": "string",
-              "enum": [
-                "AUTO",
-                "MANUAL"
-              ]
+              "enum": ["AUTO", "MANUAL"]
             }
           },
           {
@@ -729,10 +682,7 @@
               "items": {
                 "type": "string"
               },
-              "example": [
-                "GPS",
-                "BACKUP_CAMERA"
-              ]
+              "example": ["GPS", "BACKUP_CAMERA"]
             }
           },
           {
@@ -743,13 +693,7 @@
             "schema": {
               "default": "newest",
               "type": "string",
-              "enum": [
-                "price_asc",
-                "price_desc",
-                "newest",
-                "rating_desc",
-                "popularity_desc"
-              ]
+              "enum": ["price_asc", "price_desc", "newest", "rating_desc", "popularity_desc"]
             }
           },
           {
@@ -799,9 +743,7 @@
           }
         },
         "summary": "Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED)",
-        "tags": [
-          "Vehicles"
-        ]
+        "tags": ["Vehicles"]
       }
     },
     "/api/v1/vehicles/{id}": {
@@ -833,9 +775,7 @@
           }
         },
         "summary": "Lấy thông tin chi tiết xe công khai theo ID",
-        "tags": [
-          "Vehicles"
-        ]
+        "tags": ["Vehicles"]
       }
     },
     "/api/v1/owner/vehicles": {
@@ -879,9 +819,7 @@
           }
         ],
         "summary": "Chủ xe đăng ký tạo xe mới (trạng thái DRAFT)",
-        "tags": [
-          "owner-vehicles"
-        ]
+        "tags": ["owner-vehicles"]
       },
       "get": {
         "operationId": "OwnerVehiclesController_getOwnerVehicles",
@@ -910,9 +848,7 @@
           }
         ],
         "summary": "Lấy danh sách toàn bộ xe thuộc sở hữu của chủ xe hiện tại",
-        "tags": [
-          "owner-vehicles"
-        ]
+        "tags": ["owner-vehicles"]
       }
     },
     "/api/v1/owner/vehicles/{id}": {
@@ -955,9 +891,7 @@
           }
         ],
         "summary": "Xem chi tiết quản lý một xe của chủ xe",
-        "tags": [
-          "owner-vehicles"
-        ]
+        "tags": ["owner-vehicles"]
       },
       "patch": {
         "operationId": "OwnerVehiclesController_updateVehicle",
@@ -1011,9 +945,7 @@
           }
         ],
         "summary": "Chủ xe cập nhật thông tin xe",
-        "tags": [
-          "owner-vehicles"
-        ]
+        "tags": ["owner-vehicles"]
       }
     },
     "/api/v1/owner/vehicles/{id}/publish": {
@@ -1059,9 +991,7 @@
           }
         ],
         "summary": "Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai",
-        "tags": [
-          "owner-vehicles"
-        ]
+        "tags": ["owner-vehicles"]
       }
     },
     "/api/v1/pricing/quote": {
@@ -1100,9 +1030,7 @@
           }
         },
         "summary": "Tính báo giá thuê xe theo khoảng ngày, gói bảo hiểm và kiểm tra lịch xe khả dụng",
-        "tags": [
-          "Pricing"
-        ]
+        "tags": ["Pricing"]
       }
     },
     "/api/v1/pricing/calculate": {
@@ -1132,9 +1060,7 @@
           }
         },
         "summary": "Tính toán biểu phí thuê xe chi tiết (alias cho POST /pricing/quote)",
-        "tags": [
-          "Pricing"
-        ]
+        "tags": ["Pricing"]
       }
     },
     "/api/v1/vehicles/{id}/pricing-preview": {
@@ -1176,11 +1102,7 @@
             "schema": {
               "default": "BASIC",
               "type": "string",
-              "enum": [
-                "BASIC",
-                "STANDARD",
-                "PREMIUM"
-              ]
+              "enum": ["BASIC", "STANDARD", "PREMIUM"]
             }
           },
           {
@@ -1212,9 +1134,7 @@
           }
         },
         "summary": "Xem trước dự toán chi phí thuê xe bằng phương thức GET (hỗ trợ UI widget)",
-        "tags": [
-          "Pricing"
-        ]
+        "tags": ["Pricing"]
       }
     },
     "/api/v1/promotions/validate": {
@@ -1251,9 +1171,7 @@
           }
         },
         "summary": "Kiểm tra tính hợp lệ và mức giảm giá của voucher khuyến mãi",
-        "tags": [
-          "promotions"
-        ]
+        "tags": ["promotions"]
       }
     },
     "/api/v1/bookings": {
@@ -1317,9 +1235,7 @@
           }
         ],
         "summary": "Tạo yêu cầu đặt xe mới (Idempotent)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       },
       "get": {
         "description": "Lấy danh sách các đơn đặt xe thuộc quyền sở hữu của người dùng hiện tại theo góc nhìn renter hoặc owner.",
@@ -1333,10 +1249,7 @@
             "schema": {
               "default": "renter",
               "type": "string",
-              "enum": [
-                "renter",
-                "owner"
-              ]
+              "enum": ["renter", "owner"]
             }
           },
           {
@@ -1389,9 +1302,7 @@
           }
         ],
         "summary": "Tra cứu danh sách đơn đặt xe (Khách thuê hoặc Chủ xe)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}": {
@@ -1426,9 +1337,7 @@
           }
         ],
         "summary": "Xem chi tiết đơn đặt xe",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/approve": {
@@ -1463,9 +1372,7 @@
           }
         ],
         "summary": "Chủ xe phê duyệt đơn đặt xe",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/reject": {
@@ -1510,9 +1417,7 @@
           }
         ],
         "summary": "Chủ xe từ chối đơn đặt xe",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/cancel": {
@@ -1557,9 +1462,7 @@
           }
         ],
         "summary": "Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/complete": {
@@ -1594,9 +1497,7 @@
           }
         ],
         "summary": "Khách thuê hoàn tất trả xe và kết thúc chuyến đi",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/settle-deposit": {
@@ -1641,9 +1542,7 @@
           }
         ],
         "summary": "Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/bookings/{id}/settlement": {
@@ -1678,9 +1577,7 @@
           }
         ],
         "summary": "Xem chi tiết hoặc xem trước quyết toán cọc",
-        "tags": [
-          "Bookings"
-        ]
+        "tags": ["Bookings"]
       }
     },
     "/api/v1/payments/create-intent": {
@@ -1716,9 +1613,7 @@
           }
         ],
         "summary": "Tạo ý định thanh toán (tiền cọc giữ chỗ hoặc toàn bộ)",
-        "tags": [
-          "Payments"
-        ]
+        "tags": ["Payments"]
       }
     },
     "/api/v1/payments/webhook": {
@@ -1749,9 +1644,7 @@
           }
         },
         "summary": "IPN / Webhook từ cổng thanh toán (Xác thực chữ ký HMAC-SHA512)",
-        "tags": [
-          "Payments"
-        ]
+        "tags": ["Payments"]
       }
     },
     "/api/v1/payments/simulate": {
@@ -1782,9 +1675,7 @@
           }
         },
         "summary": "Giả lập thanh toán sandbox (Hỗ trợ demo & testing)",
-        "tags": [
-          "Payments"
-        ]
+        "tags": ["Payments"]
       }
     },
     "/api/v1/payments/{ref}": {
@@ -1818,9 +1709,7 @@
           }
         ],
         "summary": "Tra cứu trạng thái giao dịch theo transactionRef",
-        "tags": [
-          "Payments"
-        ]
+        "tags": ["Payments"]
       }
     },
     "/api/v1/bookings/{id}/inspections": {
@@ -1874,9 +1763,7 @@
           }
         },
         "summary": "Lưu hoặc cập nhật bản nháp biên bản bàn giao xe (CHECK_IN / CHECK_OUT)",
-        "tags": [
-          "Inspections"
-        ]
+        "tags": ["Inspections"]
       },
       "get": {
         "description": "Chỉ người thuê hoặc chủ xe của đơn mới có quyền truy cập. Kèm presigned read URL cho các ảnh.",
@@ -1909,9 +1796,7 @@
           }
         },
         "summary": "Tra cứu danh sách biên bản kiểm tra của chuyến đi",
-        "tags": [
-          "Inspections"
-        ]
+        "tags": ["Inspections"]
       }
     },
     "/api/v1/bookings/{id}/inspections/{type}/finalize": {
@@ -1935,10 +1820,7 @@
             "in": "path",
             "description": "Loại biên bản: CHECK_IN hoặc CHECK_OUT",
             "schema": {
-              "enum": [
-                "CHECK_IN",
-                "CHECK_OUT"
-              ],
+              "enum": ["CHECK_IN", "CHECK_OUT"],
               "type": "string"
             }
           }
@@ -1965,9 +1847,7 @@
           }
         },
         "summary": "Ký duyệt và chốt biên bản bàn giao bất biến",
-        "tags": [
-          "Inspections"
-        ]
+        "tags": ["Inspections"]
       }
     },
     "/api/v1/bookings/{id}/inspections/{type}": {
@@ -1990,10 +1870,7 @@
             "in": "path",
             "description": "Loại biên bản: CHECK_IN hoặc CHECK_OUT",
             "schema": {
-              "enum": [
-                "CHECK_IN",
-                "CHECK_OUT"
-              ],
+              "enum": ["CHECK_IN", "CHECK_OUT"],
               "type": "string"
             }
           }
@@ -2014,9 +1891,7 @@
           }
         },
         "summary": "Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT)",
-        "tags": [
-          "Inspections"
-        ]
+        "tags": ["Inspections"]
       }
     },
     "/api/v1/bookings/{id}/keyless-operations": {
@@ -2090,9 +1965,7 @@
           }
         },
         "summary": "Kích hoạt thao tác điều khiển khóa xe ảo Keyless (UNLOCK / LOCK)",
-        "tags": [
-          "Keyless"
-        ]
+        "tags": ["Keyless"]
       }
     },
     "/api/v1/bookings/{id}/keyless-operations/{opId}": {
@@ -2140,9 +2013,7 @@
           }
         },
         "summary": "Tra cứu trạng thái của một lệnh điều khiển khóa xe",
-        "tags": [
-          "Keyless"
-        ]
+        "tags": ["Keyless"]
       }
     },
     "/api/v1/bookings/{id}/keyless-operations/{opId}/reconcile": {
@@ -2190,9 +2061,7 @@
           }
         },
         "summary": "Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)",
-        "tags": [
-          "Keyless"
-        ]
+        "tags": ["Keyless"]
       }
     },
     "/api/v1/bookings/{id}/reviews": {
@@ -2246,9 +2115,7 @@
           }
         ],
         "summary": "Gửi đánh giá cho chuyến đi (Khách thuê hoặc Chủ xe)",
-        "tags": [
-          "Reviews"
-        ]
+        "tags": ["Reviews"]
       },
       "get": {
         "operationId": "ReviewsController_getBookingReviews",
@@ -2283,9 +2150,7 @@
           }
         ],
         "summary": "Tra cứu danh sách đánh giá của chuyến đi",
-        "tags": [
-          "Reviews"
-        ]
+        "tags": ["Reviews"]
       }
     },
     "/api/v1/vehicles/{id}/reviews": {
@@ -2315,9 +2180,7 @@
           }
         },
         "summary": "Tra cứu danh sách và điểm đánh giá trung bình của xe (Công khai)",
-        "tags": [
-          "Reviews"
-        ]
+        "tags": ["Reviews"]
       }
     }
   },
@@ -2399,33 +2262,18 @@
             "type": "string",
             "description": "Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED",
             "example": "VERIFIED",
-            "enum": [
-              "NONE",
-              "PENDING",
-              "VERIFIED",
-              "REJECTED"
-            ]
+            "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"]
           },
           "capabilities": {
             "description": "Danh sách năng lực (Capability Model): RENTER, OWNER",
-            "example": [
-              "RENTER",
-              "OWNER"
-            ],
+            "example": ["RENTER", "OWNER"],
             "type": "array",
             "items": {
               "type": "array"
             }
           }
         },
-        "required": [
-          "id",
-          "name",
-          "email",
-          "phone",
-          "kycStatus",
-          "capabilities"
-        ]
+        "required": ["id", "name", "email", "phone", "kycStatus", "capabilities"]
       },
       "AuthResponseDto": {
         "type": "object",
@@ -2444,10 +2292,7 @@
             "example": "a1b2c3d4..."
           }
         },
-        "required": [
-          "user",
-          "csrfToken"
-        ]
+        "required": ["user", "csrfToken"]
       },
       "CsrfResponseDto": {
         "type": "object",
@@ -2458,9 +2303,7 @@
             "example": "a1b2c3d4..."
           }
         },
-        "required": [
-          "csrfToken"
-        ]
+        "required": ["csrfToken"]
       },
       "LoginDto": {
         "type": "object",
@@ -2476,10 +2319,7 @@
             "example": "DemoPassword123!"
           }
         },
-        "required": [
-          "email",
-          "password"
-        ]
+        "required": ["email", "password"]
       },
       "RegisterDto": {
         "type": "object",
@@ -2505,12 +2345,7 @@
             "example": "0901234567"
           }
         },
-        "required": [
-          "name",
-          "email",
-          "password",
-          "phone"
-        ]
+        "required": ["name", "email", "password", "phone"]
       },
       "DriverLicenseDto": {
         "type": "object",
@@ -2554,12 +2389,7 @@
             "type": "string",
             "description": "Trạng thái xác thực KYC",
             "example": "PENDING",
-            "enum": [
-              "NONE",
-              "PENDING",
-              "VERIFIED",
-              "REJECTED"
-            ]
+            "enum": ["NONE", "PENDING", "VERIFIED", "REJECTED"]
           },
           "verifiedAt": {
             "type": "string",
@@ -2605,17 +2435,7 @@
             "type": "string",
             "description": "Hạng GPLX hợp lệ (B1, B2, C, D, E, FB2, FC, FD, FE)",
             "example": "B2",
-            "enum": [
-              "B1",
-              "B2",
-              "C",
-              "D",
-              "E",
-              "FB2",
-              "FC",
-              "FD",
-              "FE"
-            ]
+            "enum": ["B1", "B2", "C", "D", "E", "FB2", "FC", "FD", "FE"]
           },
           "expiryDate": {
             "type": "string",
@@ -2623,13 +2443,7 @@
             "example": "2030-05-15"
           }
         },
-        "required": [
-          "licenseNumber",
-          "fullName",
-          "dateOfBirth",
-          "licenseClass",
-          "expiryDate"
-        ]
+        "required": ["licenseNumber", "fullName", "dateOfBirth", "licenseClass", "expiryDate"]
       },
       "VerifyDriverLicenseDto": {
         "type": "object",
@@ -2638,10 +2452,7 @@
             "type": "string",
             "description": "Trạng thái xác thực GPLX",
             "example": "VERIFIED",
-            "enum": [
-              "VERIFIED",
-              "REJECTED"
-            ]
+            "enum": ["VERIFIED", "REJECTED"]
           },
           "rejectionReason": {
             "type": "string",
@@ -2649,9 +2460,7 @@
             "example": "Ảnh chụp GPLX bị mờ, không rõ số hiệu"
           }
         },
-        "required": [
-          "status"
-        ]
+        "required": ["status"]
       },
       "CreateUploadIntentDto": {
         "type": "object",
@@ -2660,20 +2469,13 @@
             "type": "string",
             "description": "Mục đích sử dụng media (VEHICLE_PHOTO, INSPECTION_PHOTO, IDENTITY_DOCUMENT)",
             "example": "IDENTITY_DOCUMENT",
-            "enum": [
-              "VEHICLE_PHOTO",
-              "INSPECTION_PHOTO",
-              "IDENTITY_DOCUMENT"
-            ]
+            "enum": ["VEHICLE_PHOTO", "INSPECTION_PHOTO", "IDENTITY_DOCUMENT"]
           },
           "mimeType": {
             "type": "string",
             "description": "Định dạng MIME hợp lệ (chỉ hỗ trợ image/jpeg hoặc image/png)",
             "example": "image/jpeg",
-            "enum": [
-              "image/jpeg",
-              "image/png"
-            ]
+            "enum": ["image/jpeg", "image/png"]
           },
           "sizeBytes": {
             "type": "number",
@@ -2691,11 +2493,7 @@
             "example": "20000000-0000-0000-0000-000000000001"
           }
         },
-        "required": [
-          "purpose",
-          "mimeType",
-          "sizeBytes"
-        ]
+        "required": ["purpose", "mimeType", "sizeBytes"]
       },
       "UploadIntentResponseDto": {
         "type": "object",
@@ -2721,12 +2519,7 @@
             "description": "Thời điểm hết hạn của presigned URL upload (ISO 8601 UTC)"
           }
         },
-        "required": [
-          "mediaId",
-          "uploadUrl",
-          "headers",
-          "expiresAt"
-        ]
+        "required": ["mediaId", "uploadUrl", "headers", "expiresAt"]
       },
       "MediaObjectDto": {
         "type": "object",
@@ -2760,11 +2553,7 @@
             "type": "string",
             "description": "Trạng thái media",
             "example": "VERIFIED",
-            "enum": [
-              "STAGING",
-              "VERIFIED",
-              "REJECTED"
-            ]
+            "enum": ["STAGING", "VERIFIED", "REJECTED"]
           },
           "verifiedAt": {
             "type": "string",
@@ -2772,14 +2561,7 @@
             "nullable": true
           }
         },
-        "required": [
-          "id",
-          "uploaderId",
-          "purpose",
-          "mimeType",
-          "sizeBytes",
-          "state"
-        ]
+        "required": ["id", "uploaderId", "purpose", "mimeType", "sizeBytes", "state"]
       },
       "MediaReadUrlResponseDto": {
         "type": "object",
@@ -2793,10 +2575,7 @@
             "description": "Thời điểm hết hạn của presigned URL xem file (ISO 8601 UTC)"
           }
         },
-        "required": [
-          "url",
-          "expiresAt"
-        ]
+        "required": ["url", "expiresAt"]
       },
       "VehicleSummaryDto": {
         "type": "object",
@@ -2823,21 +2602,12 @@
           },
           "carType": {
             "type": "string",
-            "enum": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ],
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
             "example": "SUV"
           },
           "transmission": {
             "type": "string",
-            "enum": [
-              "AUTO",
-              "MANUAL"
-            ],
+            "enum": ["AUTO", "MANUAL"],
             "example": "AUTO"
           },
           "seats": {
@@ -2845,11 +2615,7 @@
             "example": 5
           },
           "amenities": {
-            "example": [
-              "GPS",
-              "BLUETOOTH",
-              "BACKUP_CAMERA"
-            ],
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
             "type": "array",
             "items": {
               "type": "string"
@@ -2920,12 +2686,7 @@
             "example": 2
           }
         },
-        "required": [
-          "page",
-          "pageSize",
-          "total",
-          "totalPages"
-        ]
+        "required": ["page", "pageSize", "total", "totalPages"]
       },
       "VehicleOwnerSummaryDto": {
         "type": "object",
@@ -2943,11 +2704,7 @@
             "example": "2026-01-01T00:00:00.000Z"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "joinedAt"
-        ]
+        "required": ["id", "name", "joinedAt"]
       },
       "VehicleDetailDto": {
         "type": "object",
@@ -2974,21 +2731,12 @@
           },
           "carType": {
             "type": "string",
-            "enum": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ],
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
             "example": "SUV"
           },
           "transmission": {
             "type": "string",
-            "enum": [
-              "AUTO",
-              "MANUAL"
-            ],
+            "enum": ["AUTO", "MANUAL"],
             "example": "AUTO"
           },
           "seats": {
@@ -3000,20 +2748,14 @@
             "example": "Xe mới, bảo dưỡng định kỳ chính hãng, động cơ điện êm ái."
           },
           "amenities": {
-            "example": [
-              "GPS",
-              "BLUETOOTH",
-              "BACKUP_CAMERA"
-            ],
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "photoUrls": {
-            "example": [
-              "http://localhost:4000/api/v1/media/vehicles/photo1.jpg"
-            ],
+            "example": ["http://localhost:4000/api/v1/media/vehicles/photo1.jpg"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3079,43 +2821,27 @@
             "example": "Định vị GPS"
           }
         },
-        "required": [
-          "code",
-          "name"
-        ]
+        "required": ["code", "name"]
       },
       "VehicleOptionsDto": {
         "type": "object",
         "properties": {
           "cities": {
-            "example": [
-              "TP. Hồ Chí Minh",
-              "Hà Nội",
-              "Đà Nẵng"
-            ],
+            "example": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "carTypes": {
-            "example": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ],
+            "example": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
             "type": "array",
             "items": {
               "type": "string"
             }
           },
           "transmissions": {
-            "example": [
-              "AUTO",
-              "MANUAL"
-            ],
+            "example": ["AUTO", "MANUAL"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3128,12 +2854,7 @@
             }
           }
         },
-        "required": [
-          "cities",
-          "carTypes",
-          "transmissions",
-          "amenities"
-        ]
+        "required": ["cities", "carTypes", "transmissions", "amenities"]
       },
       "CreateVehicleDto": {
         "type": "object",
@@ -3162,11 +2883,7 @@
             "type": "string",
             "description": "Thành phố hoạt động",
             "example": "TP. Hồ Chí Minh",
-            "enum": [
-              "TP. Hồ Chí Minh",
-              "Hà Nội",
-              "Đà Nẵng"
-            ]
+            "enum": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"]
           },
           "pickupAddress": {
             "type": "string",
@@ -3176,22 +2893,13 @@
           "carType": {
             "type": "string",
             "description": "Phân khúc xe",
-            "enum": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ],
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"],
             "example": "SUV"
           },
           "transmission": {
             "type": "string",
             "description": "Hộp số",
-            "enum": [
-              "AUTO",
-              "MANUAL"
-            ],
+            "enum": ["AUTO", "MANUAL"],
             "example": "AUTO"
           },
           "seats": {
@@ -3216,11 +2924,7 @@
           },
           "amenities": {
             "description": "Danh sách mã tiện nghi",
-            "example": [
-              "GPS",
-              "BLUETOOTH",
-              "BACKUP_CAMERA"
-            ],
+            "example": ["GPS", "BLUETOOTH", "BACKUP_CAMERA"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3228,9 +2932,7 @@
           },
           "photoMediaIds": {
             "description": "Danh sách ID media ảnh xe đã upload và verify",
-            "example": [
-              "50000000-0000-0000-0000-000000000001"
-            ],
+            "example": ["50000000-0000-0000-0000-000000000001"],
             "type": "array",
             "items": {
               "type": "string"
@@ -3263,10 +2965,7 @@
             "description": "Thứ tự hiển thị (0 là ảnh bìa)"
           }
         },
-        "required": [
-          "mediaId",
-          "position"
-        ]
+        "required": ["mediaId", "position"]
       },
       "OwnerVehicleDto": {
         "type": "object",
@@ -3306,21 +3005,12 @@
           "carType": {
             "type": "string",
             "description": "Loại xe",
-            "enum": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ]
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
           },
           "transmission": {
             "type": "string",
             "description": "Hộp số",
-            "enum": [
-              "AUTO",
-              "MANUAL"
-            ]
+            "enum": ["AUTO", "MANUAL"]
           },
           "seats": {
             "type": "number",
@@ -3341,11 +3031,7 @@
           "status": {
             "type": "string",
             "description": "Trạng thái xe",
-            "enum": [
-              "DRAFT",
-              "PUBLISHED",
-              "ARCHIVED"
-            ]
+            "enum": ["DRAFT", "PUBLISHED", "ARCHIVED"]
           },
           "version": {
             "type": "number",
@@ -3423,11 +3109,7 @@
           "city": {
             "type": "string",
             "description": "Thành phố hoạt động",
-            "enum": [
-              "TP. Hồ Chí Minh",
-              "Hà Nội",
-              "Đà Nẵng"
-            ]
+            "enum": ["TP. Hồ Chí Minh", "Hà Nội", "Đà Nẵng"]
           },
           "pickupAddress": {
             "type": "string",
@@ -3436,21 +3118,12 @@
           "carType": {
             "type": "string",
             "description": "Phân khúc xe",
-            "enum": [
-              "SEDAN",
-              "SUV",
-              "HATCHBACK",
-              "MPV",
-              "CROSSOVER"
-            ]
+            "enum": ["SEDAN", "SUV", "HATCHBACK", "MPV", "CROSSOVER"]
           },
           "transmission": {
             "type": "string",
             "description": "Hộp số",
-            "enum": [
-              "AUTO",
-              "MANUAL"
-            ]
+            "enum": ["AUTO", "MANUAL"]
           },
           "seats": {
             "type": "number",
@@ -3643,11 +3316,7 @@
           },
           "insurancePackage": {
             "type": "string",
-            "enum": [
-              "BASIC",
-              "STANDARD",
-              "PREMIUM"
-            ],
+            "enum": ["BASIC", "STANDARD", "PREMIUM"],
             "default": "BASIC",
             "description": "Gói bảo hiểm lựa chọn (BASIC: 0đ, STANDARD: 100k/ngày, PREMIUM: 200k/ngày)"
           },
@@ -3657,11 +3326,7 @@
             "description": "Mã khuyến mãi giảm giá (nếu có)"
           }
         },
-        "required": [
-          "vehicleId",
-          "startAt",
-          "endAt"
-        ]
+        "required": ["vehicleId", "startAt", "endAt"]
       },
       "ValidatePromotionDto": {
         "type": "object",
@@ -3682,10 +3347,7 @@
             "description": "Mã định danh xe (nếu có context xe cụ thể)"
           }
         },
-        "required": [
-          "code",
-          "subtotalVnd"
-        ]
+        "required": ["code", "subtotalVnd"]
       },
       "ValidatedPromotionDto": {
         "type": "object",
@@ -3702,10 +3364,7 @@
           "discountType": {
             "type": "string",
             "example": "PERCENTAGE",
-            "enum": [
-              "PERCENTAGE",
-              "FIXED_AMOUNT"
-            ]
+            "enum": ["PERCENTAGE", "FIXED_AMOUNT"]
           },
           "discountValue": {
             "type": "number",
@@ -3786,11 +3445,7 @@
           },
           "insurancePackage": {
             "type": "string",
-            "enum": [
-              "BASIC",
-              "STANDARD",
-              "PREMIUM"
-            ],
+            "enum": ["BASIC", "STANDARD", "PREMIUM"],
             "default": "BASIC",
             "description": "Gói bảo hiểm lựa chọn (BASIC, STANDARD, PREMIUM)"
           },
@@ -3800,12 +3455,7 @@
             "description": "Mã khuyến mãi áp dụng giảm giá (nếu có)"
           }
         },
-        "required": [
-          "vehicleId",
-          "startAt",
-          "endAt",
-          "expectedTotalVnd"
-        ]
+        "required": ["vehicleId", "startAt", "endAt", "expectedTotalVnd"]
       },
       "BookingVehicleSummaryDto": {
         "type": "object",
@@ -3853,15 +3503,7 @@
             "example": true
           }
         },
-        "required": [
-          "id",
-          "brand",
-          "model",
-          "year",
-          "city",
-          "pricePerDayVnd",
-          "keylessSupported"
-        ]
+        "required": ["id", "brand", "model", "year", "city", "pricePerDayVnd", "keylessSupported"]
       },
       "PricingSnapshotDto": {
         "type": "object",
@@ -3926,11 +3568,7 @@
             "example": "0901111111"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "phone"
-        ]
+        "required": ["id", "name", "phone"]
       },
       "BookingResponseDto": {
         "type": "object",
@@ -4033,9 +3671,7 @@
             "description": "Lý do từ chối yêu cầu đặt xe (1 - 500 ký tự)"
           }
         },
-        "required": [
-          "reason"
-        ]
+        "required": ["reason"]
       },
       "CancelBookingDto": {
         "type": "object",
@@ -4046,9 +3682,7 @@
             "description": "Lý do hủy đơn đặt xe (1 - 500 ký tự)"
           }
         },
-        "required": [
-          "reason"
-        ]
+        "required": ["reason"]
       },
       "SettleDepositDto": {
         "type": "object",
@@ -4148,10 +3782,7 @@
             "type": "string",
             "description": "Trạng thái quyết toán cọc",
             "example": "SETTLED",
-            "enum": [
-              "SETTLED",
-              "PENDING"
-            ]
+            "enum": ["SETTLED", "PENDING"]
           },
           "refundTransactionRef": {
             "type": "object",
@@ -4162,13 +3793,7 @@
             "description": "Thời điểm quyết toán hoàn tất"
           }
         },
-        "required": [
-          "bookingId",
-          "depositVnd",
-          "breakdown",
-          "refundAmountVnd",
-          "status"
-        ]
+        "required": ["bookingId", "depositVnd", "breakdown", "refundAmountVnd", "status"]
       },
       "CreatePaymentIntentDto": {
         "type": "object",
@@ -4180,12 +3805,7 @@
           },
           "paymentType": {
             "type": "string",
-            "enum": [
-              "DEPOSIT",
-              "RENTAL_FEE",
-              "FULL_PAYMENT",
-              "REFUND"
-            ],
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT", "REFUND"],
             "default": "DEPOSIT",
             "description": "Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)"
           },
@@ -4195,9 +3815,7 @@
             "description": "URL chuyển hướng sau khi hoàn tất thanh toán"
           }
         },
-        "required": [
-          "bookingId"
-        ]
+        "required": ["bookingId"]
       },
       "PaymentResponseDto": {
         "type": "object",
@@ -4221,22 +3839,12 @@
           },
           "paymentType": {
             "type": "string",
-            "enum": [
-              "DEPOSIT",
-              "RENTAL_FEE",
-              "FULL_PAYMENT",
-              "REFUND"
-            ],
+            "enum": ["DEPOSIT", "RENTAL_FEE", "FULL_PAYMENT", "REFUND"],
             "example": "DEPOSIT"
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "SUCCESS",
-              "FAILED",
-              "CANCELLED"
-            ],
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
             "example": "PENDING"
           },
           "provider": {
@@ -4297,12 +3905,7 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "SUCCESS",
-              "FAILED",
-              "CANCELLED"
-            ],
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
             "example": "SUCCESS",
             "description": "Trạng thái kết quả từ cổng thanh toán"
           },
@@ -4312,12 +3915,7 @@
             "description": "Chữ ký số HMAC-SHA512 để xác thực tính toàn vẹn"
           }
         },
-        "required": [
-          "transactionRef",
-          "amountVnd",
-          "status",
-          "signature"
-        ]
+        "required": ["transactionRef", "amountVnd", "status", "signature"]
       },
       "SimulatePaymentDto": {
         "type": "object",
@@ -4329,32 +3927,19 @@
           },
           "status": {
             "type": "string",
-            "enum": [
-              "PENDING",
-              "SUCCESS",
-              "FAILED",
-              "CANCELLED"
-            ],
+            "enum": ["PENDING", "SUCCESS", "FAILED", "CANCELLED"],
             "example": "SUCCESS",
             "description": "Trạng thái muốn giả lập"
           }
         },
-        "required": [
-          "transactionRef",
-          "status"
-        ]
+        "required": ["transactionRef", "status"]
       },
       "InspectionPhotoInputDto": {
         "type": "object",
         "properties": {
           "angle": {
             "type": "string",
-            "enum": [
-              "FRONT",
-              "REAR",
-              "LEFT",
-              "RIGHT"
-            ],
+            "enum": ["FRONT", "REAR", "LEFT", "RIGHT"],
             "description": "Góc chụp ảnh kiểm tra xe"
           },
           "mediaId": {
@@ -4363,20 +3948,14 @@
             "format": "uuid"
           }
         },
-        "required": [
-          "angle",
-          "mediaId"
-        ]
+        "required": ["angle", "mediaId"]
       },
       "SaveInspectionDto": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "enum": [
-              "CHECK_IN",
-              "CHECK_OUT"
-            ],
+            "enum": ["CHECK_IN", "CHECK_OUT"],
             "description": "Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT"
           },
           "odometerKm": {
@@ -4410,24 +3989,14 @@
             }
           }
         },
-        "required": [
-          "type",
-          "odometerKm",
-          "fuelPercent",
-          "photos"
-        ]
+        "required": ["type", "odometerKm", "fuelPercent", "photos"]
       },
       "InspectionPhotoDto": {
         "type": "object",
         "properties": {
           "angle": {
             "type": "string",
-            "enum": [
-              "FRONT",
-              "REAR",
-              "LEFT",
-              "RIGHT"
-            ],
+            "enum": ["FRONT", "REAR", "LEFT", "RIGHT"],
             "description": "Góc chụp ảnh"
           },
           "mediaId": {
@@ -4440,10 +4009,7 @@
             "description": "Presigned GET URL để xem ảnh bảo mật (TTL 15m)"
           }
         },
-        "required": [
-          "angle",
-          "mediaId"
-        ]
+        "required": ["angle", "mediaId"]
       },
       "InspectionResponseDto": {
         "type": "object",
@@ -4460,10 +4026,7 @@
           },
           "type": {
             "type": "string",
-            "enum": [
-              "CHECK_IN",
-              "CHECK_OUT"
-            ],
+            "enum": ["CHECK_IN", "CHECK_OUT"],
             "description": "Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT"
           },
           "odometerKm": {
@@ -4527,26 +4090,17 @@
           "action": {
             "type": "string",
             "description": "Hành động điều khiển khóa xe (LOCK hoặc UNLOCK)",
-            "enum": [
-              "LOCK",
-              "UNLOCK"
-            ],
+            "enum": ["LOCK", "UNLOCK"],
             "example": "UNLOCK"
           },
           "simulateResult": {
             "type": "string",
             "description": "Cờ thử nghiệm giả lập kết quả phần cứng (chỉ áp dụng ở môi trường dev/test: SUCCESS, FAILED, UNKNOWN)",
-            "enum": [
-              "SUCCESS",
-              "FAILED",
-              "UNKNOWN"
-            ],
+            "enum": ["SUCCESS", "FAILED", "UNKNOWN"],
             "example": "SUCCESS"
           }
         },
-        "required": [
-          "action"
-        ]
+        "required": ["action"]
       },
       "KeylessOperationResponseDto": {
         "type": "object",
@@ -4569,10 +4123,7 @@
           "action": {
             "type": "string",
             "description": "Hành động điều khiển xe",
-            "enum": [
-              "LOCK",
-              "UNLOCK"
-            ]
+            "enum": ["LOCK", "UNLOCK"]
           },
           "idempotencyKey": {
             "type": "string",
@@ -4581,12 +4132,7 @@
           "status": {
             "type": "string",
             "description": "Trạng thái lệnh điều khiển",
-            "enum": [
-              "PENDING",
-              "SUCCESS",
-              "FAILED",
-              "UNKNOWN"
-            ]
+            "enum": ["PENDING", "SUCCESS", "FAILED", "UNKNOWN"]
           },
           "provider": {
             "type": "string",
@@ -4654,10 +4200,7 @@
             "maxLength": 2000
           }
         },
-        "required": [
-          "score",
-          "comment"
-        ]
+        "required": ["score", "comment"]
       },
       "ReviewUserSummaryDto": {
         "type": "object",
@@ -4671,10 +4214,7 @@
             "description": "Họ tên hiển thị"
           }
         },
-        "required": [
-          "id",
-          "name"
-        ]
+        "required": ["id", "name"]
       },
       "ReviewResponseDto": {
         "type": "object",
@@ -4725,15 +4265,7 @@
             ]
           }
         },
-        "required": [
-          "id",
-          "bookingId",
-          "authorId",
-          "targetUserId",
-          "score",
-          "comment",
-          "createdAt"
-        ]
+        "required": ["id", "bookingId", "authorId", "targetUserId", "score", "comment", "createdAt"]
       },
       "VehicleReviewsSummaryDto": {
         "type": "object",
@@ -4756,11 +4288,7 @@
             }
           }
         },
-        "required": [
-          "averageScore",
-          "totalReviews",
-          "reviews"
-        ]
+        "required": ["averageScore", "totalReviews", "reviews"]
       }
     }
   }

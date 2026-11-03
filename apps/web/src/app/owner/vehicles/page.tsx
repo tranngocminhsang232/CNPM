@@ -144,77 +144,77 @@ export default function OwnerVehiclesPage() {
                 <div className="p-5 flex-1 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center justify-between">
-                    <span
-                      id={`vehicle-status-${v.id}`}
-                      className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                        v.status === 'PUBLISHED'
-                          ? 'bg-emerald-100 text-emerald-800'
+                      <span
+                        id={`vehicle-status-${v.id}`}
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                          v.status === 'PUBLISHED'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : v.status === 'DRAFT'
+                              ? 'bg-slate-100 text-slate-700'
+                              : 'bg-amber-100 text-amber-800'
+                        }`}
+                      >
+                        {v.status === 'PUBLISHED'
+                          ? 'ĐANG HOẠT ĐỘNG'
                           : v.status === 'DRAFT'
-                            ? 'bg-slate-100 text-slate-700'
-                            : 'bg-amber-100 text-amber-800'
-                      }`}
-                    >
-                      {v.status === 'PUBLISHED'
-                        ? 'ĐANG HOẠT ĐỘNG'
-                        : v.status === 'DRAFT'
-                          ? 'BẢN NHÁP'
-                          : 'LƯU TRỮ'}
-                    </span>
-                    <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
-                      {v.plateNormalized}
-                    </span>
+                            ? 'BẢN NHÁP'
+                            : 'LƯU TRỮ'}
+                      </span>
+                      <span className="font-mono text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">
+                        {v.plateNormalized}
+                      </span>
+                    </div>
+
+                    <h3 className="mt-3 text-lg font-bold text-slate-900">
+                      {v.brand} {v.model} ({v.year})
+                    </h3>
+
+                    <p className="mt-1 text-xs text-slate-500 line-clamp-1">{v.pickupAddress}</p>
+
+                    <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-600">
+                      <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
+                        {v.carType}
+                      </span>
+                      <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
+                        {v.transmission}
+                      </span>
+                      <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
+                        {v.seats} chỗ
+                      </span>
+                      {v.keylessSupported && (
+                        <span className="rounded-md bg-blue-50 px-2 py-1 font-semibold text-blue-700">
+                          ⚡ Keyless
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="mt-4 text-xs text-slate-500">
+                      Ảnh xe:{' '}
+                      <span className="font-semibold text-slate-700">{v.photos.length} ảnh</span>
+                    </div>
                   </div>
 
-                  <h3 className="mt-3 text-lg font-bold text-slate-900">
-                    {v.brand} {v.model} ({v.year})
-                  </h3>
-
-                  <p className="mt-1 text-xs text-slate-500 line-clamp-1">{v.pickupAddress}</p>
-
-                  <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-600">
-                    <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
-                      {v.carType}
-                    </span>
-                    <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
-                      {v.transmission}
-                    </span>
-                    <span className="rounded-md bg-slate-100 px-2 py-1 font-medium">
-                      {v.seats} chỗ
-                    </span>
-                    {v.keylessSupported && (
-                      <span className="rounded-md bg-blue-50 px-2 py-1 font-semibold text-blue-700">
-                        ⚡ Keyless
+                  <div className="mt-6 border-t border-slate-100 pt-4">
+                    <div className="flex items-baseline justify-between">
+                      <span className="text-xs text-slate-400">Giá thuê ngày</span>
+                      <span className="text-base font-extrabold text-blue-600">
+                        {formatVnd(v.pricePerDayVnd)}
                       </span>
+                    </div>
+
+                    {v.status === 'DRAFT' && (
+                      <button
+                        id={`publish-btn-${v.id}`}
+                        type="button"
+                        onClick={() => handlePublish(v.id)}
+                        className="mt-3 w-full rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition"
+                      >
+                        Đăng công khai (Publish)
+                      </button>
                     )}
                   </div>
-
-                  <div className="mt-4 text-xs text-slate-500">
-                    Ảnh xe:{' '}
-                    <span className="font-semibold text-slate-700">{v.photos.length} ảnh</span>
-                  </div>
-                </div>
-
-                <div className="mt-6 border-t border-slate-100 pt-4">
-                  <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-slate-400">Giá thuê ngày</span>
-                    <span className="text-base font-extrabold text-blue-600">
-                      {formatVnd(v.pricePerDayVnd)}
-                    </span>
-                  </div>
-
-                  {v.status === 'DRAFT' && (
-                    <button
-                      id={`publish-btn-${v.id}`}
-                      type="button"
-                      onClick={() => handlePublish(v.id)}
-                      className="mt-3 w-full rounded-xl bg-emerald-600 py-2 text-xs font-bold text-white shadow-sm hover:bg-emerald-700 transition"
-                    >
-                      Đăng công khai (Publish)
-                    </button>
-                  )}
                 </div>
               </div>
-            </div>
             ))}
           </div>
         )}
