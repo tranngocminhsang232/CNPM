@@ -9,6 +9,11 @@ export function UserNav() {
   const { user, logout, isLoading } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const getKycBadge = (status?: string) => {
     switch (status) {
@@ -23,8 +28,15 @@ export function UserNav() {
     }
   };
 
-  if (isLoading) {
-    return <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Đang tải...</div>;
+  if (!mounted || isLoading) {
+    return (
+      <div
+        className="text-xs text-slate-400 py-2 px-3 font-medium select-none"
+        suppressHydrationWarning
+      >
+        Đang tải...
+      </div>
+    );
   }
 
   if (!user) {
@@ -33,6 +45,7 @@ export function UserNav() {
         <button
           id="nav-login-btn"
           type="button"
+          suppressHydrationWarning
           onClick={() => setIsModalOpen(true)}
           style={{
             padding: '8px 18px',
@@ -56,7 +69,7 @@ export function UserNav() {
   const badge = getKycBadge(user.kycStatus);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div style={{ position: 'relative' }} suppressHydrationWarning>
       <div
         id="user-menu-trigger"
         onClick={() => setDropdownOpen((prev) => !prev)}
