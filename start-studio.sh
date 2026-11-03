@@ -13,16 +13,40 @@ echo "      PRISMA STUDIO - GIAO DIỆN QUẢN TRỊ CƠ SỞ DỮ LIỆU (POSTG
 echo "=============================================================================="
 echo ""
 
-echo "[1/3] Kiểm tra Docker Containers..."
-docker compose -f infra/compose.yaml up -d postgres >/dev/null 2>&1
-echo "  [OK] PostgreSQL container đang chạy trên port 5433."
+# 1. Kiểm tra Docker
+echo "[1/4] Kiểm tra Docker Engine..."
+if ! docker info >/dev/null 2>&1; then
+  echo "  -> Docker daemon chưa chạy."
+  if [[ "$OSTYPE" == "darwin"* ]] && [ -d "/Applications/Docker.app" ]; then
+    echo "  -> Đang khởi động Docker Desktop trên macOS..."
+    open -a Docker
+  fi
+  echo "  -> Đang chờ Docker Engine sẵn sàng..."
+  wait_count=0
+  while ! docker info >/dev/null 2>&1; do
+    sleep 2
+    wait_count=$((wait_count + 1))
+    if [ $wait_count -ge 60 ]; then
+      echo "  [!] Docker chưa sẵn sàng sau 120s. Vui lòng bật Docker Desktop/Daemon rồi chạy lại."
+      exit 1
+    fi
+  done
+fi
+echo "  [OK] Docker Engine đã sẵn sàng!"
 echo ""
 
-echo "[2/3] Chờ cơ sở dữ liệu sẵn sàng..."
+# 2. Khởi động PostgreSQL
+echo "[2/4] Khởi động PostgreSQL 18 container..."
+docker compose -f infra/compose.yaml up -d postgres
+echo "  -> Đang chờ PostgreSQL trên port 5433..."
 until node -e 'require("net").createConnection(5433, "127.0.0.1").on("connect", () => process.exit(0)).on("error", () => process.exit(1))' 2>/dev/null; do
   sleep 1
 done
+echo "  [OK] PostgreSQL đã sẵn sàng trên port 5433!"
+echo ""
 
+# 3. Mở trình duyệt 1 tab duy nhất
+echo "[3/4] Mở trình duyệt tại http://localhost:5555..."
 (
   sleep 3
   if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -32,10 +56,12 @@ done
   fi
 ) &
 
-echo "[3/3] Khởi động Prisma Studio tại http://localhost:5555..."
+# 4. Chạy Prisma Studio
+echo "[4/4] Khởi động Prisma Studio..."
 echo "=============================================================================="
-echo "[THÀNH CÔNG] Prisma Studio đang mở tại http://localhost:5555"
+echo "[THÀNH CÔNG] Prisma Studio đang chạy tại http://localhost:5555"
+echo "  (Nhấn Ctrl + C để dừng Studio)"
 echo "=============================================================================="
 echo ""
 
-pnpm exec prisma studio
+pnpm exec prisma studio --browser none --port 5555
