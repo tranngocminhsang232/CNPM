@@ -275,6 +275,9 @@ export class OwnerVehicleDto {
   @ApiProperty({ description: 'Danh sách ảnh xe', type: [VehiclePhotoDto] })
   photos!: VehiclePhotoDto[];
 
+  @ApiPropertyOptional({ description: 'Ảnh đại diện xe', type: String, nullable: true })
+  coverImageUrl?: string | null;
+
   @ApiProperty({ description: 'Thời điểm tạo xe' })
   createdAt!: string;
 

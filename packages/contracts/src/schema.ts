@@ -4,3761 +4,3852 @@
  */
 
 export interface paths {
-  '/api/v1/auth/csrf': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/csrf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy mã xác thực CSRF gắn phiên hoặc trước phiên */
+        get: operations["AuthController_getCsrfToken"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy mã xác thực CSRF gắn phiên hoặc trước phiên */
-    get: operations['AuthController_getCsrfToken'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/login': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng nhập người dùng bằng email và mật khẩu */
+        post: operations["AuthController_login"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Đăng nhập người dùng bằng email và mật khẩu */
-    post: operations['AuthController_login'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/register': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/register": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng ký tài khoản người dùng mới */
+        post: operations["AuthController_register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Đăng ký tài khoản người dùng mới */
-    post: operations['AuthController_register'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/google': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/google": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Khởi tạo luồng xác thực Google OAuth2/OIDC */
+        get: operations["AuthController_googleAuth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Khởi tạo luồng xác thực Google OAuth2/OIDC */
-    get: operations['AuthController_googleAuth'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/google/callback': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/google/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xử lý phản hồi từ Google OAuth2/OIDC */
+        get: operations["AuthController_googleCallback"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Xử lý phản hồi từ Google OAuth2/OIDC */
-    get: operations['AuthController_googleCallback'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/logout': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Đăng xuất tài khoản và thu hồi phiên làm việc */
+        post: operations["AuthController_logout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Đăng xuất tài khoản và thu hồi phiên làm việc */
-    post: operations['AuthController_logout'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/auth/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
+        get: operations["AuthController_getProfile[0]"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
-    get: operations['AuthController_getProfile[0]'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/me': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
+        get: operations["AuthController_getProfile[1]"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy thông tin người dùng hiện tại từ phiên đăng nhập */
-    get: operations['AuthController_getProfile[1]'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/users/me/driver-license': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/users/me/driver-license": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem thông tin giấy phép lái xe hiện tại của tôi */
+        get: operations["UsersController_getMyDriverLicense"];
+        put?: never;
+        /** Nộp thông tin giấy phép lái xe (GPLX) để xác thực KYC */
+        post: operations["UsersController_submitDriverLicense"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Xem thông tin giấy phép lái xe hiện tại của tôi */
-    get: operations['UsersController_getMyDriverLicense'];
-    put?: never;
-    /** Nộp thông tin giấy phép lái xe (GPLX) để xác thực KYC */
-    post: operations['UsersController_submitDriverLicense'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/users/{id}/driver-license/verify': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/users/{id}/driver-license/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Duyệt hoặc từ chối giấy phép lái xe (Admin / Mock Verification) */
+        post: operations["UsersController_verifyDriverLicense"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Duyệt hoặc từ chối giấy phép lái xe (Admin / Mock Verification) */
-    post: operations['UsersController_verifyDriverLicense'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/media/upload-intents': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/upload-intents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tạo upload intent và sinh Presigned PUT URL để upload trực tiếp lên S3/MinIO */
+        post: operations["MediaController_createUploadIntent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Tạo upload intent và sinh Presigned PUT URL để upload trực tiếp lên S3/MinIO */
-    post: operations['MediaController_createUploadIntent'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/media/{id}/verify': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/{id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Xác thực file đã tải lên storage thành công (probe S3) và chuyển trạng thái sang VERIFIED */
+        post: operations["MediaController_verifyMedia"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Xác thực file đã tải lên storage thành công (probe S3) và chuyển trạng thái sang VERIFIED */
-    post: operations['MediaController_verifyMedia'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/media/{id}/read-url': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/{id}/read-url": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy Presigned GET URL để xem file media (kiểm tra phân quyền tài liệu nhạy cảm) */
+        get: operations["MediaController_getReadUrl"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy Presigned GET URL để xem file media (kiểm tra phân quyền tài liệu nhạy cảm) */
-    get: operations['MediaController_getReadUrl'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/health': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/vehicles/{id}/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem ảnh xe công khai */
+        get: operations["MediaController_getVehicleImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get: operations['HealthController_check'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/vehicle-options': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/finalized/{purpose}/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem media đã xác thực công khai */
+        get: operations["MediaController_getFinalizedImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy danh mục các tùy chọn tìm kiếm xe (thành phố, loại xe, hộp số, tiện nghi) */
-    get: operations['VehiclesController_getVehicleOptions'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/vehicles': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/media/staging/{filename}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem media staging */
+        get: operations["MediaController_getStagingImage"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED) */
-    get: operations['VehiclesController_getVehicles'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/vehicles/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["HealthController_check"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy thông tin chi tiết xe công khai theo ID */
-    get: operations['VehiclesController_getVehicleById'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/owner/vehicles': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/vehicle-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy danh mục các tùy chọn tìm kiếm xe (thành phố, loại xe, hộp số, tiện nghi) */
+        get: operations["VehiclesController_getVehicleOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Lấy danh sách toàn bộ xe thuộc sở hữu của chủ xe hiện tại */
-    get: operations['OwnerVehiclesController_getOwnerVehicles'];
-    put?: never;
-    /** Chủ xe đăng ký tạo xe mới (trạng thái DRAFT) */
-    post: operations['OwnerVehiclesController_createVehicle'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/owner/vehicles/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tìm kiếm và lấy danh sách xe đã được xuất bản (PUBLISHED) */
+        get: operations["VehiclesController_getVehicles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Xem chi tiết quản lý một xe của chủ xe */
-    get: operations['OwnerVehiclesController_getOwnerVehicleById'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    /** Chủ xe cập nhật thông tin xe */
-    patch: operations['OwnerVehiclesController_updateVehicle'];
-    trace?: never;
-  };
-  '/api/v1/owner/vehicles/{id}/publish': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/vehicles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy thông tin chi tiết xe công khai theo ID */
+        get: operations["VehiclesController_getVehicleById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai */
-    post: operations['OwnerVehiclesController_publishVehicle'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/pricing/quote': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/owner/vehicles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lấy danh sách toàn bộ xe thuộc sở hữu của chủ xe hiện tại */
+        get: operations["OwnerVehiclesController_getOwnerVehicles"];
+        put?: never;
+        /** Chủ xe đăng ký tạo xe mới (trạng thái DRAFT) */
+        post: operations["OwnerVehiclesController_createVehicle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Tính báo giá thuê xe theo khoảng ngày, gói bảo hiểm và kiểm tra lịch xe khả dụng */
-    post: operations['PricingController_getQuote'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/pricing/calculate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/owner/vehicles/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem chi tiết quản lý một xe của chủ xe */
+        get: operations["OwnerVehiclesController_getOwnerVehicleById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Chủ xe cập nhật thông tin xe */
+        patch: operations["OwnerVehiclesController_updateVehicle"];
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /** Tính toán biểu phí thuê xe chi tiết (alias cho POST /pricing/quote) */
-    post: operations['PricingController_calculatePricing'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/vehicles/{id}/pricing-preview': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/owner/vehicles/{id}/publish": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Chuyển trạng thái xe từ DRAFT sang PUBLISHED để hiển thị trên danh sách tìm kiếm công khai */
+        post: operations["OwnerVehiclesController_publishVehicle"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Xem trước dự toán chi phí thuê xe bằng phương thức GET (hỗ trợ UI widget) */
-    get: operations['PricingController_getPricingPreview'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/promotions/validate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/pricing/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tính báo giá thuê xe theo khoảng ngày, gói bảo hiểm và kiểm tra lịch xe khả dụng */
+        post: operations["PricingController_getQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Kiểm tra tính hợp lệ và mức giảm giá của voucher khuyến mãi
-     * @description Kiểm tra mã khuyến mãi theo giá trị đơn hàng, hạn sử dụng, số lượt dùng và tính mức chiết khấu VND chính xác.
-     */
-    post: operations['PromotionsController_validatePromotion'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/pricing/calculate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Tính toán biểu phí thuê xe chi tiết (alias cho POST /pricing/quote) */
+        post: operations["PricingController_calculatePricing"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Tra cứu danh sách đơn đặt xe (Khách thuê hoặc Chủ xe)
-     * @description Lấy danh sách các đơn đặt xe thuộc quyền sở hữu của người dùng hiện tại theo góc nhìn renter hoặc owner.
-     */
-    get: operations['BookingsController_getBookings'];
-    put?: never;
-    /**
-     * Tạo yêu cầu đặt xe mới (Idempotent)
-     * @description Tạo đơn đặt xe với trạng thái REQUESTED, khóa lịch xe tự động, lưu snapshot biểu phí bất biến. Yêu cầu tài khoản đã KYC và có header Idempotency-Key.
-     */
-    post: operations['BookingsController_createBooking'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/vehicles/{id}/pricing-preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Xem trước dự toán chi phí thuê xe bằng phương thức GET (hỗ trợ UI widget) */
+        get: operations["PricingController_getPricingPreview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Xem chi tiết đơn đặt xe
-     * @description Chỉ khách thuê hoặc chủ xe liên quan mới có quyền xem thông tin chi tiết đơn này.
-     */
-    get: operations['BookingsController_getBookingById'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/approve': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/promotions/validate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kiểm tra tính hợp lệ và mức giảm giá của voucher khuyến mãi
+         * @description Kiểm tra mã khuyến mãi theo giá trị đơn hàng, hạn sử dụng, số lượt dùng và tính mức chiết khấu VND chính xác.
+         */
+        post: operations["PromotionsController_validatePromotion"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Chủ xe phê duyệt đơn đặt xe
-     * @description Chuyển trạng thái đơn từ REQUESTED sang APPROVED.
-     */
-    post: operations['BookingsController_approveBooking'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/reject': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tra cứu danh sách đơn đặt xe (Khách thuê hoặc Chủ xe)
+         * @description Lấy danh sách các đơn đặt xe thuộc quyền sở hữu của người dùng hiện tại theo góc nhìn renter hoặc owner.
+         */
+        get: operations["BookingsController_getBookings"];
+        put?: never;
+        /**
+         * Tạo yêu cầu đặt xe mới (Idempotent)
+         * @description Tạo đơn đặt xe với trạng thái REQUESTED, khóa lịch xe tự động, lưu snapshot biểu phí bất biến. Yêu cầu tài khoản đã KYC và có header Idempotency-Key.
+         */
+        post: operations["BookingsController_createBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Chủ xe từ chối đơn đặt xe
-     * @description Chuyển trạng thái đơn sang REJECTED, tự động giải phóng lịch xe và hoàn lại voucher nếu có.
-     */
-    post: operations['BookingsController_rejectBooking'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/cancel': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Xem chi tiết đơn đặt xe
+         * @description Chỉ khách thuê hoặc chủ xe liên quan mới có quyền xem thông tin chi tiết đơn này.
+         */
+        get: operations["BookingsController_getBookingById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)
-     * @description Chuyển trạng thái đơn sang CANCELLED, giải phóng lịch xe và hoàn trả voucher nếu có.
-     */
-    post: operations['BookingsController_cancelBooking'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/complete': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Chủ xe phê duyệt đơn đặt xe
+         * @description Chuyển trạng thái đơn từ REQUESTED sang APPROVED.
+         */
+        post: operations["BookingsController_approveBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Khách thuê hoàn tất trả xe và kết thúc chuyến đi
-     * @description Chuyển trạng thái đơn sang COMPLETED, giải phóng lịch xe và gửi thông báo hoàn tất cho 2 bên.
-     */
-    post: operations['BookingsController_completeBooking'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/settle-deposit': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Chủ xe từ chối đơn đặt xe
+         * @description Chuyển trạng thái đơn sang REJECTED, tự động giải phóng lịch xe và hoàn lại voucher nếu có.
+         */
+        post: operations["BookingsController_rejectBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)
-     * @description Khấu trừ phụ phí nhiên liệu hao hụt (30.000 đ/1%), phụ phí vệ sinh, trễ giờ và hoàn phần cọc còn lại qua cổng thanh toán.
-     */
-    post: operations['BookingsController_settleDeposit'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/settlement': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Hủy đơn đặt xe (Khách thuê hoặc Chủ xe)
+         * @description Chuyển trạng thái đơn sang CANCELLED, giải phóng lịch xe và hoàn trả voucher nếu có.
+         */
+        post: operations["BookingsController_cancelBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Xem chi tiết hoặc xem trước quyết toán cọc
-     * @description Chỉ khách thuê hoặc chủ xe mới có quyền xem thông tin quyết toán cọc của chuyến đi.
-     */
-    get: operations['BookingsController_getSettlement'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/payments/create-intent': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Khách thuê hoàn tất trả xe và kết thúc chuyến đi
+         * @description Chuyển trạng thái đơn sang COMPLETED, giải phóng lịch xe và gửi thông báo hoàn tất cho 2 bên.
+         */
+        post: operations["BookingsController_completeBooking"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Tạo ý định thanh toán (tiền cọc giữ chỗ hoặc toàn bộ)
-     * @description Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.
-     */
-    post: operations['PaymentsController_createPaymentIntent'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/payments/webhook': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/settle-deposit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Chủ xe quyết toán tiền cọc ký quỹ (Deposit Settlement)
+         * @description Khấu trừ phụ phí nhiên liệu hao hụt (30.000 đ/1%), phụ phí vệ sinh, trễ giờ và hoàn phần cọc còn lại qua cổng thanh toán.
+         */
+        post: operations["BookingsController_settleDeposit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * IPN / Webhook từ cổng thanh toán (Xác thực chữ ký HMAC-SHA512)
-     * @description Nhận thông báo trạng thái giao dịch từ đối tác thanh toán, đối soát chữ ký số và cập nhật sự kiện cho chuyến đi.
-     */
-    post: operations['PaymentsController_processWebhook'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/payments/simulate': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/settlement": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Xem chi tiết hoặc xem trước quyết toán cọc
+         * @description Chỉ khách thuê hoặc chủ xe mới có quyền xem thông tin quyết toán cọc của chuyến đi.
+         */
+        get: operations["BookingsController_getSettlement"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Giả lập thanh toán sandbox (Hỗ trợ demo & testing)
-     * @description Tự động sinh chữ ký HMAC-SHA512 hợp lệ để giả lập giao dịch thành công hoặc thất bại trong môi trường phát triển.
-     */
-    post: operations['PaymentsController_simulatePayment'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/payments/{ref}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/payments/create-intent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Tạo ý định thanh toán (tiền cọc giữ chỗ hoặc toàn bộ)
+         * @description Tạo phiên thanh toán sandbox với chữ ký số HMAC-SHA512. Chỉ khách thuê mới có quyền thanh toán cho đơn của mình.
+         */
+        post: operations["PaymentsController_createPaymentIntent"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Tra cứu trạng thái giao dịch theo transactionRef */
-    get: operations['PaymentsController_getPaymentByRef'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/inspections': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/payments/webhook": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * IPN / Webhook từ cổng thanh toán (Xác thực chữ ký HMAC-SHA512)
+         * @description Nhận thông báo trạng thái giao dịch từ đối tác thanh toán, đối soát chữ ký số và cập nhật sự kiện cho chuyến đi.
+         */
+        post: operations["PaymentsController_processWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Tra cứu danh sách biên bản kiểm tra của chuyến đi
-     * @description Chỉ người thuê hoặc chủ xe của đơn mới có quyền truy cập. Kèm presigned read URL cho các ảnh.
-     */
-    get: operations['InspectionsController_getInspections'];
-    /**
-     * Lưu hoặc cập nhật bản nháp biên bản bàn giao xe (CHECK_IN / CHECK_OUT)
-     * @description Ghi nhận số km, mức pin/xăng, ghi chú vết xước và danh sách ảnh chụp 4 góc xe. Áp dụng optimistic locking qua trường version.
-     */
-    put: operations['InspectionsController_saveInspection'];
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/inspections/{type}/finalize': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/payments/simulate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Giả lập thanh toán sandbox (Hỗ trợ demo & testing)
+         * @description Tự động sinh chữ ký HMAC-SHA512 hợp lệ để giả lập giao dịch thành công hoặc thất bại trong môi trường phát triển.
+         */
+        post: operations["PaymentsController_simulatePayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Ký duyệt và chốt biên bản bàn giao bất biến
-     * @description Yêu cầu bắt buộc phải có đầy đủ 4 góc ảnh xe (FRONT, REAR, LEFT, RIGHT). Khi hoàn tất, ghi nhận sự kiện hệ thống và gửi thông báo cho đối tác.
-     */
-    post: operations['InspectionsController_finalizeInspection'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/inspections/{type}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/payments/{ref}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tra cứu trạng thái giao dịch theo transactionRef */
+        get: operations["PaymentsController_getPaymentByRef"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT) */
-    get: operations['InspectionsController_getInspectionByType'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/keyless-operations': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/inspections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tra cứu danh sách biên bản kiểm tra của chuyến đi
+         * @description Chỉ người thuê hoặc chủ xe của đơn mới có quyền truy cập. Kèm presigned read URL cho các ảnh.
+         */
+        get: operations["InspectionsController_getInspections"];
+        /**
+         * Lưu hoặc cập nhật bản nháp biên bản bàn giao xe (CHECK_IN / CHECK_OUT)
+         * @description Ghi nhận số km, mức pin/xăng, ghi chú vết xước và danh sách ảnh chụp 4 góc xe. Áp dụng optimistic locking qua trường version.
+         */
+        put: operations["InspectionsController_saveInspection"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Kích hoạt thao tác điều khiển khóa xe ảo Keyless (UNLOCK / LOCK)
-     * @description Gửi lệnh mở hoặc khóa xe qua kết nối viễn thông IoT. Yêu cầu Idempotency-Key bắt buộc, xác thực người thuê, xe hỗ trợ Keyless, khung giờ thuê hợp lệ và biên bản kiểm tra nhận xe CHECK_IN đã chốt.
-     */
-    post: operations['KeylessController_triggerOperation'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/keyless-operations/{opId}': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/inspections/{type}/finalize": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Ký duyệt và chốt biên bản bàn giao bất biến
+         * @description Yêu cầu bắt buộc phải có đầy đủ 4 góc ảnh xe (FRONT, REAR, LEFT, RIGHT). Khi hoàn tất, ghi nhận sự kiện hệ thống và gửi thông báo cho đối tác.
+         */
+        post: operations["InspectionsController_finalizeInspection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Tra cứu trạng thái của một lệnh điều khiển khóa xe
-     * @description Chỉ khách thuê hoặc chủ xe của booking mới có quyền tra cứu.
-     */
-    get: operations['KeylessController_getOperation'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/keyless-operations/{opId}/reconcile': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/inspections/{type}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tra cứu biên bản kiểm tra theo loại (CHECK_IN hoặc CHECK_OUT) */
+        get: operations["InspectionsController_getInspectionByType"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    get?: never;
-    put?: never;
-    /**
-     * Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)
-     * @description Gửi truy vấn kiểm tra tới bộ mô phỏng phần cứng để giải phóng lệnh bị treo và cập nhật trạng thái chuyến đi nếu cần.
-     */
-    post: operations['KeylessController_reconcileOperation'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/bookings/{id}/reviews': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/keyless-operations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kích hoạt thao tác điều khiển khóa xe ảo Keyless (UNLOCK / LOCK)
+         * @description Gửi lệnh mở hoặc khóa xe qua kết nối viễn thông IoT. Yêu cầu Idempotency-Key bắt buộc, xác thực người thuê, xe hỗ trợ Keyless, khung giờ thuê hợp lệ và biên bản kiểm tra nhận xe CHECK_IN đã chốt.
+         */
+        post: operations["KeylessController_triggerOperation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /** Tra cứu danh sách đánh giá của chuyến đi */
-    get: operations['ReviewsController_getBookingReviews'];
-    put?: never;
-    /**
-     * Gửi đánh giá cho chuyến đi (Khách thuê hoặc Chủ xe)
-     * @description Chỉ gửi được sau khi chuyến đi đã COMPLETED. Điểm 1-5 sao, nhận xét tối đa 2.000 ký tự. Mỗi bên tham gia chỉ gửi đúng 1 đánh giá bất biến.
-     */
-    post: operations['ReviewsController_createReview'];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  '/api/v1/vehicles/{id}/reviews': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/api/v1/bookings/{id}/keyless-operations/{opId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tra cứu trạng thái của một lệnh điều khiển khóa xe
+         * @description Chỉ khách thuê hoặc chủ xe của booking mới có quyền tra cứu.
+         */
+        get: operations["KeylessController_getOperation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Tra cứu danh sách và điểm đánh giá trung bình của xe (Công khai)
-     * @description Tổng hợp điểm trung bình và các nhận xét từ khách thuê đã trải nghiệm xe.
-     */
-    get: operations['ReviewsController_getVehicleReviews'];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/api/v1/bookings/{id}/keyless-operations/{opId}/reconcile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Đối soát trạng thái lệnh điều khiển bị mất kết nối (UNKNOWN hoặc PENDING)
+         * @description Gửi truy vấn kiểm tra tới bộ mô phỏng phần cứng để giải phóng lệnh bị treo và cập nhật trạng thái chuyến đi nếu cần.
+         */
+        post: operations["KeylessController_reconcileOperation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/bookings/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tra cứu danh sách đánh giá của chuyến đi */
+        get: operations["ReviewsController_getBookingReviews"];
+        put?: never;
+        /**
+         * Gửi đánh giá cho chuyến đi (Khách thuê hoặc Chủ xe)
+         * @description Chỉ gửi được sau khi chuyến đi đã COMPLETED. Điểm 1-5 sao, nhận xét tối đa 2.000 ký tự. Mỗi bên tham gia chỉ gửi đúng 1 đánh giá bất biến.
+         */
+        post: operations["ReviewsController_createReview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vehicles/{id}/reviews": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Tra cứu danh sách và điểm đánh giá trung bình của xe (Công khai)
+         * @description Tổng hợp điểm trung bình và các nhận xét từ khách thuê đã trải nghiệm xe.
+         */
+        get: operations["ReviewsController_getVehicleReviews"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    UserDto: {
-      /**
-       * @description ID người dùng (UUID)
-       * @example 00000000-0000-0000-0000-000000000001
-       */
-      id: string;
-      /**
-       * @description Họ và tên
-       * @example Nguyễn Văn Chủ 1
-       */
-      name: string;
-      /**
-       * @description Email tài khoản
-       * @example owner1@carsharing.local
-       */
-      email: string;
-      /**
-       * @description Số điện thoại
-       * @example 0901111111
-       */
-      phone: string;
-      /**
-       * @description Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED
-       * @example VERIFIED
-       * @enum {string}
-       */
-      kycStatus: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
-      /**
-       * @description Danh sách năng lực (Capability Model): RENTER, OWNER
-       * @example [
-       *       "RENTER",
-       *       "OWNER"
-       *     ]
-       */
-      capabilities: unknown[][];
+    schemas: {
+        UserDto: {
+            /**
+             * @description ID người dùng (UUID)
+             * @example 00000000-0000-0000-0000-000000000001
+             */
+            id: string;
+            /**
+             * @description Họ và tên
+             * @example Nguyễn Văn Chủ 1
+             */
+            name: string;
+            /**
+             * @description Email tài khoản
+             * @example owner1@carsharing.local
+             */
+            email: string;
+            /**
+             * @description Số điện thoại
+             * @example 0901111111
+             */
+            phone: string;
+            /**
+             * @description Trạng thái xác thực bằng lái xe KYC: NONE, PENDING, VERIFIED, REJECTED
+             * @example VERIFIED
+             * @enum {string}
+             */
+            kycStatus: "NONE" | "PENDING" | "VERIFIED" | "REJECTED";
+            /**
+             * @description Danh sách năng lực (Capability Model): RENTER, OWNER
+             * @example [
+             *       "RENTER",
+             *       "OWNER"
+             *     ]
+             */
+            capabilities: unknown[][];
+        };
+        AuthResponseDto: {
+            /** @description Thông tin tài khoản người dùng */
+            user: components["schemas"]["UserDto"];
+            /**
+             * @description Mã xác thực chống CSRF gắn phiên
+             * @example a1b2c3d4...
+             */
+            csrfToken: string;
+        };
+        CsrfResponseDto: {
+            /**
+             * @description CSRF token gắn phiên hoặc trước phiên
+             * @example a1b2c3d4...
+             */
+            csrfToken: string;
+        };
+        LoginDto: {
+            /**
+             * @description Địa chỉ email đăng nhập
+             * @example owner1@carsharing.local
+             */
+            email: string;
+            /**
+             * @description Mật khẩu tài khoản (tối thiểu 6 ký tự)
+             * @example DemoPassword123!
+             */
+            password: string;
+        };
+        RegisterDto: {
+            /**
+             * @description Họ và tên người dùng (2 - 100 ký tự)
+             * @example Nguyễn Văn A
+             */
+            name: string;
+            /**
+             * @description Địa chỉ email đăng ký
+             * @example user@example.com
+             */
+            email: string;
+            /**
+             * @description Mật khẩu bảo mật (12 - 128 ký tự)
+             * @example StrongPassword2026!#
+             */
+            password: string;
+            /**
+             * @description Số điện thoại liên hệ (9 - 15 chữ số)
+             * @example 0901234567
+             */
+            phone: string;
+        };
+        DriverLicenseDto: {
+            /**
+             * @description ID hồ sơ GPLX (UUID)
+             * @example 40000000-0000-0000-0000-000000000001
+             */
+            id: string;
+            /**
+             * @description ID chủ tài khoản (UUID)
+             * @example 00000000-0000-0000-0000-000000000001
+             */
+            userId: string;
+            /**
+             * @description Số Giấy phép lái xe
+             * @example 079199012345
+             */
+            licenseNumber: string;
+            /**
+             * @description Họ và tên người lái xe
+             * @example NGUYỄN VĂN CHỦ
+             */
+            fullName: string;
+            /**
+             * @description Ngày sinh (YYYY-MM-DD)
+             * @example 1995-05-15
+             */
+            dateOfBirth: string;
+            /**
+             * @description Hạng GPLX
+             * @example B2
+             */
+            licenseClass: string;
+            /**
+             * @description Ngày hết hạn (YYYY-MM-DD)
+             * @example 2030-05-15
+             */
+            expiryDate: string;
+            /**
+             * @description Trạng thái xác thực KYC
+             * @example PENDING
+             * @enum {string}
+             */
+            status: "NONE" | "PENDING" | "VERIFIED" | "REJECTED";
+            /** @description Thời điểm duyệt xác minh */
+            verifiedAt?: string | null;
+            /** @description Lý do từ chối xác thực */
+            rejectionReason?: string | null;
+        };
+        SubmitDriverLicenseDto: {
+            /**
+             * @description Số Giấy phép lái xe (đúng 12 chữ số chuẩn Việt Nam)
+             * @example 079199012345
+             */
+            licenseNumber: string;
+            /**
+             * @description Họ và tên ghi trên GPLX (2 - 100 ký tự)
+             * @example NGUYỄN VĂN CHỦ
+             */
+            fullName: string;
+            /**
+             * @description Ngày sinh định dạng ISO 8601 (YYYY-MM-DD)
+             * @example 1995-05-15
+             */
+            dateOfBirth: string;
+            /**
+             * @description Hạng GPLX hợp lệ (B1, B2, C, D, E, FB2, FC, FD, FE)
+             * @example B2
+             * @enum {string}
+             */
+            licenseClass: "B1" | "B2" | "C" | "D" | "E" | "FB2" | "FC" | "FD" | "FE";
+            /**
+             * @description Ngày hết hạn GPLX (bắt buộc còn hạn ít nhất 30 ngày)
+             * @example 2030-05-15
+             */
+            expiryDate: string;
+        };
+        VerifyDriverLicenseDto: {
+            /**
+             * @description Trạng thái xác thực GPLX
+             * @example VERIFIED
+             * @enum {string}
+             */
+            status: "VERIFIED" | "REJECTED";
+            /**
+             * @description Lý do từ chối (bắt buộc nếu REJECTED)
+             * @example Ảnh chụp GPLX bị mờ, không rõ số hiệu
+             */
+            rejectionReason?: string;
+        };
+        CreateUploadIntentDto: {
+            /**
+             * @description Mục đích sử dụng media (VEHICLE_PHOTO, INSPECTION_PHOTO, IDENTITY_DOCUMENT)
+             * @example IDENTITY_DOCUMENT
+             * @enum {string}
+             */
+            purpose: "VEHICLE_PHOTO" | "INSPECTION_PHOTO" | "IDENTITY_DOCUMENT";
+            /**
+             * @description Định dạng MIME hợp lệ (chỉ hỗ trợ image/jpeg hoặc image/png)
+             * @example image/jpeg
+             * @enum {string}
+             */
+            mimeType: "image/jpeg" | "image/png";
+            /**
+             * @description Dung lượng file tính bằng bytes (tối đa 5.242.880 bytes ~ 5 MiB)
+             * @example 1048576
+             */
+            sizeBytes: number;
+            /**
+             * @description ID xe liên quan (nếu là VEHICLE_PHOTO)
+             * @example 10000000-0000-0000-0000-000000000001
+             */
+            vehicleId?: string;
+            /**
+             * @description ID booking liên quan (nếu là INSPECTION_PHOTO)
+             * @example 20000000-0000-0000-0000-000000000001
+             */
+            bookingId?: string;
+        };
+        UploadIntentResponseDto: {
+            /**
+             * @description ID định danh duy nhất của media (UUID)
+             * @example 50000000-0000-0000-0000-000000000001
+             */
+            mediaId: string;
+            /** @description Presigned URL để thực hiện PUT upload trực tiếp lên S3/MinIO */
+            uploadUrl: string;
+            /**
+             * @description Headers bắt buộc phải gửi kèm khi PUT lên S3
+             * @example {
+             *       "Content-Type": "image/jpeg"
+             *     }
+             */
+            headers: Record<string, never>;
+            /** @description Thời điểm hết hạn của presigned URL upload (ISO 8601 UTC) */
+            expiresAt: string;
+        };
+        MediaObjectDto: {
+            /**
+             * @description ID media (UUID)
+             * @example 50000000-0000-0000-0000-000000000001
+             */
+            id: string;
+            /**
+             * @description ID người tải lên (UUID)
+             * @example 00000000-0000-0000-0000-000000000001
+             */
+            uploaderId: string;
+            /**
+             * @description Mục đích sử dụng media
+             * @example IDENTITY_DOCUMENT
+             */
+            purpose: string;
+            /**
+             * @description Định dạng MIME
+             * @example image/jpeg
+             */
+            mimeType: string;
+            /**
+             * @description Dung lượng bytes
+             * @example 1048576
+             */
+            sizeBytes: number;
+            /**
+             * @description Trạng thái media
+             * @example VERIFIED
+             * @enum {string}
+             */
+            state: "STAGING" | "VERIFIED" | "REJECTED";
+            /** @description Thời điểm xác minh file */
+            verifiedAt?: string | null;
+        };
+        MediaReadUrlResponseDto: {
+            /** @description Presigned URL để tải hoặc xem ảnh từ private S3 bucket */
+            url: string;
+            /** @description Thời điểm hết hạn của presigned URL xem file (ISO 8601 UTC) */
+            expiresAt: string;
+        };
+        VehicleSummaryDto: {
+            /** @example 10000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example VinFast */
+            brand: string;
+            /** @example VF8 Plus */
+            model: string;
+            /** @example 2024 */
+            year: number;
+            /** @example TP. Hồ Chí Minh */
+            city: string;
+            /**
+             * @example SUV
+             * @enum {string}
+             */
+            carType: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+            /**
+             * @example AUTO
+             * @enum {string}
+             */
+            transmission: "AUTO" | "MANUAL";
+            /** @example 5 */
+            seats: number;
+            /**
+             * @example [
+             *       "GPS",
+             *       "BLUETOOTH",
+             *       "BACKUP_CAMERA"
+             *     ]
+             */
+            amenities: string[];
+            /** @example true */
+            keylessSupported: boolean;
+            /**
+             * @description Giá thuê một ngày (VND, số nguyên an toàn)
+             * @example 1400000
+             */
+            pricePerDayVnd: number;
+            /** @example http://localhost:4000/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/cover.jpg */
+            coverImageUrl?: string | null;
+            /**
+             * @description Điểm đánh giá trung bình
+             * @example 5
+             */
+            ratingAverage: number;
+            /**
+             * @description Tổng số lượt đánh giá
+             * @example 0
+             */
+            reviewCount: number;
+            /** @description Báo giá tính nhanh (nếu có yêu cầu khoảng ngày) */
+            quote?: Record<string, never>;
+        };
+        PaginationMetaDto: {
+            /** @example 1 */
+            page: number;
+            /** @example 10 */
+            pageSize: number;
+            /** @example 12 */
+            total: number;
+            /** @example 2 */
+            totalPages: number;
+        };
+        VehicleOwnerSummaryDto: {
+            /** @example 00000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example Nguyễn Văn Chủ 1 */
+            name: string;
+            /** @example 2026-01-01T00:00:00.000Z */
+            joinedAt: string;
+        };
+        VehicleDetailDto: {
+            /** @example 10000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example VinFast */
+            brand: string;
+            /** @example VF8 Plus */
+            model: string;
+            /** @example 2024 */
+            year: number;
+            /** @example TP. Hồ Chí Minh */
+            city: string;
+            /**
+             * @example SUV
+             * @enum {string}
+             */
+            carType: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+            /**
+             * @example AUTO
+             * @enum {string}
+             */
+            transmission: "AUTO" | "MANUAL";
+            /** @example 5 */
+            seats: number;
+            /** @example Xe mới, bảo dưỡng định kỳ chính hãng, động cơ điện êm ái. */
+            description: string;
+            /**
+             * @example [
+             *       "GPS",
+             *       "BLUETOOTH",
+             *       "BACKUP_CAMERA"
+             *     ]
+             */
+            amenities: string[];
+            /**
+             * @example [
+             *       "http://localhost:4000/api/v1/media/vehicles/photo1.jpg"
+             *     ]
+             */
+            photoUrls: string[];
+            /** @example true */
+            keylessSupported: boolean;
+            /**
+             * @description Giá thuê một ngày (VND)
+             * @example 1400000
+             */
+            pricePerDayVnd: number;
+            /**
+             * @description Điểm đánh giá trung bình
+             * @example 5
+             */
+            ratingAverage: number;
+            /**
+             * @description Tổng số lượt đánh giá
+             * @example 12
+             */
+            reviewCount: number;
+            /**
+             * @description Tổng số chuyến đi đã hoàn thành
+             * @example 15
+             */
+            totalTrips: number;
+            owner: components["schemas"]["VehicleOwnerSummaryDto"];
+        };
+        AmenityOptionDto: {
+            /** @example GPS */
+            code: string;
+            /** @example Định vị GPS */
+            name: string;
+        };
+        VehicleOptionsDto: {
+            /**
+             * @example [
+             *       "TP. Hồ Chí Minh",
+             *       "Hà Nội",
+             *       "Đà Nẵng"
+             *     ]
+             */
+            cities: string[];
+            /**
+             * @example [
+             *       "SEDAN",
+             *       "SUV",
+             *       "HATCHBACK",
+             *       "MPV",
+             *       "CROSSOVER"
+             *     ]
+             */
+            carTypes: string[];
+            /**
+             * @example [
+             *       "AUTO",
+             *       "MANUAL"
+             *     ]
+             */
+            transmissions: string[];
+            amenities: components["schemas"]["AmenityOptionDto"][];
+        };
+        CreateVehicleDto: {
+            /**
+             * @description Hãng xe
+             * @example Toyota
+             */
+            brand: string;
+            /**
+             * @description Dòng xe / Model
+             * @example Corolla Cross
+             */
+            model: string;
+            /**
+             * @description Năm sản xuất
+             * @example 2023
+             */
+            year: number;
+            /**
+             * @description Biển số xe
+             * @example 51K-123.45
+             */
+            licensePlate: string;
+            /**
+             * @description Thành phố hoạt động
+             * @example TP. Hồ Chí Minh
+             * @enum {string}
+             */
+            city: "TP. Hồ Chí Minh" | "Hà Nội" | "Đà Nẵng";
+            /**
+             * @description Địa chỉ đón/trả xe chính xác
+             * @example 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh
+             */
+            pickupAddress: string;
+            /**
+             * @description Phân khúc xe
+             * @example SUV
+             * @enum {string}
+             */
+            carType: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+            /**
+             * @description Hộp số
+             * @example AUTO
+             * @enum {string}
+             */
+            transmission: "AUTO" | "MANUAL";
+            /**
+             * @description Số chỗ ngồi
+             * @example 5
+             */
+            seats: number;
+            /**
+             * @description Mô tả chi tiết về xe
+             * @example Xe gia đình giữ gìn sạch sẽ, bảo dưỡng định kỳ.
+             */
+            description: string;
+            /**
+             * @description Giá thuê một ngày (VND)
+             * @example 1200000
+             */
+            pricePerDayVnd: number;
+            /**
+             * @description Hỗ trợ nhận xe tự động không chìa (Keyless)
+             * @default false
+             */
+            keylessSupported: boolean;
+            /**
+             * @description Danh sách mã tiện nghi
+             * @example [
+             *       "GPS",
+             *       "BLUETOOTH",
+             *       "BACKUP_CAMERA"
+             *     ]
+             */
+            amenities?: string[];
+            /**
+             * @description Danh sách ID media ảnh xe đã upload và verify
+             * @example [
+             *       "50000000-0000-0000-0000-000000000001"
+             *     ]
+             */
+            photoMediaIds?: string[];
+        };
+        VehiclePhotoDto: {
+            /** @description ID media */
+            mediaId: string;
+            /** @description Thứ tự hiển thị (0 là ảnh bìa) */
+            position: number;
+        };
+        OwnerVehicleDto: {
+            /** @description ID định danh xe (UUID) */
+            id: string;
+            /** @description ID chủ xe (UUID) */
+            ownerId: string;
+            /** @description Hãng xe */
+            brand: string;
+            /** @description Dòng xe */
+            model: string;
+            /** @description Năm sản xuất */
+            year: number;
+            /** @description Biển số xe đã chuẩn hóa */
+            plateNormalized: string;
+            /** @description Thành phố */
+            city: string;
+            /** @description Địa chỉ đón/trả xe chính xác */
+            pickupAddress: string;
+            /**
+             * @description Loại xe
+             * @enum {string}
+             */
+            carType: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+            /**
+             * @description Hộp số
+             * @enum {string}
+             */
+            transmission: "AUTO" | "MANUAL";
+            /** @description Số chỗ ngồi */
+            seats: number;
+            /** @description Mô tả xe */
+            description: string;
+            /** @description Giá thuê ngày (VND) */
+            pricePerDayVnd: number;
+            /** @description Hỗ trợ Keyless */
+            keylessSupported: boolean;
+            /**
+             * @description Trạng thái xe
+             * @enum {string}
+             */
+            status: "DRAFT" | "PUBLISHED" | "ARCHIVED";
+            /** @description Phiên bản concurrency */
+            version: number;
+            /** @description Danh sách tiện nghi */
+            amenities: string[];
+            /** @description Danh sách ảnh xe */
+            photos: components["schemas"]["VehiclePhotoDto"][];
+            /** @description Ảnh đại diện xe */
+            coverImageUrl?: string | null;
+            /** @description Thời điểm tạo xe */
+            createdAt: string;
+            /** @description Thời điểm cập nhật xe */
+            updatedAt: string;
+        };
+        UpdateVehicleDto: {
+            /**
+             * @description Hãng xe
+             * @example Toyota
+             */
+            brand?: string;
+            /**
+             * @description Dòng xe / Model
+             * @example Corolla Cross
+             */
+            model?: string;
+            /**
+             * @description Năm sản xuất
+             * @example 2023
+             */
+            year?: number;
+            /**
+             * @description Thành phố hoạt động
+             * @enum {string}
+             */
+            city?: "TP. Hồ Chí Minh" | "Hà Nội" | "Đà Nẵng";
+            /** @description Địa chỉ đón/trả xe */
+            pickupAddress?: string;
+            /**
+             * @description Phân khúc xe
+             * @enum {string}
+             */
+            carType?: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+            /**
+             * @description Hộp số
+             * @enum {string}
+             */
+            transmission?: "AUTO" | "MANUAL";
+            /** @description Số chỗ ngồi */
+            seats?: number;
+            /** @description Mô tả chi tiết */
+            description?: string;
+            /**
+             * @description Giá thuê ngày VND
+             * @example 1200000
+             */
+            pricePerDayVnd?: number;
+            /** @description Hỗ trợ Keyless */
+            keylessSupported?: boolean;
+            /** @description Danh sách mã tiện nghi */
+            amenities?: string[];
+            /** @description Danh sách ID media ảnh xe */
+            photoMediaIds?: string[];
+        };
+        PricingBreakdownDto: {
+            /**
+             * @description Số ngày thuê (làm tròn lên theo block 24h)
+             * @example 2
+             */
+            rentalDays: number;
+            /**
+             * @description Đơn giá thuê theo ngày (VND)
+             * @example 1400000
+             */
+            pricePerDayVnd: number;
+            /**
+             * @description Tiền thuê gốc = pricePerDayVnd * rentalDays (VND)
+             * @example 2800000
+             */
+            baseRentVnd: number;
+            /**
+             * @description Phụ phí ngày cao điểm/cuối tuần (VND)
+             * @example 140000
+             */
+            peakSurchargeVnd: number;
+            /**
+             * @description Phí bảo hiểm chuyến đi (VND)
+             * @example 200000
+             */
+            insuranceFeeVnd: number;
+            /**
+             * @description Số tiền giảm giá từ khuyến mãi (VND)
+             * @example 0
+             */
+            discountVnd: number;
+            /**
+             * @description Tổng phụ = baseRent + peakSurcharge + insuranceFee - discount (VND)
+             * @example 3140000
+             */
+            subtotalVnd: number;
+            /**
+             * @description Phí dịch vụ nền tảng (10% của baseRent + peakSurcharge) (VND)
+             * @example 294000
+             */
+            serviceFeeVnd: number;
+            /**
+             * @description Tiền đặt cọc thế chấp giữ xe (hoàn lại sau chuyến đi) (VND)
+             * @example 10000000
+             */
+            depositVnd: number;
+            /**
+             * @description Tổng thanh toán = subtotal + serviceFee + deposit (VND, bảo đảm toàn vẹn toán học)
+             * @example 13434000
+             */
+            totalVnd: number;
+        };
+        QuoteDto: {
+            /** @example 10000000-0000-0000-0000-000000000001 */
+            vehicleId: string;
+            /** @example 2026-11-01T08:00:00.000Z */
+            startAt: string;
+            /** @example 2026-11-03T18:00:00.000Z */
+            endAt: string;
+            /** @example 1400000 */
+            pricePerDayVnd: number;
+            /** @example 2 */
+            rentalDays: number;
+            /** @example 2800000 */
+            subtotalVnd: number;
+            /** @example 280000 */
+            serviceFeeVnd: number;
+            /** @example 10000000 */
+            depositVnd: number;
+            /** @example 13080000 */
+            totalVnd: number;
+            /** @example daily-v1 */
+            pricingVersion: string;
+            breakdown: components["schemas"]["PricingBreakdownDto"];
+            /**
+             * @description Xe có sẵn sàng trong khoảng thời gian này không
+             * @example true
+             */
+            available: boolean;
+            /** @example Xe đã có lịch đặt trước trong khoảng thời gian này */
+            unavailableReason?: string;
+        };
+        CalculatePricingDto: {
+            /**
+             * @description Mã định danh xe
+             * @example 10000000-0000-0000-0000-000000000001
+             */
+            vehicleId: string;
+            /**
+             * @description Thời điểm bắt đầu thuê (ISO 8601 UTC)
+             * @example 2026-11-01T08:00:00.000Z
+             */
+            startAt: string;
+            /**
+             * @description Thời điểm kết thúc thuê (ISO 8601 UTC)
+             * @example 2026-11-03T18:00:00.000Z
+             */
+            endAt: string;
+            /**
+             * @description Gói bảo hiểm lựa chọn (BASIC: 0đ, STANDARD: 100k/ngày, PREMIUM: 200k/ngày)
+             * @default BASIC
+             * @enum {string}
+             */
+            insurancePackage: "BASIC" | "STANDARD" | "PREMIUM";
+            /**
+             * @description Mã khuyến mãi giảm giá (nếu có)
+             * @example SUMMER2026
+             */
+            voucherCode?: string;
+        };
+        ValidatePromotionDto: {
+            /**
+             * @description Mã khuyến mãi cần kiểm tra (không phân biệt hoa thường)
+             * @example WELCOME2026
+             */
+            code: string;
+            /**
+             * @description Tổng tiền thuê xe trước giảm giá (VND) để kiểm tra điều kiện áp dụng
+             * @example 2000000
+             */
+            subtotalVnd: number;
+            /**
+             * @description Mã định danh xe (nếu có context xe cụ thể)
+             * @example 10000000-0000-0000-0000-000000000001
+             */
+            vehicleId?: string;
+        };
+        ValidatedPromotionDto: {
+            /**
+             * @description Mã khuyến mãi chuẩn hóa viết hoa
+             * @example WELCOME2026
+             */
+            code: string;
+            /** @example Chào mừng thành viên mới: Giảm 10% tối đa 200.000 VND */
+            description: string;
+            /**
+             * @example PERCENTAGE
+             * @enum {string}
+             */
+            discountType: "PERCENTAGE" | "FIXED_AMOUNT";
+            /**
+             * @description Giá trị giảm (% hoặc số tiền VND)
+             * @example 10
+             */
+            discountValue: number;
+            /**
+             * @description Mức giảm tối đa (VND) cho loại %
+             * @example 200000
+             */
+            maxDiscountVnd?: Record<string, never>;
+            /**
+             * @description Giá trị đơn hàng tối thiểu (VND)
+             * @example 500000
+             */
+            minOrderValueVnd: number;
+            /**
+             * @description Số tiền giảm giá thực tế tính ra (VND)
+             * @example 200000
+             */
+            discountVnd: number;
+            /**
+             * @description Tổng tiền trước khi giảm giá (VND)
+             * @example 2000000
+             */
+            subtotalBeforeDiscountVnd: number;
+            /**
+             * @description Tổng phụ sau khi trừ số tiền giảm giá (VND)
+             * @example 1800000
+             */
+            subtotalAfterDiscountVnd: number;
+            /**
+             * @description Mã khuyến mãi hợp lệ
+             * @example true
+             */
+            valid: boolean;
+        };
+        CreateBookingDto: {
+            /**
+             * @description Mã định danh xe muốn thuê (UUID)
+             * @example 10000000-0000-0000-0000-000000000001
+             */
+            vehicleId: string;
+            /**
+             * @description Thời điểm nhận xe (ISO 8601 UTC)
+             * @example 2026-11-10T08:00:00.000Z
+             */
+            startAt: string;
+            /**
+             * @description Thời điểm trả xe (ISO 8601 UTC)
+             * @example 2026-11-12T18:00:00.000Z
+             */
+            endAt: string;
+            /**
+             * @description Tổng tiền dự kiến (VND) để bảo vệ chống trượt giá
+             * @example 3380000
+             */
+            expectedTotalVnd: number;
+            /**
+             * @description Phiên bản biểu phí áp dụng
+             * @default daily-v1
+             * @example daily-v1
+             */
+            pricingVersion: string;
+            /**
+             * @description Gói bảo hiểm lựa chọn (BASIC, STANDARD, PREMIUM)
+             * @default BASIC
+             * @enum {string}
+             */
+            insurancePackage: "BASIC" | "STANDARD" | "PREMIUM";
+            /**
+             * @description Mã khuyến mãi áp dụng giảm giá (nếu có)
+             * @example WELCOME2026
+             */
+            voucherCode?: string;
+        };
+        BookingVehicleSummaryDto: {
+            /** @example 10000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example VinFast */
+            brand: string;
+            /** @example VF8 Plus */
+            model: string;
+            /** @example 2024 */
+            year: number;
+            /** @example 51K-10001 */
+            plateNormalized?: Record<string, never> | null;
+            /** @example TP. Hồ Chí Minh */
+            city: string;
+            /** @example Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Quận Bình Thạnh */
+            pickupAddress?: Record<string, never> | null;
+            /** @example 1400000 */
+            pricePerDayVnd: number;
+            coverImageUrl?: string | null;
+            /** @example true */
+            keylessSupported: boolean;
+        };
+        PricingSnapshotDto: {
+            /** @example VND */
+            currency: string;
+            /** @example 1400000 */
+            pricePerDayVnd: number;
+            /** @example 2 */
+            rentalDays: number;
+            /** @example 2800000 */
+            subtotalVnd: number;
+            /** @example 280000 */
+            serviceFeeVnd: number;
+            /** @example 10000000 */
+            depositVnd: number;
+            /** @example 13080000 */
+            totalVnd: number;
+            /** @example daily-v1 */
+            pricingVersion: string;
+        };
+        BookingUserSummaryDto: {
+            /** @example 00000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example Nguyễn Văn Chủ 1 */
+            name: string;
+            /** @example 0901111111 */
+            phone: string;
+        };
+        BookingResponseDto: {
+            /** @example 20000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example 10000000-0000-0000-0000-000000000001 */
+            vehicleId: string;
+            /** @example 00000000-0000-0000-0000-000000000003 */
+            renterId: string;
+            /** @example 00000000-0000-0000-0000-000000000001 */
+            ownerId: string;
+            /** @example 2026-11-10T08:00:00.000Z */
+            startAt: string;
+            /** @example 2026-11-12T18:00:00.000Z */
+            endAt: string;
+            /**
+             * @example REQUESTED
+             * @enum {string}
+             */
+            status: "REQUESTED" | "APPROVED" | "REJECTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+            /** @example 2026-11-10T08:15:00.000Z */
+            requestExpiresAt: string;
+            completedAt?: Record<string, never> | null;
+            reason?: Record<string, never> | null;
+            /** @example 1 */
+            version: number;
+            /** @example 2026-10-27T10:00:00.000Z */
+            createdAt: string;
+            vehicle?: components["schemas"]["BookingVehicleSummaryDto"];
+            pricingSnapshot?: components["schemas"]["PricingSnapshotDto"] | null;
+            renter?: components["schemas"]["BookingUserSummaryDto"];
+            owner?: components["schemas"]["BookingUserSummaryDto"];
+        };
+        RejectBookingDto: {
+            /**
+             * @description Lý do từ chối yêu cầu đặt xe (1 - 500 ký tự)
+             * @example Chủ xe bận đột xuất vào khung giờ này không thể bàn giao xe
+             */
+            reason: string;
+        };
+        CancelBookingDto: {
+            /**
+             * @description Lý do hủy đơn đặt xe (1 - 500 ký tự)
+             * @example Khách đổi lịch công tác nên cần hủy chuyến
+             */
+            reason: string;
+        };
+        SettleDepositDto: {
+            /**
+             * @description Phí vệ sinh nếu xe bị bẩn quá mức quy định (VND)
+             * @default 0
+             * @example 100000
+             */
+            cleaningFeeVnd: number;
+            /**
+             * @description Phụ phí phát sinh khác (ví dụ đền bù xước nhỏ, trễ giờ...) (VND)
+             * @default 0
+             * @example 0
+             */
+            otherSurchargeVnd: number;
+            /**
+             * @description Ghi chú lý do khấu trừ hoặc nghiệm thu hoàn cọc
+             * @example Khấu trừ 5% nhiên liệu hao hụt và phí rửa xe
+             */
+            damageNotes?: string;
+        };
+        SurchargeBreakdownDto: {
+            /**
+             * @description Phần trăm nhiên liệu/pin bị hao hụt so với lúc nhận
+             * @example 5
+             */
+            fuelShortfallPercent: number;
+            /**
+             * @description Đơn giá bù nhiên liệu / 1% (VND)
+             * @example 30000
+             */
+            fuelUnitPriceVnd: number;
+            /**
+             * @description Tiền phụ thu nhiên liệu hao hụt (VND)
+             * @example 150000
+             */
+            fuelSurchargeVnd: number;
+            /**
+             * @description Phí vệ sinh (VND)
+             * @example 100000
+             */
+            cleaningFeeVnd: number;
+            /**
+             * @description Phụ phí phát sinh khác (VND)
+             * @example 0
+             */
+            otherSurchargeVnd: number;
+            /**
+             * @description Tổng toàn bộ phụ phí khấu trừ (VND)
+             * @example 250000
+             */
+            totalSurchargesVnd: number;
+            /** @description Ghi chú giải trình của chủ xe */
+            damageNotes?: Record<string, never>;
+        };
+        DepositSettlementResponseDto: {
+            /** @description ID chuyến đi */
+            bookingId: string;
+            /**
+             * @description Số tiền ký quỹ ban đầu (VND)
+             * @example 10000000
+             */
+            depositVnd: number;
+            /** @description Chi tiết bóc tách phụ phí phát sinh */
+            breakdown: components["schemas"]["SurchargeBreakdownDto"];
+            /**
+             * @description Số tiền hoàn trả lại cho khách thuê (VND)
+             * @example 9750000
+             */
+            refundAmountVnd: number;
+            /**
+             * @description Trạng thái quyết toán cọc
+             * @example SETTLED
+             * @enum {string}
+             */
+            status: "SETTLED" | "PENDING";
+            /** @description Mã giao dịch hoàn tiền nếu có */
+            refundTransactionRef?: Record<string, never>;
+            /** @description Thời điểm quyết toán hoàn tất */
+            settledAt?: Record<string, never>;
+        };
+        CreatePaymentIntentDto: {
+            /**
+             * @description Mã định danh đơn đặt xe (UUID)
+             * @example 20000000-0000-0000-0000-000000000001
+             */
+            bookingId: string;
+            /**
+             * @description Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)
+             * @default DEPOSIT
+             * @enum {string}
+             */
+            paymentType: "DEPOSIT" | "RENTAL_FEE" | "FULL_PAYMENT" | "REFUND";
+            /**
+             * @description URL chuyển hướng sau khi hoàn tất thanh toán
+             * @example http://localhost:3000/bookings/20000000-0000-0000-0000-000000000001
+             */
+            returnUrl?: string;
+        };
+        PaymentResponseDto: {
+            /** @example 50000000-0000-0000-0000-000000000001 */
+            id: string;
+            /** @example 20000000-0000-0000-0000-000000000001 */
+            bookingId: string;
+            /** @example 00000000-0000-0000-0000-000000000003 */
+            renterId: string;
+            /**
+             * @description Số tiền thanh toán (VND)
+             * @example 10000000
+             */
+            amountVnd: number;
+            /**
+             * @example DEPOSIT
+             * @enum {string}
+             */
+            paymentType: "DEPOSIT" | "RENTAL_FEE" | "FULL_PAYMENT" | "REFUND";
+            /**
+             * @example PENDING
+             * @enum {string}
+             */
+            status: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+            /** @example SANDBOX_GATEWAY */
+            provider: string;
+            /** @example TX-1730000000-a1b2c3d4 */
+            transactionRef: string;
+            /** @example /checkout/payment-gateway?ref=TX-1730000000-a1b2c3d4 */
+            paymentUrl?: Record<string, never>;
+            /** @example VNP-20261027-998877 */
+            gatewayTxnId?: Record<string, never> | null;
+            paidAt?: Record<string, never> | null;
+            /** @example 2026-10-27T10:00:00.000Z */
+            createdAt: string;
+        };
+        PaymentWebhookDto: {
+            /**
+             * @description Mã đối soát giao dịch
+             * @example TX-1730000000-a1b2c3d4
+             */
+            transactionRef: string;
+            /**
+             * @description Mã giao dịch từ cổng thanh toán đối tác
+             * @example VNP-20261027-998877
+             */
+            gatewayTxnId?: string;
+            /**
+             * @description Số tiền giao dịch thực tế (VND)
+             * @example 10000000
+             */
+            amountVnd: number;
+            /**
+             * @description Trạng thái kết quả từ cổng thanh toán
+             * @example SUCCESS
+             * @enum {string}
+             */
+            status: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+            /**
+             * @description Chữ ký số HMAC-SHA512 để xác thực tính toàn vẹn
+             * @example a5d89f...
+             */
+            signature: string;
+        };
+        SimulatePaymentDto: {
+            /**
+             * @description Mã tham chiếu giao dịch cần giả lập
+             * @example TX-1730000000-a1b2c3d4
+             */
+            transactionRef: string;
+            /**
+             * @description Trạng thái muốn giả lập
+             * @example SUCCESS
+             * @enum {string}
+             */
+            status: "PENDING" | "SUCCESS" | "FAILED" | "CANCELLED";
+        };
+        InspectionPhotoInputDto: {
+            /**
+             * @description Góc chụp ảnh kiểm tra xe
+             * @enum {string}
+             */
+            angle: "FRONT" | "REAR" | "LEFT" | "RIGHT";
+            /**
+             * Format: uuid
+             * @description ID của media đã được xác thực trên storage
+             */
+            mediaId: string;
+        };
+        SaveInspectionDto: {
+            /**
+             * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
+             * @enum {string}
+             */
+            type: "CHECK_IN" | "CHECK_OUT";
+            /**
+             * @description Số km trên đồng hồ công tơ mét
+             * @default 0
+             */
+            odometerKm: number;
+            /**
+             * @description Tỷ lệ nhiên liệu / pin (0 - 100%)
+             * @default 100
+             */
+            fuelPercent: number;
+            /** @description Ghi chú vết trầy xước, va chạm có sẵn */
+            damageNotes?: string;
+            /**
+             * @description Phiên bản concurrency phục vụ optimistic locking
+             * @default 1
+             */
+            version: number;
+            /** @description Danh sách các ảnh chụp theo từng góc */
+            photos: components["schemas"]["InspectionPhotoInputDto"][];
+        };
+        InspectionPhotoDto: {
+            /**
+             * @description Góc chụp ảnh
+             * @enum {string}
+             */
+            angle: "FRONT" | "REAR" | "LEFT" | "RIGHT";
+            /**
+             * Format: uuid
+             * @description ID của media object
+             */
+            mediaId: string;
+            /** @description Presigned GET URL để xem ảnh bảo mật (TTL 15m) */
+            readUrl?: string;
+        };
+        InspectionResponseDto: {
+            /**
+             * Format: uuid
+             * @description ID của biên bản kiểm tra
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description ID của chuyến đi booking
+             */
+            bookingId: string;
+            /**
+             * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
+             * @enum {string}
+             */
+            type: "CHECK_IN" | "CHECK_OUT";
+            /** @description Số km trên đồng hồ công tơ mét */
+            odometerKm: number;
+            /** @description Tỷ lệ nhiên liệu / pin (0 - 100%) */
+            fuelPercent: number;
+            /** @description Ghi chú vết trầy xước, va chạm có sẵn */
+            damageNotes?: Record<string, never>;
+            /** @description Đã được xác nhận hoàn tất chưa */
+            acknowledged: boolean;
+            /** @description Thời điểm chốt biên bản bất biến */
+            finalizedAt?: Record<string, never>;
+            /** @description Phiên bản concurrency */
+            version: number;
+            /**
+             * Format: uuid
+             * @description ID người thực hiện kiểm tra
+             */
+            performedBy: string;
+            /**
+             * Format: date-time
+             * @description Thời gian khởi tạo
+             */
+            createdAt: string;
+            /** @description Danh sách ảnh 4 góc xe */
+            photos: components["schemas"]["InspectionPhotoDto"][];
+        };
+        TriggerKeylessDto: {
+            /**
+             * @description Hành động điều khiển khóa xe (LOCK hoặc UNLOCK)
+             * @example UNLOCK
+             * @enum {string}
+             */
+            action: "LOCK" | "UNLOCK";
+            /**
+             * @description Cờ thử nghiệm giả lập kết quả phần cứng (chỉ áp dụng ở môi trường dev/test: SUCCESS, FAILED, UNKNOWN)
+             * @example SUCCESS
+             * @enum {string}
+             */
+            simulateResult?: "SUCCESS" | "FAILED" | "UNKNOWN";
+        };
+        KeylessOperationResponseDto: {
+            /**
+             * Format: uuid
+             * @description ID định danh duy nhất của lệnh điều khiển
+             */
+            id: string;
+            /**
+             * Format: uuid
+             * @description ID chuyến đi booking
+             */
+            bookingId: string;
+            /**
+             * Format: uuid
+             * @description ID người gửi lệnh điều khiển (@CurrentUser)
+             */
+            actorId: string;
+            /**
+             * @description Hành động điều khiển xe
+             * @enum {string}
+             */
+            action: "LOCK" | "UNLOCK";
+            /** @description Khóa chống trùng lặp Idempotency-Key */
+            idempotencyKey: string;
+            /**
+             * @description Trạng thái lệnh điều khiển
+             * @enum {string}
+             */
+            status: "PENDING" | "SUCCESS" | "FAILED" | "UNKNOWN";
+            /**
+             * @description Nhà cung cấp phần cứng điều khiển xe (SIMULATOR)
+             * @example SIMULATOR
+             */
+            provider: string;
+            /** @description Chi tiết phản hồi từ phần cứng xe dạng JSON */
+            deviceResult?: Record<string, never>;
+            /**
+             * Format: date-time
+             * @description Thời điểm hoàn tất xử lý lệnh
+             */
+            resolvedAt?: Record<string, never>;
+            /**
+             * Format: date-time
+             * @description Thời điểm tạo lệnh
+             */
+            createdAt: string;
+            /**
+             * @description Trạng thái hiện tại của chuyến đi booking sau khi xử lý lệnh
+             * @enum {string}
+             */
+            bookingStatus?: "REQUESTED" | "APPROVED" | "REJECTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+            /**
+             * @description Cờ báo hiệu kết quả replayed do trùng khớp Idempotency-Key
+             * @example false
+             */
+            isReplay?: boolean;
+        };
+        CreateReviewDto: {
+            /**
+             * @description Điểm đánh giá từ 1 đến 5 sao
+             * @example 5
+             */
+            score: number;
+            /**
+             * @description Nhận xét chi tiết (tối đa 2.000 ký tự)
+             * @example Xe chạy rất êm, sạch sẽ, chủ xe nhiệt tình và giao xe đúng giờ!
+             */
+            comment: string;
+        };
+        ReviewUserSummaryDto: {
+            /** @description ID người dùng */
+            id: string;
+            /** @description Họ tên hiển thị */
+            name: string;
+        };
+        ReviewResponseDto: {
+            /** @description ID đánh giá */
+            id: string;
+            /** @description ID chuyến đi */
+            bookingId: string;
+            /** @description ID người viết đánh giá */
+            authorId: string;
+            /** @description ID người nhận đánh giá */
+            targetUserId: string;
+            /**
+             * @description Điểm số từ 1 đến 5
+             * @example 5
+             */
+            score: number;
+            /** @description Nội dung nhận xét */
+            comment: string;
+            /** @description Thời điểm tạo đánh giá */
+            createdAt: string;
+            /** @description Thông tin người viết */
+            author?: components["schemas"]["ReviewUserSummaryDto"];
+            /** @description Thông tin người nhận */
+            targetUser?: components["schemas"]["ReviewUserSummaryDto"];
+        };
+        VehicleReviewsSummaryDto: {
+            /**
+             * @description Điểm đánh giá trung bình (làm tròn 1 chữ số thập phân)
+             * @example 4.8
+             */
+            averageScore: number;
+            /**
+             * @description Tổng số lượt đánh giá
+             * @example 12
+             */
+            totalReviews: number;
+            /** @description Danh sách đánh giá */
+            reviews: components["schemas"]["ReviewResponseDto"][];
+        };
     };
-    AuthResponseDto: {
-      /** @description Thông tin tài khoản người dùng */
-      user: components['schemas']['UserDto'];
-      /**
-       * @description Mã xác thực chống CSRF gắn phiên
-       * @example a1b2c3d4...
-       */
-      csrfToken: string;
-    };
-    CsrfResponseDto: {
-      /**
-       * @description CSRF token gắn phiên hoặc trước phiên
-       * @example a1b2c3d4...
-       */
-      csrfToken: string;
-    };
-    LoginDto: {
-      /**
-       * @description Địa chỉ email đăng nhập
-       * @example owner1@carsharing.local
-       */
-      email: string;
-      /**
-       * @description Mật khẩu tài khoản (tối thiểu 6 ký tự)
-       * @example DemoPassword123!
-       */
-      password: string;
-    };
-    RegisterDto: {
-      /**
-       * @description Họ và tên người dùng (2 - 100 ký tự)
-       * @example Nguyễn Văn A
-       */
-      name: string;
-      /**
-       * @description Địa chỉ email đăng ký
-       * @example user@example.com
-       */
-      email: string;
-      /**
-       * @description Mật khẩu bảo mật (12 - 128 ký tự)
-       * @example StrongPassword2026!#
-       */
-      password: string;
-      /**
-       * @description Số điện thoại liên hệ (9 - 15 chữ số)
-       * @example 0901234567
-       */
-      phone: string;
-    };
-    DriverLicenseDto: {
-      /**
-       * @description ID hồ sơ GPLX (UUID)
-       * @example 40000000-0000-0000-0000-000000000001
-       */
-      id: string;
-      /**
-       * @description ID chủ tài khoản (UUID)
-       * @example 00000000-0000-0000-0000-000000000001
-       */
-      userId: string;
-      /**
-       * @description Số Giấy phép lái xe
-       * @example 079199012345
-       */
-      licenseNumber: string;
-      /**
-       * @description Họ và tên người lái xe
-       * @example NGUYỄN VĂN CHỦ
-       */
-      fullName: string;
-      /**
-       * @description Ngày sinh (YYYY-MM-DD)
-       * @example 1995-05-15
-       */
-      dateOfBirth: string;
-      /**
-       * @description Hạng GPLX
-       * @example B2
-       */
-      licenseClass: string;
-      /**
-       * @description Ngày hết hạn (YYYY-MM-DD)
-       * @example 2030-05-15
-       */
-      expiryDate: string;
-      /**
-       * @description Trạng thái xác thực KYC
-       * @example PENDING
-       * @enum {string}
-       */
-      status: 'NONE' | 'PENDING' | 'VERIFIED' | 'REJECTED';
-      /** @description Thời điểm duyệt xác minh */
-      verifiedAt?: string | null;
-      /** @description Lý do từ chối xác thực */
-      rejectionReason?: string | null;
-    };
-    SubmitDriverLicenseDto: {
-      /**
-       * @description Số Giấy phép lái xe (đúng 12 chữ số chuẩn Việt Nam)
-       * @example 079199012345
-       */
-      licenseNumber: string;
-      /**
-       * @description Họ và tên ghi trên GPLX (2 - 100 ký tự)
-       * @example NGUYỄN VĂN CHỦ
-       */
-      fullName: string;
-      /**
-       * @description Ngày sinh định dạng ISO 8601 (YYYY-MM-DD)
-       * @example 1995-05-15
-       */
-      dateOfBirth: string;
-      /**
-       * @description Hạng GPLX hợp lệ (B1, B2, C, D, E, FB2, FC, FD, FE)
-       * @example B2
-       * @enum {string}
-       */
-      licenseClass: 'B1' | 'B2' | 'C' | 'D' | 'E' | 'FB2' | 'FC' | 'FD' | 'FE';
-      /**
-       * @description Ngày hết hạn GPLX (bắt buộc còn hạn ít nhất 30 ngày)
-       * @example 2030-05-15
-       */
-      expiryDate: string;
-    };
-    VerifyDriverLicenseDto: {
-      /**
-       * @description Trạng thái xác thực GPLX
-       * @example VERIFIED
-       * @enum {string}
-       */
-      status: 'VERIFIED' | 'REJECTED';
-      /**
-       * @description Lý do từ chối (bắt buộc nếu REJECTED)
-       * @example Ảnh chụp GPLX bị mờ, không rõ số hiệu
-       */
-      rejectionReason?: string;
-    };
-    CreateUploadIntentDto: {
-      /**
-       * @description Mục đích sử dụng media (VEHICLE_PHOTO, INSPECTION_PHOTO, IDENTITY_DOCUMENT)
-       * @example IDENTITY_DOCUMENT
-       * @enum {string}
-       */
-      purpose: 'VEHICLE_PHOTO' | 'INSPECTION_PHOTO' | 'IDENTITY_DOCUMENT';
-      /**
-       * @description Định dạng MIME hợp lệ (chỉ hỗ trợ image/jpeg hoặc image/png)
-       * @example image/jpeg
-       * @enum {string}
-       */
-      mimeType: 'image/jpeg' | 'image/png';
-      /**
-       * @description Dung lượng file tính bằng bytes (tối đa 5.242.880 bytes ~ 5 MiB)
-       * @example 1048576
-       */
-      sizeBytes: number;
-      /**
-       * @description ID xe liên quan (nếu là VEHICLE_PHOTO)
-       * @example 10000000-0000-0000-0000-000000000001
-       */
-      vehicleId?: string;
-      /**
-       * @description ID booking liên quan (nếu là INSPECTION_PHOTO)
-       * @example 20000000-0000-0000-0000-000000000001
-       */
-      bookingId?: string;
-    };
-    UploadIntentResponseDto: {
-      /**
-       * @description ID định danh duy nhất của media (UUID)
-       * @example 50000000-0000-0000-0000-000000000001
-       */
-      mediaId: string;
-      /** @description Presigned URL để thực hiện PUT upload trực tiếp lên S3/MinIO */
-      uploadUrl: string;
-      /**
-       * @description Headers bắt buộc phải gửi kèm khi PUT lên S3
-       * @example {
-       *       "Content-Type": "image/jpeg"
-       *     }
-       */
-      headers: Record<string, never>;
-      /** @description Thời điểm hết hạn của presigned URL upload (ISO 8601 UTC) */
-      expiresAt: string;
-    };
-    MediaObjectDto: {
-      /**
-       * @description ID media (UUID)
-       * @example 50000000-0000-0000-0000-000000000001
-       */
-      id: string;
-      /**
-       * @description ID người tải lên (UUID)
-       * @example 00000000-0000-0000-0000-000000000001
-       */
-      uploaderId: string;
-      /**
-       * @description Mục đích sử dụng media
-       * @example IDENTITY_DOCUMENT
-       */
-      purpose: string;
-      /**
-       * @description Định dạng MIME
-       * @example image/jpeg
-       */
-      mimeType: string;
-      /**
-       * @description Dung lượng bytes
-       * @example 1048576
-       */
-      sizeBytes: number;
-      /**
-       * @description Trạng thái media
-       * @example VERIFIED
-       * @enum {string}
-       */
-      state: 'STAGING' | 'VERIFIED' | 'REJECTED';
-      /** @description Thời điểm xác minh file */
-      verifiedAt?: string | null;
-    };
-    MediaReadUrlResponseDto: {
-      /** @description Presigned URL để tải hoặc xem ảnh từ private S3 bucket */
-      url: string;
-      /** @description Thời điểm hết hạn của presigned URL xem file (ISO 8601 UTC) */
-      expiresAt: string;
-    };
-    VehicleSummaryDto: {
-      /** @example 10000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example VinFast */
-      brand: string;
-      /** @example VF8 Plus */
-      model: string;
-      /** @example 2024 */
-      year: number;
-      /** @example TP. Hồ Chí Minh */
-      city: string;
-      /**
-       * @example SUV
-       * @enum {string}
-       */
-      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-      /**
-       * @example AUTO
-       * @enum {string}
-       */
-      transmission: 'AUTO' | 'MANUAL';
-      /** @example 5 */
-      seats: number;
-      /**
-       * @example [
-       *       "GPS",
-       *       "BLUETOOTH",
-       *       "BACKUP_CAMERA"
-       *     ]
-       */
-      amenities: string[];
-      /** @example true */
-      keylessSupported: boolean;
-      /**
-       * @description Giá thuê một ngày (VND, số nguyên an toàn)
-       * @example 1400000
-       */
-      pricePerDayVnd: number;
-      /** @example http://localhost:4000/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/cover.jpg */
-      coverImageUrl?: Record<string, never> | null;
-      /**
-       * @description Điểm đánh giá trung bình
-       * @example 5
-       */
-      ratingAverage: number;
-      /**
-       * @description Tổng số lượt đánh giá
-       * @example 0
-       */
-      reviewCount: number;
-      /** @description Báo giá tính nhanh (nếu có yêu cầu khoảng ngày) */
-      quote?: Record<string, never>;
-    };
-    PaginationMetaDto: {
-      /** @example 1 */
-      page: number;
-      /** @example 10 */
-      pageSize: number;
-      /** @example 12 */
-      total: number;
-      /** @example 2 */
-      totalPages: number;
-    };
-    VehicleOwnerSummaryDto: {
-      /** @example 00000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example Nguyễn Văn Chủ 1 */
-      name: string;
-      /** @example 2026-01-01T00:00:00.000Z */
-      joinedAt: string;
-    };
-    VehicleDetailDto: {
-      /** @example 10000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example VinFast */
-      brand: string;
-      /** @example VF8 Plus */
-      model: string;
-      /** @example 2024 */
-      year: number;
-      /** @example TP. Hồ Chí Minh */
-      city: string;
-      /**
-       * @example SUV
-       * @enum {string}
-       */
-      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-      /**
-       * @example AUTO
-       * @enum {string}
-       */
-      transmission: 'AUTO' | 'MANUAL';
-      /** @example 5 */
-      seats: number;
-      /** @example Xe mới, bảo dưỡng định kỳ chính hãng, động cơ điện êm ái. */
-      description: string;
-      /**
-       * @example [
-       *       "GPS",
-       *       "BLUETOOTH",
-       *       "BACKUP_CAMERA"
-       *     ]
-       */
-      amenities: string[];
-      /**
-       * @example [
-       *       "http://localhost:4000/api/v1/media/vehicles/photo1.jpg"
-       *     ]
-       */
-      photoUrls: string[];
-      /** @example true */
-      keylessSupported: boolean;
-      /**
-       * @description Giá thuê một ngày (VND)
-       * @example 1400000
-       */
-      pricePerDayVnd: number;
-      /**
-       * @description Điểm đánh giá trung bình
-       * @example 5
-       */
-      ratingAverage: number;
-      /**
-       * @description Tổng số lượt đánh giá
-       * @example 12
-       */
-      reviewCount: number;
-      /**
-       * @description Tổng số chuyến đi đã hoàn thành
-       * @example 15
-       */
-      totalTrips: number;
-      owner: components['schemas']['VehicleOwnerSummaryDto'];
-    };
-    AmenityOptionDto: {
-      /** @example GPS */
-      code: string;
-      /** @example Định vị GPS */
-      name: string;
-    };
-    VehicleOptionsDto: {
-      /**
-       * @example [
-       *       "TP. Hồ Chí Minh",
-       *       "Hà Nội",
-       *       "Đà Nẵng"
-       *     ]
-       */
-      cities: string[];
-      /**
-       * @example [
-       *       "SEDAN",
-       *       "SUV",
-       *       "HATCHBACK",
-       *       "MPV",
-       *       "CROSSOVER"
-       *     ]
-       */
-      carTypes: string[];
-      /**
-       * @example [
-       *       "AUTO",
-       *       "MANUAL"
-       *     ]
-       */
-      transmissions: string[];
-      amenities: components['schemas']['AmenityOptionDto'][];
-    };
-    CreateVehicleDto: {
-      /**
-       * @description Hãng xe
-       * @example Toyota
-       */
-      brand: string;
-      /**
-       * @description Dòng xe / Model
-       * @example Corolla Cross
-       */
-      model: string;
-      /**
-       * @description Năm sản xuất
-       * @example 2023
-       */
-      year: number;
-      /**
-       * @description Biển số xe
-       * @example 51K-123.45
-       */
-      licensePlate: string;
-      /**
-       * @description Thành phố hoạt động
-       * @example TP. Hồ Chí Minh
-       * @enum {string}
-       */
-      city: 'TP. Hồ Chí Minh' | 'Hà Nội' | 'Đà Nẵng';
-      /**
-       * @description Địa chỉ đón/trả xe chính xác
-       * @example 123 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh
-       */
-      pickupAddress: string;
-      /**
-       * @description Phân khúc xe
-       * @example SUV
-       * @enum {string}
-       */
-      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-      /**
-       * @description Hộp số
-       * @example AUTO
-       * @enum {string}
-       */
-      transmission: 'AUTO' | 'MANUAL';
-      /**
-       * @description Số chỗ ngồi
-       * @example 5
-       */
-      seats: number;
-      /**
-       * @description Mô tả chi tiết về xe
-       * @example Xe gia đình giữ gìn sạch sẽ, bảo dưỡng định kỳ.
-       */
-      description: string;
-      /**
-       * @description Giá thuê một ngày (VND)
-       * @example 1200000
-       */
-      pricePerDayVnd: number;
-      /**
-       * @description Hỗ trợ nhận xe tự động không chìa (Keyless)
-       * @default false
-       */
-      keylessSupported: boolean;
-      /**
-       * @description Danh sách mã tiện nghi
-       * @example [
-       *       "GPS",
-       *       "BLUETOOTH",
-       *       "BACKUP_CAMERA"
-       *     ]
-       */
-      amenities?: string[];
-      /**
-       * @description Danh sách ID media ảnh xe đã upload và verify
-       * @example [
-       *       "50000000-0000-0000-0000-000000000001"
-       *     ]
-       */
-      photoMediaIds?: string[];
-    };
-    VehiclePhotoDto: {
-      /** @description ID media */
-      mediaId: string;
-      /** @description Thứ tự hiển thị (0 là ảnh bìa) */
-      position: number;
-    };
-    OwnerVehicleDto: {
-      /** @description ID định danh xe (UUID) */
-      id: string;
-      /** @description ID chủ xe (UUID) */
-      ownerId: string;
-      /** @description Hãng xe */
-      brand: string;
-      /** @description Dòng xe */
-      model: string;
-      /** @description Năm sản xuất */
-      year: number;
-      /** @description Biển số xe đã chuẩn hóa */
-      plateNormalized: string;
-      /** @description Thành phố */
-      city: string;
-      /** @description Địa chỉ đón/trả xe chính xác */
-      pickupAddress: string;
-      /**
-       * @description Loại xe
-       * @enum {string}
-       */
-      carType: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-      /**
-       * @description Hộp số
-       * @enum {string}
-       */
-      transmission: 'AUTO' | 'MANUAL';
-      /** @description Số chỗ ngồi */
-      seats: number;
-      /** @description Mô tả xe */
-      description: string;
-      /** @description Giá thuê ngày (VND) */
-      pricePerDayVnd: number;
-      /** @description Hỗ trợ Keyless */
-      keylessSupported: boolean;
-      /**
-       * @description Trạng thái xe
-       * @enum {string}
-       */
-      status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
-      /** @description Phiên bản concurrency */
-      version: number;
-      /** @description Danh sách tiện nghi */
-      amenities: string[];
-      /** @description Danh sách ảnh xe */
-      photos: components['schemas']['VehiclePhotoDto'][];
-      /** @description Thời điểm tạo xe */
-      createdAt: string;
-      /** @description Thời điểm cập nhật xe */
-      updatedAt: string;
-    };
-    UpdateVehicleDto: {
-      /**
-       * @description Hãng xe
-       * @example Toyota
-       */
-      brand?: string;
-      /**
-       * @description Dòng xe / Model
-       * @example Corolla Cross
-       */
-      model?: string;
-      /**
-       * @description Năm sản xuất
-       * @example 2023
-       */
-      year?: number;
-      /**
-       * @description Thành phố hoạt động
-       * @enum {string}
-       */
-      city?: 'TP. Hồ Chí Minh' | 'Hà Nội' | 'Đà Nẵng';
-      /** @description Địa chỉ đón/trả xe */
-      pickupAddress?: string;
-      /**
-       * @description Phân khúc xe
-       * @enum {string}
-       */
-      carType?: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-      /**
-       * @description Hộp số
-       * @enum {string}
-       */
-      transmission?: 'AUTO' | 'MANUAL';
-      /** @description Số chỗ ngồi */
-      seats?: number;
-      /** @description Mô tả chi tiết */
-      description?: string;
-      /**
-       * @description Giá thuê ngày VND
-       * @example 1200000
-       */
-      pricePerDayVnd?: number;
-      /** @description Hỗ trợ Keyless */
-      keylessSupported?: boolean;
-      /** @description Danh sách mã tiện nghi */
-      amenities?: string[];
-      /** @description Danh sách ID media ảnh xe */
-      photoMediaIds?: string[];
-    };
-    PricingBreakdownDto: {
-      /**
-       * @description Số ngày thuê (làm tròn lên theo block 24h)
-       * @example 2
-       */
-      rentalDays: number;
-      /**
-       * @description Đơn giá thuê theo ngày (VND)
-       * @example 1400000
-       */
-      pricePerDayVnd: number;
-      /**
-       * @description Tiền thuê gốc = pricePerDayVnd * rentalDays (VND)
-       * @example 2800000
-       */
-      baseRentVnd: number;
-      /**
-       * @description Phụ phí ngày cao điểm/cuối tuần (VND)
-       * @example 140000
-       */
-      peakSurchargeVnd: number;
-      /**
-       * @description Phí bảo hiểm chuyến đi (VND)
-       * @example 200000
-       */
-      insuranceFeeVnd: number;
-      /**
-       * @description Số tiền giảm giá từ khuyến mãi (VND)
-       * @example 0
-       */
-      discountVnd: number;
-      /**
-       * @description Tổng phụ = baseRent + peakSurcharge + insuranceFee - discount (VND)
-       * @example 3140000
-       */
-      subtotalVnd: number;
-      /**
-       * @description Phí dịch vụ nền tảng (10% của baseRent + peakSurcharge) (VND)
-       * @example 294000
-       */
-      serviceFeeVnd: number;
-      /**
-       * @description Tiền đặt cọc thế chấp giữ xe (hoàn lại sau chuyến đi) (VND)
-       * @example 10000000
-       */
-      depositVnd: number;
-      /**
-       * @description Tổng thanh toán = subtotal + serviceFee + deposit (VND, bảo đảm toàn vẹn toán học)
-       * @example 13434000
-       */
-      totalVnd: number;
-    };
-    QuoteDto: {
-      /** @example 10000000-0000-0000-0000-000000000001 */
-      vehicleId: string;
-      /** @example 2026-11-01T08:00:00.000Z */
-      startAt: string;
-      /** @example 2026-11-03T18:00:00.000Z */
-      endAt: string;
-      /** @example 1400000 */
-      pricePerDayVnd: number;
-      /** @example 2 */
-      rentalDays: number;
-      /** @example 2800000 */
-      subtotalVnd: number;
-      /** @example 280000 */
-      serviceFeeVnd: number;
-      /** @example 10000000 */
-      depositVnd: number;
-      /** @example 13080000 */
-      totalVnd: number;
-      /** @example daily-v1 */
-      pricingVersion: string;
-      breakdown: components['schemas']['PricingBreakdownDto'];
-      /**
-       * @description Xe có sẵn sàng trong khoảng thời gian này không
-       * @example true
-       */
-      available: boolean;
-      /** @example Xe đã có lịch đặt trước trong khoảng thời gian này */
-      unavailableReason?: string;
-    };
-    CalculatePricingDto: {
-      /**
-       * @description Mã định danh xe
-       * @example 10000000-0000-0000-0000-000000000001
-       */
-      vehicleId: string;
-      /**
-       * @description Thời điểm bắt đầu thuê (ISO 8601 UTC)
-       * @example 2026-11-01T08:00:00.000Z
-       */
-      startAt: string;
-      /**
-       * @description Thời điểm kết thúc thuê (ISO 8601 UTC)
-       * @example 2026-11-03T18:00:00.000Z
-       */
-      endAt: string;
-      /**
-       * @description Gói bảo hiểm lựa chọn (BASIC: 0đ, STANDARD: 100k/ngày, PREMIUM: 200k/ngày)
-       * @default BASIC
-       * @enum {string}
-       */
-      insurancePackage: 'BASIC' | 'STANDARD' | 'PREMIUM';
-      /**
-       * @description Mã khuyến mãi giảm giá (nếu có)
-       * @example SUMMER2026
-       */
-      voucherCode?: string;
-    };
-    ValidatePromotionDto: {
-      /**
-       * @description Mã khuyến mãi cần kiểm tra (không phân biệt hoa thường)
-       * @example WELCOME2026
-       */
-      code: string;
-      /**
-       * @description Tổng tiền thuê xe trước giảm giá (VND) để kiểm tra điều kiện áp dụng
-       * @example 2000000
-       */
-      subtotalVnd: number;
-      /**
-       * @description Mã định danh xe (nếu có context xe cụ thể)
-       * @example 10000000-0000-0000-0000-000000000001
-       */
-      vehicleId?: string;
-    };
-    ValidatedPromotionDto: {
-      /**
-       * @description Mã khuyến mãi chuẩn hóa viết hoa
-       * @example WELCOME2026
-       */
-      code: string;
-      /** @example Chào mừng thành viên mới: Giảm 10% tối đa 200.000 VND */
-      description: string;
-      /**
-       * @example PERCENTAGE
-       * @enum {string}
-       */
-      discountType: 'PERCENTAGE' | 'FIXED_AMOUNT';
-      /**
-       * @description Giá trị giảm (% hoặc số tiền VND)
-       * @example 10
-       */
-      discountValue: number;
-      /**
-       * @description Mức giảm tối đa (VND) cho loại %
-       * @example 200000
-       */
-      maxDiscountVnd?: Record<string, never>;
-      /**
-       * @description Giá trị đơn hàng tối thiểu (VND)
-       * @example 500000
-       */
-      minOrderValueVnd: number;
-      /**
-       * @description Số tiền giảm giá thực tế tính ra (VND)
-       * @example 200000
-       */
-      discountVnd: number;
-      /**
-       * @description Tổng tiền trước khi giảm giá (VND)
-       * @example 2000000
-       */
-      subtotalBeforeDiscountVnd: number;
-      /**
-       * @description Tổng phụ sau khi trừ số tiền giảm giá (VND)
-       * @example 1800000
-       */
-      subtotalAfterDiscountVnd: number;
-      /**
-       * @description Mã khuyến mãi hợp lệ
-       * @example true
-       */
-      valid: boolean;
-    };
-    CreateBookingDto: {
-      /**
-       * @description Mã định danh xe muốn thuê (UUID)
-       * @example 10000000-0000-0000-0000-000000000001
-       */
-      vehicleId: string;
-      /**
-       * @description Thời điểm nhận xe (ISO 8601 UTC)
-       * @example 2026-11-10T08:00:00.000Z
-       */
-      startAt: string;
-      /**
-       * @description Thời điểm trả xe (ISO 8601 UTC)
-       * @example 2026-11-12T18:00:00.000Z
-       */
-      endAt: string;
-      /**
-       * @description Tổng tiền dự kiến (VND) để bảo vệ chống trượt giá
-       * @example 3380000
-       */
-      expectedTotalVnd: number;
-      /**
-       * @description Phiên bản biểu phí áp dụng
-       * @default daily-v1
-       * @example daily-v1
-       */
-      pricingVersion: string;
-      /**
-       * @description Gói bảo hiểm lựa chọn (BASIC, STANDARD, PREMIUM)
-       * @default BASIC
-       * @enum {string}
-       */
-      insurancePackage: 'BASIC' | 'STANDARD' | 'PREMIUM';
-      /**
-       * @description Mã khuyến mãi áp dụng giảm giá (nếu có)
-       * @example WELCOME2026
-       */
-      voucherCode?: string;
-    };
-    BookingVehicleSummaryDto: {
-      /** @example 10000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example VinFast */
-      brand: string;
-      /** @example VF8 Plus */
-      model: string;
-      /** @example 2024 */
-      year: number;
-      /** @example 51K-10001 */
-      plateNormalized?: Record<string, never> | null;
-      /** @example TP. Hồ Chí Minh */
-      city: string;
-      /** @example Vinhomes Central Park, 208 Nguyễn Hữu Cảnh, Quận Bình Thạnh */
-      pickupAddress?: Record<string, never> | null;
-      /** @example 1400000 */
-      pricePerDayVnd: number;
-      coverImageUrl?: Record<string, never> | null;
-      /** @example true */
-      keylessSupported: boolean;
-    };
-    PricingSnapshotDto: {
-      /** @example VND */
-      currency: string;
-      /** @example 1400000 */
-      pricePerDayVnd: number;
-      /** @example 2 */
-      rentalDays: number;
-      /** @example 2800000 */
-      subtotalVnd: number;
-      /** @example 280000 */
-      serviceFeeVnd: number;
-      /** @example 10000000 */
-      depositVnd: number;
-      /** @example 13080000 */
-      totalVnd: number;
-      /** @example daily-v1 */
-      pricingVersion: string;
-    };
-    BookingUserSummaryDto: {
-      /** @example 00000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example Nguyễn Văn Chủ 1 */
-      name: string;
-      /** @example 0901111111 */
-      phone: string;
-    };
-    BookingResponseDto: {
-      /** @example 20000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example 10000000-0000-0000-0000-000000000001 */
-      vehicleId: string;
-      /** @example 00000000-0000-0000-0000-000000000003 */
-      renterId: string;
-      /** @example 00000000-0000-0000-0000-000000000001 */
-      ownerId: string;
-      /** @example 2026-11-10T08:00:00.000Z */
-      startAt: string;
-      /** @example 2026-11-12T18:00:00.000Z */
-      endAt: string;
-      /**
-       * @example REQUESTED
-       * @enum {string}
-       */
-      status:
-        | 'REQUESTED'
-        | 'APPROVED'
-        | 'REJECTED'
-        | 'IN_PROGRESS'
-        | 'COMPLETED'
-        | 'CANCELLED'
-        | 'EXPIRED';
-      /** @example 2026-11-10T08:15:00.000Z */
-      requestExpiresAt: string;
-      completedAt?: Record<string, never> | null;
-      reason?: Record<string, never> | null;
-      /** @example 1 */
-      version: number;
-      /** @example 2026-10-27T10:00:00.000Z */
-      createdAt: string;
-      vehicle?: components['schemas']['BookingVehicleSummaryDto'];
-      pricingSnapshot?: components['schemas']['PricingSnapshotDto'] | null;
-      renter?: components['schemas']['BookingUserSummaryDto'];
-      owner?: components['schemas']['BookingUserSummaryDto'];
-    };
-    RejectBookingDto: {
-      /**
-       * @description Lý do từ chối yêu cầu đặt xe (1 - 500 ký tự)
-       * @example Chủ xe bận đột xuất vào khung giờ này không thể bàn giao xe
-       */
-      reason: string;
-    };
-    CancelBookingDto: {
-      /**
-       * @description Lý do hủy đơn đặt xe (1 - 500 ký tự)
-       * @example Khách đổi lịch công tác nên cần hủy chuyến
-       */
-      reason: string;
-    };
-    SettleDepositDto: {
-      /**
-       * @description Phí vệ sinh nếu xe bị bẩn quá mức quy định (VND)
-       * @default 0
-       * @example 100000
-       */
-      cleaningFeeVnd: number;
-      /**
-       * @description Phụ phí phát sinh khác (ví dụ đền bù xước nhỏ, trễ giờ...) (VND)
-       * @default 0
-       * @example 0
-       */
-      otherSurchargeVnd: number;
-      /**
-       * @description Ghi chú lý do khấu trừ hoặc nghiệm thu hoàn cọc
-       * @example Khấu trừ 5% nhiên liệu hao hụt và phí rửa xe
-       */
-      damageNotes?: string;
-    };
-    SurchargeBreakdownDto: {
-      /**
-       * @description Phần trăm nhiên liệu/pin bị hao hụt so với lúc nhận
-       * @example 5
-       */
-      fuelShortfallPercent: number;
-      /**
-       * @description Đơn giá bù nhiên liệu / 1% (VND)
-       * @example 30000
-       */
-      fuelUnitPriceVnd: number;
-      /**
-       * @description Tiền phụ thu nhiên liệu hao hụt (VND)
-       * @example 150000
-       */
-      fuelSurchargeVnd: number;
-      /**
-       * @description Phí vệ sinh (VND)
-       * @example 100000
-       */
-      cleaningFeeVnd: number;
-      /**
-       * @description Phụ phí phát sinh khác (VND)
-       * @example 0
-       */
-      otherSurchargeVnd: number;
-      /**
-       * @description Tổng toàn bộ phụ phí khấu trừ (VND)
-       * @example 250000
-       */
-      totalSurchargesVnd: number;
-      /** @description Ghi chú giải trình của chủ xe */
-      damageNotes?: Record<string, never>;
-    };
-    DepositSettlementResponseDto: {
-      /** @description ID chuyến đi */
-      bookingId: string;
-      /**
-       * @description Số tiền ký quỹ ban đầu (VND)
-       * @example 10000000
-       */
-      depositVnd: number;
-      /** @description Chi tiết bóc tách phụ phí phát sinh */
-      breakdown: components['schemas']['SurchargeBreakdownDto'];
-      /**
-       * @description Số tiền hoàn trả lại cho khách thuê (VND)
-       * @example 9750000
-       */
-      refundAmountVnd: number;
-      /**
-       * @description Trạng thái quyết toán cọc
-       * @example SETTLED
-       * @enum {string}
-       */
-      status: 'SETTLED' | 'PENDING';
-      /** @description Mã giao dịch hoàn tiền nếu có */
-      refundTransactionRef?: Record<string, never>;
-      /** @description Thời điểm quyết toán hoàn tất */
-      settledAt?: Record<string, never>;
-    };
-    CreatePaymentIntentDto: {
-      /**
-       * @description Mã định danh đơn đặt xe (UUID)
-       * @example 20000000-0000-0000-0000-000000000001
-       */
-      bookingId: string;
-      /**
-       * @description Loại thanh toán: DEPOSIT (tiền cọc giữ chỗ), FULL_PAYMENT (toàn bộ)
-       * @default DEPOSIT
-       * @enum {string}
-       */
-      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT' | 'REFUND';
-      /**
-       * @description URL chuyển hướng sau khi hoàn tất thanh toán
-       * @example http://localhost:3000/bookings/20000000-0000-0000-0000-000000000001
-       */
-      returnUrl?: string;
-    };
-    PaymentResponseDto: {
-      /** @example 50000000-0000-0000-0000-000000000001 */
-      id: string;
-      /** @example 20000000-0000-0000-0000-000000000001 */
-      bookingId: string;
-      /** @example 00000000-0000-0000-0000-000000000003 */
-      renterId: string;
-      /**
-       * @description Số tiền thanh toán (VND)
-       * @example 10000000
-       */
-      amountVnd: number;
-      /**
-       * @example DEPOSIT
-       * @enum {string}
-       */
-      paymentType: 'DEPOSIT' | 'RENTAL_FEE' | 'FULL_PAYMENT' | 'REFUND';
-      /**
-       * @example PENDING
-       * @enum {string}
-       */
-      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
-      /** @example SANDBOX_GATEWAY */
-      provider: string;
-      /** @example TX-1730000000-a1b2c3d4 */
-      transactionRef: string;
-      /** @example /checkout/payment-gateway?ref=TX-1730000000-a1b2c3d4 */
-      paymentUrl?: Record<string, never>;
-      /** @example VNP-20261027-998877 */
-      gatewayTxnId?: Record<string, never> | null;
-      paidAt?: Record<string, never> | null;
-      /** @example 2026-10-27T10:00:00.000Z */
-      createdAt: string;
-    };
-    PaymentWebhookDto: {
-      /**
-       * @description Mã đối soát giao dịch
-       * @example TX-1730000000-a1b2c3d4
-       */
-      transactionRef: string;
-      /**
-       * @description Mã giao dịch từ cổng thanh toán đối tác
-       * @example VNP-20261027-998877
-       */
-      gatewayTxnId?: string;
-      /**
-       * @description Số tiền giao dịch thực tế (VND)
-       * @example 10000000
-       */
-      amountVnd: number;
-      /**
-       * @description Trạng thái kết quả từ cổng thanh toán
-       * @example SUCCESS
-       * @enum {string}
-       */
-      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
-      /**
-       * @description Chữ ký số HMAC-SHA512 để xác thực tính toàn vẹn
-       * @example a5d89f...
-       */
-      signature: string;
-    };
-    SimulatePaymentDto: {
-      /**
-       * @description Mã tham chiếu giao dịch cần giả lập
-       * @example TX-1730000000-a1b2c3d4
-       */
-      transactionRef: string;
-      /**
-       * @description Trạng thái muốn giả lập
-       * @example SUCCESS
-       * @enum {string}
-       */
-      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED';
-    };
-    InspectionPhotoInputDto: {
-      /**
-       * @description Góc chụp ảnh kiểm tra xe
-       * @enum {string}
-       */
-      angle: 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
-      /**
-       * Format: uuid
-       * @description ID của media đã được xác thực trên storage
-       */
-      mediaId: string;
-    };
-    SaveInspectionDto: {
-      /**
-       * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
-       * @enum {string}
-       */
-      type: 'CHECK_IN' | 'CHECK_OUT';
-      /**
-       * @description Số km trên đồng hồ công tơ mét
-       * @default 0
-       */
-      odometerKm: number;
-      /**
-       * @description Tỷ lệ nhiên liệu / pin (0 - 100%)
-       * @default 100
-       */
-      fuelPercent: number;
-      /** @description Ghi chú vết trầy xước, va chạm có sẵn */
-      damageNotes?: string;
-      /**
-       * @description Phiên bản concurrency phục vụ optimistic locking
-       * @default 1
-       */
-      version: number;
-      /** @description Danh sách các ảnh chụp theo từng góc */
-      photos: components['schemas']['InspectionPhotoInputDto'][];
-    };
-    InspectionPhotoDto: {
-      /**
-       * @description Góc chụp ảnh
-       * @enum {string}
-       */
-      angle: 'FRONT' | 'REAR' | 'LEFT' | 'RIGHT';
-      /**
-       * Format: uuid
-       * @description ID của media object
-       */
-      mediaId: string;
-      /** @description Presigned GET URL để xem ảnh bảo mật (TTL 15m) */
-      readUrl?: string;
-    };
-    InspectionResponseDto: {
-      /**
-       * Format: uuid
-       * @description ID của biên bản kiểm tra
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description ID của chuyến đi booking
-       */
-      bookingId: string;
-      /**
-       * @description Loại biên bản bàn giao: CHECK_IN hoặc CHECK_OUT
-       * @enum {string}
-       */
-      type: 'CHECK_IN' | 'CHECK_OUT';
-      /** @description Số km trên đồng hồ công tơ mét */
-      odometerKm: number;
-      /** @description Tỷ lệ nhiên liệu / pin (0 - 100%) */
-      fuelPercent: number;
-      /** @description Ghi chú vết trầy xước, va chạm có sẵn */
-      damageNotes?: Record<string, never>;
-      /** @description Đã được xác nhận hoàn tất chưa */
-      acknowledged: boolean;
-      /** @description Thời điểm chốt biên bản bất biến */
-      finalizedAt?: Record<string, never>;
-      /** @description Phiên bản concurrency */
-      version: number;
-      /**
-       * Format: uuid
-       * @description ID người thực hiện kiểm tra
-       */
-      performedBy: string;
-      /**
-       * Format: date-time
-       * @description Thời gian khởi tạo
-       */
-      createdAt: string;
-      /** @description Danh sách ảnh 4 góc xe */
-      photos: components['schemas']['InspectionPhotoDto'][];
-    };
-    TriggerKeylessDto: {
-      /**
-       * @description Hành động điều khiển khóa xe (LOCK hoặc UNLOCK)
-       * @example UNLOCK
-       * @enum {string}
-       */
-      action: 'LOCK' | 'UNLOCK';
-      /**
-       * @description Cờ thử nghiệm giả lập kết quả phần cứng (chỉ áp dụng ở môi trường dev/test: SUCCESS, FAILED, UNKNOWN)
-       * @example SUCCESS
-       * @enum {string}
-       */
-      simulateResult?: 'SUCCESS' | 'FAILED' | 'UNKNOWN';
-    };
-    KeylessOperationResponseDto: {
-      /**
-       * Format: uuid
-       * @description ID định danh duy nhất của lệnh điều khiển
-       */
-      id: string;
-      /**
-       * Format: uuid
-       * @description ID chuyến đi booking
-       */
-      bookingId: string;
-      /**
-       * Format: uuid
-       * @description ID người gửi lệnh điều khiển (@CurrentUser)
-       */
-      actorId: string;
-      /**
-       * @description Hành động điều khiển xe
-       * @enum {string}
-       */
-      action: 'LOCK' | 'UNLOCK';
-      /** @description Khóa chống trùng lặp Idempotency-Key */
-      idempotencyKey: string;
-      /**
-       * @description Trạng thái lệnh điều khiển
-       * @enum {string}
-       */
-      status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'UNKNOWN';
-      /**
-       * @description Nhà cung cấp phần cứng điều khiển xe (SIMULATOR)
-       * @example SIMULATOR
-       */
-      provider: string;
-      /** @description Chi tiết phản hồi từ phần cứng xe dạng JSON */
-      deviceResult?: Record<string, never>;
-      /**
-       * Format: date-time
-       * @description Thời điểm hoàn tất xử lý lệnh
-       */
-      resolvedAt?: Record<string, never>;
-      /**
-       * Format: date-time
-       * @description Thời điểm tạo lệnh
-       */
-      createdAt: string;
-      /**
-       * @description Trạng thái hiện tại của chuyến đi booking sau khi xử lý lệnh
-       * @enum {string}
-       */
-      bookingStatus?:
-        | 'REQUESTED'
-        | 'APPROVED'
-        | 'REJECTED'
-        | 'IN_PROGRESS'
-        | 'COMPLETED'
-        | 'CANCELLED'
-        | 'EXPIRED';
-      /**
-       * @description Cờ báo hiệu kết quả replayed do trùng khớp Idempotency-Key
-       * @example false
-       */
-      isReplay?: boolean;
-    };
-    CreateReviewDto: {
-      /**
-       * @description Điểm đánh giá từ 1 đến 5 sao
-       * @example 5
-       */
-      score: number;
-      /**
-       * @description Nhận xét chi tiết (tối đa 2.000 ký tự)
-       * @example Xe chạy rất êm, sạch sẽ, chủ xe nhiệt tình và giao xe đúng giờ!
-       */
-      comment: string;
-    };
-    ReviewUserSummaryDto: {
-      /** @description ID người dùng */
-      id: string;
-      /** @description Họ tên hiển thị */
-      name: string;
-    };
-    ReviewResponseDto: {
-      /** @description ID đánh giá */
-      id: string;
-      /** @description ID chuyến đi */
-      bookingId: string;
-      /** @description ID người viết đánh giá */
-      authorId: string;
-      /** @description ID người nhận đánh giá */
-      targetUserId: string;
-      /**
-       * @description Điểm số từ 1 đến 5
-       * @example 5
-       */
-      score: number;
-      /** @description Nội dung nhận xét */
-      comment: string;
-      /** @description Thời điểm tạo đánh giá */
-      createdAt: string;
-      /** @description Thông tin người viết */
-      author?: components['schemas']['ReviewUserSummaryDto'];
-      /** @description Thông tin người nhận */
-      targetUser?: components['schemas']['ReviewUserSummaryDto'];
-    };
-    VehicleReviewsSummaryDto: {
-      /**
-       * @description Điểm đánh giá trung bình (làm tròn 1 chữ số thập phân)
-       * @example 4.8
-       */
-      averageScore: number;
-      /**
-       * @description Tổng số lượt đánh giá
-       * @example 12
-       */
-      totalReviews: number;
-      /** @description Danh sách đánh giá */
-      reviews: components['schemas']['ReviewResponseDto'][];
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  AuthController_getCsrfToken: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Trả về CSRF token và gắn cookie csrf_token */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['CsrfResponseDto'];
-          };
-        };
-      };
-    };
-  };
-  AuthController_login: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['LoginDto'];
-      };
-    };
-    responses: {
-      /** @description Đăng nhập thành công, thiết lập session cookies */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['AuthResponseDto'];
-          };
-        };
-      };
-      /** @description Sai thông tin đăng nhập (INVALID_CREDENTIALS) */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_register: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RegisterDto'];
-      };
-    };
-    responses: {
-      /** @description Đăng ký thành công, tạo phiên và trả về thông tin user */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['AuthResponseDto'];
-          };
-        };
-      };
-      /** @description Email đã tồn tại (EMAIL_IN_USE) */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_googleAuth: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chuyển hướng đến Google hoặc mock callback */
-      302: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_googleCallback: {
-    parameters: {
-      query: {
-        code: string;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thiết lập cookie phiên và chuyển hướng về web */
-      302: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  AuthController_logout: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Đăng xuất thành công, xóa cookie */
-      204: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  'AuthController_getProfile[0]': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin tài khoản và năng lực của người dùng */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['UserDto'];
-          };
-        };
-      };
-      /** @description Chưa đăng nhập hoặc phiên hết hạn */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  'AuthController_getProfile[1]': {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin tài khoản và năng lực của người dùng */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['UserDto'];
-          };
-        };
-      };
-      /** @description Chưa đăng nhập hoặc phiên hết hạn */
-      401: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  UsersController_getMyDriverLicense: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Hồ sơ GPLX của người dùng hoặc null nếu chưa nộp */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['DriverLicenseDto'];
-          };
-        };
-      };
-    };
-  };
-  UsersController_submitDriverLicense: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SubmitDriverLicenseDto'];
-      };
-    };
-    responses: {
-      /** @description Nộp GPLX thành công, trạng thái chuyển sang PENDING */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['DriverLicenseDto'];
-          };
-        };
-      };
-      /** @description Dữ liệu không hợp lệ (hết hạn, < 18 tuổi, sai số GPLX) */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description GPLX đã được xác thực trước đó (ALREADY_VERIFIED) */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  UsersController_verifyDriverLicense: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID người dùng cần duyệt GPLX */
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['VerifyDriverLicenseDto'];
-      };
-    };
-    responses: {
-      /** @description Cập nhật trạng thái KYC thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['DriverLicenseDto'];
-          };
-        };
-      };
-      /** @description Không tìm thấy hồ sơ GPLX của người dùng */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MediaController_createUploadIntent: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateUploadIntentDto'];
-      };
-    };
-    responses: {
-      /** @description Sinh presigned URL thành công */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['UploadIntentResponseDto'];
-        };
-      };
-      /** @description Dữ liệu không hợp lệ (MIME hoặc dung lượng sai quy định) */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MediaController_verifyMedia: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Xác thực file thành công, file được chuyển từ staging sang finalized */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MediaObjectDto'];
-        };
-      };
-      /** @description File chưa được tải lên storage thành công */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không có quyền xác thực media của người khác */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy media object */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  MediaController_getReadUrl: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Sinh URL xem file thành công (TTL 15 phút) */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['MediaReadUrlResponseDto'];
-        };
-      };
-      /** @description Media chưa hoàn tất xác thực */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không có quyền truy cập tài liệu định danh này */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy media object */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  HealthController_check: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VehiclesController_getVehicleOptions: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh mục tùy chọn cho phép tìm kiếm xe */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['VehicleOptionsDto'];
-        };
-      };
-    };
-  };
-  VehiclesController_getVehicles: {
-    parameters: {
-      query?: {
-        /** @description Từ khóa tìm kiếm theo hãng (brand) hoặc mẫu xe (model) */
-        q?: string;
-        /** @description Hãng sản xuất (brand) */
-        brand?: string;
-        /** @description Tỉnh / thành phố tìm kiếm */
-        city?: string;
-        /** @description Thời điểm bắt đầu thuê (ISO 8601) */
-        startAt?: string;
-        /** @description Thời điểm kết thúc thuê (ISO 8601) */
-        endAt?: string;
-        /** @description Phân khúc xe */
-        carType?: 'SEDAN' | 'SUV' | 'HATCHBACK' | 'MPV' | 'CROSSOVER';
-        /** @description Hộp số */
-        transmission?: 'AUTO' | 'MANUAL';
-        /** @description Số chỗ ngồi tối thiểu */
-        seats?: number;
-        /** @description Giá thuê ngày tối thiểu (VND) */
-        minPrice?: number;
-        /** @description Giá thuê ngày tối đa (VND) */
-        maxPrice?: number;
-        /** @description Chỉ tìm xe hỗ trợ tự mở khóa Keyless */
-        keylessOnly?: boolean;
-        /** @description Lọc theo danh sách tiện nghi (mảng hoặc phân cách bởi dấu phẩy, e.g. GPS,BACKUP_CAMERA) */
-        amenities?: string[];
-        /** @description Sắp xếp kết quả */
-        sort?: 'price_asc' | 'price_desc' | 'newest' | 'rating_desc' | 'popularity_desc';
-        /** @description Số trang (1-indexed) */
-        page?: number;
-        /** @description Số xe trên một trang */
-        pageSize?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh sách xe thỏa mãn điều kiện lọc và thông tin phân trang */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': {
-            data?: components['schemas']['VehicleSummaryDto'][];
-            meta?: components['schemas']['PaginationMetaDto'];
-          };
-        };
-      };
-      /** @description Tham số tìm kiếm hoặc khoảng ngày không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  VehiclesController_getVehicleById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin chi tiết xe công khai (không lộ biển số và địa chỉ đón trả chi tiết) */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['VehicleDetailDto'];
-        };
-      };
-      /** @description Không tìm thấy xe hoặc xe chưa được công khai */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  OwnerVehiclesController_getOwnerVehicles: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh sách xe cá nhân của chủ xe */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['OwnerVehicleDto'][];
-        };
-      };
-    };
-  };
-  OwnerVehiclesController_createVehicle: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateVehicleDto'];
-      };
-    };
-    responses: {
-      /** @description Tạo xe mới thành công với trạng thái DRAFT */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['OwnerVehicleDto'];
-        };
-      };
-      /** @description Dữ liệu đầu vào không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Biển số xe đã được đăng ký trên hệ thống */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  OwnerVehiclesController_getOwnerVehicleById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chi tiết thông tin xe (bao gồm biển số và địa chỉ đón trả) */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['OwnerVehicleDto'];
-        };
-      };
-      /** @description Không có quyền truy cập xe của chủ khác */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy xe */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  OwnerVehiclesController_updateVehicle: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['UpdateVehicleDto'];
-      };
-    };
-    responses: {
-      /** @description Cập nhật xe thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['OwnerVehicleDto'];
-        };
-      };
-      /** @description Dữ liệu cập nhật không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không có quyền cập nhật xe của chủ khác */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy xe */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  OwnerVehiclesController_publishVehicle: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Xe được đăng công khai thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['OwnerVehicleDto'];
-        };
-      };
-      /** @description Không có quyền publish xe của chủ khác */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy xe */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Xe chưa đủ điều kiện publish (thiếu ảnh hoặc giấy tờ) */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  PricingController_getQuote: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CalculatePricingDto'];
-      };
-    };
-    responses: {
-      /** @description Báo giá chi tiết với đầy đủ bóc tách chi phí */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['QuoteDto'];
-        };
-      };
-      /** @description Dữ liệu đầu vào hoặc định dạng ngày không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy xe */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Thời lượng thuê không hợp lệ */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  PricingController_calculatePricing: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CalculatePricingDto'];
-      };
-    };
-    responses: {
-      /** @description Biểu phí tính toán thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['QuoteDto'];
-        };
-      };
-    };
-  };
-  PricingController_getPricingPreview: {
-    parameters: {
-      query: {
-        /** @description Thời điểm bắt đầu thuê (ISO 8601 UTC) */
-        startAt: string;
-        /** @description Thời điểm kết thúc thuê (ISO 8601 UTC) */
-        endAt: string;
-        insurancePackage?: 'BASIC' | 'STANDARD' | 'PREMIUM';
-        voucherCode?: string;
-      };
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Dự toán chi phí thuê xe */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['QuoteDto'];
-        };
-      };
-      /** @description Khoảng ngày không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không tìm thấy xe */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  PromotionsController_validatePromotion: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['ValidatePromotionDto'];
-      };
-    };
-    responses: {
-      /** @description Mã khuyến mãi hợp lệ, trả về số tiền được giảm */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ValidatedPromotionDto'];
-        };
-      };
-      /** @description Mã khuyến mãi không hợp lệ, hết hạn, hết lượt dùng hoặc chưa đạt đơn hàng tối thiểu */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Mã khuyến mãi không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  BookingsController_getBookings: {
-    parameters: {
-      query?: {
-        /** @description Góc nhìn tra cứu: renter (khách thuê) hoặc owner (chủ xe) */
-        perspective?: 'renter' | 'owner';
-        /** @description Lọc theo trạng thái đơn thuê (REQUESTED, APPROVED, REJECTED, IN_PROGRESS, COMPLETED, CANCELLED, EXPIRED) */
-        status?:
-          | 'REQUESTED'
-          | 'APPROVED'
-          | 'REJECTED'
-          | 'IN_PROGRESS'
-          | 'COMPLETED'
-          | 'CANCELLED'
-          | 'EXPIRED';
-        /** @description Số thứ tự trang */
-        page?: number;
-        /** @description Số lượng bản ghi mỗi trang */
-        pageSize?: number;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh sách đơn đặt xe kèm phân trang */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  BookingsController_createBooking: {
-    parameters: {
-      query?: never;
-      header: {
-        'idempotency-key': string;
-        /** @description Khóa chống trùng lặp (16 - 128 ký tự ASCII) */
-        'Idempotency-Key': string;
-      };
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateBookingDto'];
-      };
-    };
-    responses: {
-      /** @description Replay yêu cầu đặt xe trùng lặp (Idempotent) */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-      /** @description Tạo đơn đặt xe mới thành công */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_getBookingById: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin chi tiết đơn thuê, xe, biểu phí và hai bên tham gia */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_approveBooking: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Phê duyệt thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_rejectBooking: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['RejectBookingDto'];
-      };
-    };
-    responses: {
-      /** @description Từ chối thành công, lịch xe đã được mở lại */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_cancelBooking: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CancelBookingDto'];
-      };
-    };
-    responses: {
-      /** @description Hủy đơn thành công, lịch xe đã được mở lại */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_completeBooking: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chuyến đi đã hoàn tất thành công, lịch xe đã được giải phóng */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['BookingResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_settleDeposit: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SettleDepositDto'];
-      };
-    };
-    responses: {
-      /** @description Quyết toán ký quỹ thành công, hoàn cọc cho khách thuê */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['DepositSettlementResponseDto'];
-        };
-      };
-    };
-  };
-  BookingsController_getSettlement: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin quyết toán cọc */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['DepositSettlementResponseDto'];
-        };
-      };
-    };
-  };
-  PaymentsController_createPaymentIntent: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreatePaymentIntentDto'];
-      };
-    };
-    responses: {
-      /** @description Tạo ý định thanh toán thành công, trả về redirect URL */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaymentResponseDto'];
-        };
-      };
-    };
-  };
-  PaymentsController_processWebhook: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['PaymentWebhookDto'];
-      };
-    };
-    responses: {
-      /** @description Xử lý webhook thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaymentResponseDto'];
-        };
-      };
-    };
-  };
-  PaymentsController_simulatePayment: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SimulatePaymentDto'];
-      };
-    };
-    responses: {
-      /** @description Giả lập thanh toán thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaymentResponseDto'];
-        };
-      };
-    };
-  };
-  PaymentsController_getPaymentByRef: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        ref: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chi tiết thông tin giao dịch thanh toán */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['PaymentResponseDto'];
-        };
-      };
-    };
-  };
-  InspectionsController_getInspections: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh sách biên bản */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InspectionResponseDto'][];
-        };
-      };
-    };
-  };
-  InspectionsController_saveInspection: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['SaveInspectionDto'];
-      };
-    };
-    responses: {
-      /** @description Lưu biên bản thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InspectionResponseDto'];
-        };
-      };
-      /** @description Dữ liệu không hợp lệ hoặc ảnh chưa verified */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không có quyền thao tác trên booking này */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Chuyến đi không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Biên bản đã chốt hoặc xung đột phiên bản version */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  InspectionsController_finalizeInspection: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-        /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
-        type: 'CHECK_IN' | 'CHECK_OUT';
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chốt biên bản thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InspectionResponseDto'];
-        };
-      };
-      /** @description Không có quyền thao tác */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Biên bản chưa được tạo */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Thiếu góc ảnh bắt buộc trong 4 góc */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  InspectionsController_getInspectionByType: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-        /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
-        type: 'CHECK_IN' | 'CHECK_OUT';
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Chi tiết biên bản */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['InspectionResponseDto'];
-        };
-      };
-      /** @description Biên bản chưa được tạo */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  KeylessController_triggerOperation: {
-    parameters: {
-      query?: never;
-      header: {
-        'idempotency-key': string;
-        /** @description Khóa chống lặp duy nhất cho mỗi thao tác người dùng (độ dài 16-128 ký tự) */
-        'Idempotency-Key': string;
-      };
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['TriggerKeylessDto'];
-      };
-    };
-    responses: {
-      /** @description Lệnh điều khiển đã được xử lý thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['KeylessOperationResponseDto'];
-        };
-      };
-      /** @description Thiếu Idempotency-Key hoặc dữ liệu không hợp lệ */
-      400: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Không có quyền điều khiển xe (chỉ người thuê) */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Chuyến đi không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Xung đột thao tác chưa hoàn tất (UNRESOLVED_OPERATION) hoặc lệch Idempotency-Key */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Xe không hỗ trợ Keyless, ngoài giờ thuê, hoặc chưa chốt biên bản CHECK_IN */
-      422: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  KeylessController_getOperation: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-        /** @description ID lệnh điều khiển xe */
-        opId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Thông tin chi tiết lệnh điều khiển */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['KeylessOperationResponseDto'];
-        };
-      };
-      /** @description Không có quyền truy cập */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Lệnh điều khiển không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  KeylessController_reconcileOperation: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        /** @description ID chuyến đi booking */
-        id: string;
-        /** @description ID lệnh điều khiển xe */
-        opId: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Lệnh điều khiển đã được đối soát thành công */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['KeylessOperationResponseDto'];
-        };
-      };
-      /** @description Không có quyền đối soát */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Lệnh điều khiển không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReviewsController_getBookingReviews: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Danh sách đánh giá */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ReviewResponseDto'][];
-        };
-      };
-    };
-  };
-  ReviewsController_createReview: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody: {
-      content: {
-        'application/json': components['schemas']['CreateReviewDto'];
-      };
-    };
-    responses: {
-      /** @description Gửi đánh giá thành công */
-      201: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['ReviewResponseDto'];
-        };
-      };
-      /** @description Không phải người tham gia chuyến đi */
-      403: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Chuyến đi không tồn tại */
-      404: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-      /** @description Chuyến đi chưa COMPLETED hoặc đã đánh giá rồi */
-      409: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
-  ReviewsController_getVehicleReviews: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path: {
-        id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Tổng hợp đánh giá xe */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          'application/json': components['schemas']['VehicleReviewsSummaryDto'];
-        };
-      };
-    };
-  };
+    AuthController_getCsrfToken: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Trả về CSRF token và gắn cookie csrf_token */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["CsrfResponseDto"];
+                    };
+                };
+            };
+        };
+    };
+    AuthController_login: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginDto"];
+            };
+        };
+        responses: {
+            /** @description Đăng nhập thành công, thiết lập session cookies */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["AuthResponseDto"];
+                    };
+                };
+            };
+            /** @description Sai thông tin đăng nhập (INVALID_CREDENTIALS) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDto"];
+            };
+        };
+        responses: {
+            /** @description Đăng ký thành công, tạo phiên và trả về thông tin user */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["AuthResponseDto"];
+                    };
+                };
+            };
+            /** @description Email đã tồn tại (EMAIL_IN_USE) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_googleAuth: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chuyển hướng đến Google hoặc mock callback */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_googleCallback: {
+        parameters: {
+            query: {
+                code: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thiết lập cookie phiên và chuyển hướng về web */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    AuthController_logout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Đăng xuất thành công, xóa cookie */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "AuthController_getProfile[0]": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin tài khoản và năng lực của người dùng */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["UserDto"];
+                    };
+                };
+            };
+            /** @description Chưa đăng nhập hoặc phiên hết hạn */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    "AuthController_getProfile[1]": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin tài khoản và năng lực của người dùng */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["UserDto"];
+                    };
+                };
+            };
+            /** @description Chưa đăng nhập hoặc phiên hết hạn */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_getMyDriverLicense: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Hồ sơ GPLX của người dùng hoặc null nếu chưa nộp */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["DriverLicenseDto"];
+                    };
+                };
+            };
+        };
+    };
+    UsersController_submitDriverLicense: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitDriverLicenseDto"];
+            };
+        };
+        responses: {
+            /** @description Nộp GPLX thành công, trạng thái chuyển sang PENDING */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["DriverLicenseDto"];
+                    };
+                };
+            };
+            /** @description Dữ liệu không hợp lệ (hết hạn, < 18 tuổi, sai số GPLX) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description GPLX đã được xác thực trước đó (ALREADY_VERIFIED) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    UsersController_verifyDriverLicense: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID người dùng cần duyệt GPLX */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyDriverLicenseDto"];
+            };
+        };
+        responses: {
+            /** @description Cập nhật trạng thái KYC thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["DriverLicenseDto"];
+                    };
+                };
+            };
+            /** @description Không tìm thấy hồ sơ GPLX của người dùng */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_createUploadIntent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUploadIntentDto"];
+            };
+        };
+        responses: {
+            /** @description Sinh presigned URL thành công */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadIntentResponseDto"];
+                };
+            };
+            /** @description Dữ liệu không hợp lệ (MIME hoặc dung lượng sai quy định) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_verifyMedia: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Xác thực file thành công, file được chuyển từ staging sang finalized */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaObjectDto"];
+                };
+            };
+            /** @description File chưa được tải lên storage thành công */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không có quyền xác thực media của người khác */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy media object */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_getReadUrl: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Sinh URL xem file thành công (TTL 15 phút) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MediaReadUrlResponseDto"];
+                };
+            };
+            /** @description Media chưa hoàn tất xác thực */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không có quyền truy cập tài liệu định danh này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy media object */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_getVehicleImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                filename: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_getFinalizedImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                purpose: string;
+                filename: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    MediaController_getStagingImage: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                filename: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    HealthController_check: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VehiclesController_getVehicleOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh mục tùy chọn cho phép tìm kiếm xe */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleOptionsDto"];
+                };
+            };
+        };
+    };
+    VehiclesController_getVehicles: {
+        parameters: {
+            query?: {
+                /** @description Từ khóa tìm kiếm theo hãng (brand) hoặc mẫu xe (model) */
+                q?: string;
+                /** @description Hãng sản xuất (brand) */
+                brand?: string;
+                /** @description Tỉnh / thành phố tìm kiếm */
+                city?: string;
+                /** @description Thời điểm bắt đầu thuê (ISO 8601) */
+                startAt?: string;
+                /** @description Thời điểm kết thúc thuê (ISO 8601) */
+                endAt?: string;
+                /** @description Phân khúc xe */
+                carType?: "SEDAN" | "SUV" | "HATCHBACK" | "MPV" | "CROSSOVER";
+                /** @description Hộp số */
+                transmission?: "AUTO" | "MANUAL";
+                /** @description Số chỗ ngồi tối thiểu */
+                seats?: number;
+                /** @description Giá thuê ngày tối thiểu (VND) */
+                minPrice?: number;
+                /** @description Giá thuê ngày tối đa (VND) */
+                maxPrice?: number;
+                /** @description Chỉ tìm xe hỗ trợ tự mở khóa Keyless */
+                keylessOnly?: boolean;
+                /** @description Lọc theo danh sách tiện nghi (mảng hoặc phân cách bởi dấu phẩy, e.g. GPS,BACKUP_CAMERA) */
+                amenities?: string[];
+                /** @description Sắp xếp kết quả */
+                sort?: "price_asc" | "price_desc" | "newest" | "rating_desc" | "popularity_desc";
+                /** @description Số trang (1-indexed) */
+                page?: number;
+                /** @description Số xe trên một trang */
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh sách xe thỏa mãn điều kiện lọc và thông tin phân trang */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        data?: components["schemas"]["VehicleSummaryDto"][];
+                        meta?: components["schemas"]["PaginationMetaDto"];
+                    };
+                };
+            };
+            /** @description Tham số tìm kiếm hoặc khoảng ngày không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    VehiclesController_getVehicleById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin chi tiết xe công khai (không lộ biển số và địa chỉ đón trả chi tiết) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleDetailDto"];
+                };
+            };
+            /** @description Không tìm thấy xe hoặc xe chưa được công khai */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OwnerVehiclesController_getOwnerVehicles: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh sách xe cá nhân của chủ xe */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerVehicleDto"][];
+                };
+            };
+        };
+    };
+    OwnerVehiclesController_createVehicle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVehicleDto"];
+            };
+        };
+        responses: {
+            /** @description Tạo xe mới thành công với trạng thái DRAFT */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerVehicleDto"];
+                };
+            };
+            /** @description Dữ liệu đầu vào không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Biển số xe đã được đăng ký trên hệ thống */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OwnerVehiclesController_getOwnerVehicleById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chi tiết thông tin xe (bao gồm biển số và địa chỉ đón trả) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerVehicleDto"];
+                };
+            };
+            /** @description Không có quyền truy cập xe của chủ khác */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy xe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OwnerVehiclesController_updateVehicle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVehicleDto"];
+            };
+        };
+        responses: {
+            /** @description Cập nhật xe thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerVehicleDto"];
+                };
+            };
+            /** @description Dữ liệu cập nhật không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không có quyền cập nhật xe của chủ khác */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy xe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    OwnerVehiclesController_publishVehicle: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Xe được đăng công khai thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OwnerVehicleDto"];
+                };
+            };
+            /** @description Không có quyền publish xe của chủ khác */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy xe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Xe chưa đủ điều kiện publish (thiếu ảnh hoặc giấy tờ) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PricingController_getQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CalculatePricingDto"];
+            };
+        };
+        responses: {
+            /** @description Báo giá chi tiết với đầy đủ bóc tách chi phí */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteDto"];
+                };
+            };
+            /** @description Dữ liệu đầu vào hoặc định dạng ngày không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy xe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Thời lượng thuê không hợp lệ */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PricingController_calculatePricing: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CalculatePricingDto"];
+            };
+        };
+        responses: {
+            /** @description Biểu phí tính toán thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteDto"];
+                };
+            };
+        };
+    };
+    PricingController_getPricingPreview: {
+        parameters: {
+            query: {
+                /** @description Thời điểm bắt đầu thuê (ISO 8601 UTC) */
+                startAt: string;
+                /** @description Thời điểm kết thúc thuê (ISO 8601 UTC) */
+                endAt: string;
+                insurancePackage?: "BASIC" | "STANDARD" | "PREMIUM";
+                voucherCode?: string;
+            };
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dự toán chi phí thuê xe */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteDto"];
+                };
+            };
+            /** @description Khoảng ngày không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không tìm thấy xe */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PromotionsController_validatePromotion: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ValidatePromotionDto"];
+            };
+        };
+        responses: {
+            /** @description Mã khuyến mãi hợp lệ, trả về số tiền được giảm */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ValidatedPromotionDto"];
+                };
+            };
+            /** @description Mã khuyến mãi không hợp lệ, hết hạn, hết lượt dùng hoặc chưa đạt đơn hàng tối thiểu */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Mã khuyến mãi không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BookingsController_getBookings: {
+        parameters: {
+            query?: {
+                /** @description Góc nhìn tra cứu: renter (khách thuê) hoặc owner (chủ xe) */
+                perspective?: "renter" | "owner";
+                /** @description Lọc theo trạng thái đơn thuê (REQUESTED, APPROVED, REJECTED, IN_PROGRESS, COMPLETED, CANCELLED, EXPIRED) */
+                status?: "REQUESTED" | "APPROVED" | "REJECTED" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED" | "EXPIRED";
+                /** @description Số thứ tự trang */
+                page?: number;
+                /** @description Số lượng bản ghi mỗi trang */
+                pageSize?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh sách đơn đặt xe kèm phân trang */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    BookingsController_createBooking: {
+        parameters: {
+            query?: never;
+            header: {
+                "idempotency-key": string;
+                /** @description Khóa chống trùng lặp (16 - 128 ký tự ASCII) */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBookingDto"];
+            };
+        };
+        responses: {
+            /** @description Replay yêu cầu đặt xe trùng lặp (Idempotent) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+            /** @description Tạo đơn đặt xe mới thành công */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_getBookingById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin chi tiết đơn thuê, xe, biểu phí và hai bên tham gia */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_approveBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Phê duyệt thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_rejectBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectBookingDto"];
+            };
+        };
+        responses: {
+            /** @description Từ chối thành công, lịch xe đã được mở lại */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_cancelBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelBookingDto"];
+            };
+        };
+        responses: {
+            /** @description Hủy đơn thành công, lịch xe đã được mở lại */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_completeBooking: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chuyến đi đã hoàn tất thành công, lịch xe đã được giải phóng */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_settleDeposit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SettleDepositDto"];
+            };
+        };
+        responses: {
+            /** @description Quyết toán ký quỹ thành công, hoàn cọc cho khách thuê */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepositSettlementResponseDto"];
+                };
+            };
+        };
+    };
+    BookingsController_getSettlement: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin quyết toán cọc */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DepositSettlementResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_createPaymentIntent: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePaymentIntentDto"];
+            };
+        };
+        responses: {
+            /** @description Tạo ý định thanh toán thành công, trả về redirect URL */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_processWebhook: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentWebhookDto"];
+            };
+        };
+        responses: {
+            /** @description Xử lý webhook thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_simulatePayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SimulatePaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Giả lập thanh toán thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponseDto"];
+                };
+            };
+        };
+    };
+    PaymentsController_getPaymentByRef: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ref: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chi tiết thông tin giao dịch thanh toán */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentResponseDto"];
+                };
+            };
+        };
+    };
+    InspectionsController_getInspections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh sách biên bản */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InspectionResponseDto"][];
+                };
+            };
+        };
+    };
+    InspectionsController_saveInspection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SaveInspectionDto"];
+            };
+        };
+        responses: {
+            /** @description Lưu biên bản thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InspectionResponseDto"];
+                };
+            };
+            /** @description Dữ liệu không hợp lệ hoặc ảnh chưa verified */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không có quyền thao tác trên booking này */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Chuyến đi không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Biên bản đã chốt hoặc xung đột phiên bản version */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InspectionsController_finalizeInspection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+                /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
+                type: "CHECK_IN" | "CHECK_OUT";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chốt biên bản thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InspectionResponseDto"];
+                };
+            };
+            /** @description Không có quyền thao tác */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Biên bản chưa được tạo */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Thiếu góc ảnh bắt buộc trong 4 góc */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    InspectionsController_getInspectionByType: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+                /** @description Loại biên bản: CHECK_IN hoặc CHECK_OUT */
+                type: "CHECK_IN" | "CHECK_OUT";
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Chi tiết biên bản */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InspectionResponseDto"];
+                };
+            };
+            /** @description Biên bản chưa được tạo */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    KeylessController_triggerOperation: {
+        parameters: {
+            query?: never;
+            header: {
+                "idempotency-key": string;
+                /** @description Khóa chống lặp duy nhất cho mỗi thao tác người dùng (độ dài 16-128 ký tự) */
+                "Idempotency-Key": string;
+            };
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TriggerKeylessDto"];
+            };
+        };
+        responses: {
+            /** @description Lệnh điều khiển đã được xử lý thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KeylessOperationResponseDto"];
+                };
+            };
+            /** @description Thiếu Idempotency-Key hoặc dữ liệu không hợp lệ */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Không có quyền điều khiển xe (chỉ người thuê) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Chuyến đi không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Xung đột thao tác chưa hoàn tất (UNRESOLVED_OPERATION) hoặc lệch Idempotency-Key */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Xe không hỗ trợ Keyless, ngoài giờ thuê, hoặc chưa chốt biên bản CHECK_IN */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    KeylessController_getOperation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+                /** @description ID lệnh điều khiển xe */
+                opId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Thông tin chi tiết lệnh điều khiển */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KeylessOperationResponseDto"];
+                };
+            };
+            /** @description Không có quyền truy cập */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Lệnh điều khiển không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    KeylessController_reconcileOperation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description ID chuyến đi booking */
+                id: string;
+                /** @description ID lệnh điều khiển xe */
+                opId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Lệnh điều khiển đã được đối soát thành công */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KeylessOperationResponseDto"];
+                };
+            };
+            /** @description Không có quyền đối soát */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Lệnh điều khiển không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReviewsController_getBookingReviews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Danh sách đánh giá */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewResponseDto"][];
+                };
+            };
+        };
+    };
+    ReviewsController_createReview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateReviewDto"];
+            };
+        };
+        responses: {
+            /** @description Gửi đánh giá thành công */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReviewResponseDto"];
+                };
+            };
+            /** @description Không phải người tham gia chuyến đi */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Chuyến đi không tồn tại */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Chuyến đi chưa COMPLETED hoặc đã đánh giá rồi */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    ReviewsController_getVehicleReviews: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tổng hợp đánh giá xe */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VehicleReviewsSummaryDto"];
+                };
+            };
+        };
+    };
 }

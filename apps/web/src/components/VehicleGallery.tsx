@@ -31,17 +31,19 @@ export function VehicleGallery({
 
   const hasPhotos = photos && photos.length > 0;
   const currentPhoto = hasPhotos ? photos[activeIndex] : null;
+  const [photoError, setPhotoError] = useState(false);
 
   return (
     <div className="flex flex-col gap-3">
       {/* Main Large Hero Image */}
       <div className="relative h-80 sm:h-96 md:h-[440px] w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-lg">
-        {currentPhoto ? (
+        {currentPhoto && !photoError ? (
           <img
             src={currentPhoto}
             alt={`${brand} ${model} - Ảnh ${activeIndex + 1}`}
             className="h-full w-full object-cover transition-all duration-500 hover:scale-105"
             id="main-vehicle-photo"
+            onError={() => setPhotoError(true)}
           />
         ) : (
           <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center text-slate-400">

@@ -129,10 +129,21 @@ export default function OwnerVehiclesPage() {
               <div
                 key={v.id}
                 id={`owner-vehicle-card-${v.id}`}
-                className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition"
+                className="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm hover:shadow-md transition"
               >
-                <div>
-                  <div className="flex items-center justify-between">
+                <div className="relative h-36 w-full overflow-hidden bg-slate-100">
+                  <img
+                    src={`http://localhost:4000/api/v1/media/vehicles/${v.id}/cover.jpg`}
+                    alt={`${v.brand} ${v.model}`}
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+                <div className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between">
                     <span
                       id={`vehicle-status-${v.id}`}
                       className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${
@@ -203,6 +214,7 @@ export default function OwnerVehiclesPage() {
                   )}
                 </div>
               </div>
+            </div>
             ))}
           </div>
         )}

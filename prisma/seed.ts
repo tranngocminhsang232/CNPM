@@ -391,41 +391,49 @@ async function main() {
       });
     }
 
-    // Seed media photo for published vehicles
+    // Seed media photo for published vehicles (3 photos per vehicle: cover, angle, interior)
     if (v.status === 'PUBLISHED') {
-      const mediaId = `40000000-0000-0000-0000-${v.id.slice(24)}`;
-      await prisma.mediaObject.upsert({
-        where: { id: mediaId },
-        update: { state: 'VERIFIED' },
-        create: {
-          id: mediaId,
-          uploaderId: v.ownerId,
-          purpose: 'VEHICLE_PHOTO',
-          vehicleId: v.id,
-          stagingKey: `staging/vehicles/${v.id}/cover.jpg`,
-          finalKey: `vehicles/${v.id}/cover.jpg`,
-          mimeType: 'image/jpeg',
-          sizeBytes: 1542000,
-          checksum: 'sha256-mock-checksum-v1',
-          state: 'VERIFIED',
-          verifiedAt: new Date('2026-10-01T00:00:00Z'),
-        },
-      });
+      const photos = [
+        { prefix: '40', pos: 1, key: `vehicles/${v.id}/cover.jpg` },
+        { prefix: '41', pos: 2, key: `vehicles/${v.id}/photo-2.jpg` },
+        { prefix: '42', pos: 3, key: `vehicles/${v.id}/photo-3.jpg` },
+      ];
 
-      await prisma.vehiclePhoto.upsert({
-        where: {
-          vehicleId_mediaId: {
+      for (const p of photos) {
+        const mediaId = `${p.prefix}000000-0000-0000-0000-${v.id.slice(24)}`;
+        await prisma.mediaObject.upsert({
+          where: { id: mediaId },
+          update: { state: 'VERIFIED', finalKey: p.key },
+          create: {
+            id: mediaId,
+            uploaderId: v.ownerId,
+            purpose: 'VEHICLE_PHOTO',
+            vehicleId: v.id,
+            stagingKey: `staging/${p.key}`,
+            finalKey: p.key,
+            mimeType: 'image/jpeg',
+            sizeBytes: 350000,
+            checksum: `sha256-photo-${p.pos}-v1`,
+            state: 'VERIFIED',
+            verifiedAt: new Date('2026-10-01T00:00:00Z'),
+          },
+        });
+
+        await prisma.vehiclePhoto.upsert({
+          where: {
+            vehicleId_mediaId: {
+              vehicleId: v.id,
+              mediaId,
+            },
+          },
+          update: { position: p.pos },
+          create: {
             vehicleId: v.id,
             mediaId,
+            position: p.pos,
           },
-        },
-        update: { position: 1 },
-        create: {
-          vehicleId: v.id,
-          mediaId,
-          position: 1,
-        },
-      });
+        });
+      }
     }
   }
   console.log(`✓ Seeded ${vehiclesData.length} vehicles (12 PUBLISHED, 1 DRAFT).`);
@@ -503,7 +511,7 @@ async function main() {
 
   await prisma.booking.upsert({
     where: { id: DEMO_IDS.BOOKINGS.IN_PROGRESS },
-    update: {},
+    update: { startAt: b2Start, endAt: b2End, status: 'IN_PROGRESS' },
     create: {
       id: DEMO_IDS.BOOKINGS.IN_PROGRESS,
       vehicleId: DEMO_IDS.VEHICLES[1],
@@ -535,7 +543,7 @@ async function main() {
 
   await prisma.vehicleCalendar.upsert({
     where: { id: DEMO_IDS.CALENDAR.IN_PROGRESS },
-    update: {},
+    update: { startAt: b2Start, endAt: b2End, releasedAt: null },
     create: {
       id: DEMO_IDS.CALENDAR.IN_PROGRESS,
       vehicleId: DEMO_IDS.VEHICLES[1],
@@ -559,7 +567,12 @@ async function main() {
 
   await prisma.booking.upsert({
     where: { id: DEMO_IDS.BOOKINGS.APPROVED },
-    update: {},
+    update: {
+      startAt: b3Start,
+      endAt: b3End,
+      status: 'APPROVED',
+      requestExpiresAt: new Date(b3Start.getTime() - dayMs),
+    },
     create: {
       id: DEMO_IDS.BOOKINGS.APPROVED,
       vehicleId: DEMO_IDS.VEHICLES[2],
@@ -591,7 +604,7 @@ async function main() {
 
   await prisma.vehicleCalendar.upsert({
     where: { id: DEMO_IDS.CALENDAR.APPROVED },
-    update: {},
+    update: { startAt: b3Start, endAt: b3End, releasedAt: null },
     create: {
       id: DEMO_IDS.CALENDAR.APPROVED,
       vehicleId: DEMO_IDS.VEHICLES[2],
@@ -615,7 +628,12 @@ async function main() {
 
   await prisma.booking.upsert({
     where: { id: DEMO_IDS.BOOKINGS.REQUESTED },
-    update: {},
+    update: {
+      startAt: b4Start,
+      endAt: b4End,
+      status: 'REQUESTED',
+      requestExpiresAt: new Date(now.getTime() + dayMs),
+    },
     create: {
       id: DEMO_IDS.BOOKINGS.REQUESTED,
       vehicleId: DEMO_IDS.VEHICLES[3],
@@ -651,7 +669,7 @@ async function main() {
 
   await prisma.vehicleCalendar.upsert({
     where: { id: DEMO_IDS.CALENDAR.OWNER_BLOCK },
-    update: {},
+    update: { startAt: blockStart, endAt: blockEnd, releasedAt: null },
     create: {
       id: DEMO_IDS.CALENDAR.OWNER_BLOCK,
       vehicleId: DEMO_IDS.VEHICLES[4],

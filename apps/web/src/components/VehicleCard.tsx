@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import type { VehicleSummary } from '@carsharing/contracts';
 
@@ -9,7 +9,14 @@ interface VehicleCardProps {
 }
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
+  const [imgFailed, setImgFailed] = useState(false);
   const formattedPrice = new Intl.NumberFormat('vi-VN').format(vehicle.pricePerDayVnd);
+
+  const coverUrl =
+    !imgFailed &&
+    (typeof vehicle.coverImageUrl === 'string' && vehicle.coverImageUrl
+      ? vehicle.coverImageUrl
+      : `/images/vehicles/${vehicle.id}/cover.jpg`);
 
   const getCarTypeLabel = (type: string) => {
     switch (type) {
@@ -55,21 +62,33 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
     >
       {/* Vehicle Image / Cover */}
       <div className="relative h-48 w-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200">
-        <div className="flex h-full w-full items-center justify-center text-slate-400">
-          <svg
-            className="h-20 w-20 opacity-40 transition-transform duration-300 group-hover:scale-105"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4m-9-7h10l1.5 5H4.5L6 10zm-1.5 5h13m-13 0l-1.5 3h16l-1.5-3"
-            />
-          </svg>
-        </div>
+        {coverUrl ? (
+          <img
+            src={coverUrl}
+            alt={`${vehicle.brand} ${vehicle.model}`}
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={() => setImgFailed(true)}
+            loading="lazy"
+          />
+        ) : null}
+
+        {(!coverUrl || imgFailed) && (
+          <div className="flex h-full w-full items-center justify-center text-slate-400">
+            <svg
+              className="h-20 w-20 opacity-40 transition-transform duration-300 group-hover:scale-105"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M8 17a2 2 0 100 4 2 2 0 000-4zm8 0a2 2 0 100 4 2 2 0 000-4m-9-7h10l1.5 5H4.5L6 10zm-1.5 5h13m-13 0l-1.5 3h16l-1.5-3"
+              />
+            </svg>
+          </div>
+        )}
 
         {/* Badges Overlay */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">

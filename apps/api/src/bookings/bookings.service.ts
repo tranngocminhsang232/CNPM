@@ -810,6 +810,16 @@ export class BookingsService {
             keylessSupported: booking.vehicle.keylessSupported,
             plateNormalized: canSeePrivate ? booking.vehicle.plateNormalized : null,
             pickupAddress: canSeePrivate ? booking.vehicle.pickupAddress : null,
+            coverImageUrl: (() => {
+              if (booking.vehicle.photos && booking.vehicle.photos.length > 0) {
+                const first = booking.vehicle.photos[0];
+                if (first.media && first.media.state === 'VERIFIED') {
+                  const key = first.media.finalKey || first.media.stagingKey;
+                  return `http://localhost:4000/api/v1/media/${key}`;
+                }
+              }
+              return `http://localhost:4000/api/v1/media/vehicles/${booking.vehicle.id}/cover.jpg`;
+            })(),
           }
         : undefined,
       pricingSnapshot: booking.pricingSnapshot

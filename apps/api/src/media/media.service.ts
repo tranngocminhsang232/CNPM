@@ -16,6 +16,9 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { MediaPurpose, MediaState } from '@prisma/client';
 import { randomUUID } from 'crypto';
+import * as fs from 'fs';
+import * as path from 'path';
+import type { Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateUploadIntentDto,
@@ -186,6 +189,66 @@ export class MediaService {
       url,
       expiresAt,
     };
+  }
+
+  async streamMedia(key: string, res: Response): Promise<void> {
+    // 1. Try MinIO S3 first
+    try {
+      const getCmd = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      });
+      const response = await this.s3Client.send(getCmd);
+      if (response.Body) {
+        res.setHeader('Content-Type', response.ContentType || 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        const stream = response.Body as unknown as NodeJS.ReadableStream;
+        stream.pipe(res);
+        return;
+      }
+    } catch {
+      // S3 object not found or error, fallback to local file
+    }
+
+    // 2. Try local files
+    const ext = path.extname(key).toLowerCase();
+    const mime = ext === '.png' ? 'image/png' : ext === '.webp' ? 'image/webp' : 'image/jpeg';
+
+    const possiblePaths = [
+      path.resolve(process.cwd(), 'assets', key),
+      path.resolve(process.cwd(), 'apps/api/assets', key),
+      path.resolve(process.cwd(), '../web/public/images', key),
+      path.resolve(process.cwd(), 'apps/web/public/images', key),
+      path.resolve(__dirname, '../../../assets', key),
+      path.resolve(__dirname, '../../../../apps/web/public/images', key),
+    ];
+
+    for (const filePath of possiblePaths) {
+      if (fs.existsSync(filePath)) {
+        res.setHeader('Content-Type', mime);
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        fs.createReadStream(filePath).pipe(res);
+        return;
+      }
+    }
+
+    // 3. Fallback to default car image if vehicle photo
+    const fallbackPaths = [
+      path.resolve(process.cwd(), 'assets/vehicles/default-car.jpg'),
+      path.resolve(process.cwd(), 'apps/api/assets/vehicles/default-car.jpg'),
+      path.resolve(process.cwd(), 'apps/web/public/images/vehicles/default-car.jpg'),
+      path.resolve(__dirname, '../../../assets/vehicles/default-car.jpg'),
+    ];
+    for (const fb of fallbackPaths) {
+      if (fs.existsSync(fb)) {
+        res.setHeader('Content-Type', 'image/jpeg');
+        res.setHeader('Cache-Control', 'public, max-age=86400');
+        fs.createReadStream(fb).pipe(res);
+        return;
+      }
+    }
+
+    throw new NotFoundException(`Media không tồn tại: ${key}`);
   }
 
   private mapToDto(media: {

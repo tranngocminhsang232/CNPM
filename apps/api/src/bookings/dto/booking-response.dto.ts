@@ -29,7 +29,7 @@ export class BookingVehicleSummaryDto {
   @ApiProperty({ example: 1400000 })
   pricePerDayVnd!: number;
 
-  @ApiPropertyOptional({ nullable: true })
+  @ApiPropertyOptional({ type: String, nullable: true })
   coverImageUrl?: string | null;
 
   @ApiProperty({ example: true })

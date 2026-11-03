@@ -7,8 +7,10 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  Res,
   UseGuards,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -102,5 +104,34 @@ export class MediaController {
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
   ): Promise<MediaReadUrlResponseDto> {
     return this.mediaService.getReadUrl(id, user?.id);
+  }
+
+  @Get('vehicles/:id/:filename')
+  @ApiOperation({ summary: 'Xem ảnh xe công khai' })
+  async getVehicleImage(
+    @Param('id') id: string,
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    await this.mediaService.streamMedia(`vehicles/${id}/${filename}`, res);
+  }
+
+  @Get('finalized/:purpose/:filename')
+  @ApiOperation({ summary: 'Xem media đã xác thực công khai' })
+  async getFinalizedImage(
+    @Param('purpose') purpose: string,
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    await this.mediaService.streamMedia(`finalized/${purpose}/${filename}`, res);
+  }
+
+  @Get('staging/:filename')
+  @ApiOperation({ summary: 'Xem media staging' })
+  async getStagingImage(
+    @Param('filename') filename: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    await this.mediaService.streamMedia(`staging/${filename}`, res);
   }
 }

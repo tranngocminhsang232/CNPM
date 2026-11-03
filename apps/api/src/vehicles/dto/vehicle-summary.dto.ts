@@ -36,6 +36,7 @@ export class VehicleSummaryDto {
   pricePerDayVnd!: number;
 
   @ApiPropertyOptional({
+    type: String,
     example:
       'http://localhost:4000/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/cover.jpg',
     nullable: true,

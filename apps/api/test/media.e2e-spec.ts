@@ -219,4 +219,21 @@ describe('Media Service & Presigned S3 API (e2e) - G1-03', () => {
     assert.ok(publicRead.body.data.url);
     assert.ok(publicRead.body.data.url.includes('finalized/vehicle_photo/'));
   });
+
+  it('11. GET /api/v1/media/vehicles/:id/cover.jpg returns 200 OK with Content-Type image/jpeg', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/cover.jpg')
+      .expect(200);
+
+    assert.equal(res.headers['content-type'], 'image/jpeg');
+    assert.ok(res.body);
+  });
+
+  it('12. GET /api/v1/media/vehicles/:id/photo-2.jpg returns 200 OK with photo angle', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/media/vehicles/10000000-0000-0000-0000-000000000001/photo-2.jpg')
+      .expect(200);
+
+    assert.equal(res.headers['content-type'], 'image/jpeg');
+  });
 });

@@ -20,6 +20,23 @@ Ba báo cáo Word ở thư mục gốc được cập nhật và đồng bộ th
 
 ## Lệnh Vận Hành và Kiểm Tra Workspace
 
+### ⚡ Khởi chạy Nhanh 1-Click (Dành cho Windows)
+
+Dự án đã tích hợp sẵn các file script tự động hóa ở thư mục gốc:
+
+- **`start-dev.bat`**: Tự động bật Docker Desktop, khởi động PostgreSQL & MinIO, đồng bộ CSDL, chạy Backend + Frontend và tự mở trình duyệt `http://localhost:3000`.
+- **`stop-dev.bat`**: Tự động dừng an toàn toàn bộ Backend, Frontend và Docker containers.
+- **`start-studio.bat`**: Mở giao diện quản trị cơ sở dữ liệu đồ họa (Prisma Studio) tại `http://localhost:5555`.
+- **`reset-db.bat`**: Khôi phục CSDL về trạng thái dữ liệu mẫu ban đầu (4 tài khoản Demo, 13 xe).
+
+Hoặc khởi chạy cả Backend & Frontend bằng một lệnh duy nhất:
+
+```bash
+pnpm run dev
+```
+
+### Các Lệnh Vận Hành Chi Tiết
+
 ```bash
 # 1. Cài đặt dependencies (yêu cầu Node.js >= 24 và pnpm >= 10)
 pnpm install

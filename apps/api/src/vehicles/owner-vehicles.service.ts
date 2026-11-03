@@ -343,6 +343,7 @@ export class OwnerVehiclesService {
         mediaId: p.mediaId,
         position: p.position,
       })),
+      coverImageUrl: `http://localhost:4000/api/v1/media/vehicles/${vehicle.id}/cover.jpg`,
       createdAt: vehicle.createdAt.toISOString(),
       updatedAt: vehicle.updatedAt.toISOString(),
     };
