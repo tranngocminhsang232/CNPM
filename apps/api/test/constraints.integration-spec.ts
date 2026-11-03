@@ -5,6 +5,8 @@ import { randomUUID } from 'node:crypto';
 
 const TEST_DB_URL =
   process.env.DATABASE_TEST_URL ||
+  process.env.TEST_DATABASE_URL ||
+  process.env.DATABASE_URL ||
   'postgresql://carsharing:carsharing_local_password@localhost:5433/carsharing_test?schema=public';
 
 describe('PostgreSQL Constraints Integration Test (G0-07)', () => {
