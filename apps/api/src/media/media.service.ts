@@ -37,11 +37,20 @@ export class MediaService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
   ) {
-    this.bucket = this.configService.get<string>('S3_BUCKET_PRIVATE') || 'car-sharing-private';
+    this.bucket =
+      this.configService.get<string>('S3_BUCKET_PRIVATE') ||
+      this.configService.get<string>('S3_BUCKET') ||
+      'car-sharing-private';
     const endpoint = this.configService.get<string>('S3_ENDPOINT') || 'http://localhost:9000';
     const region = this.configService.get<string>('S3_REGION') || 'us-east-1';
-    const accessKeyId = this.configService.get<string>('S3_ACCESS_KEY') || 'minioadmin';
-    const secretAccessKey = this.configService.get<string>('S3_SECRET_KEY') || 'minioadmin';
+    const accessKeyId =
+      this.configService.get<string>('S3_ACCESS_KEY') ||
+      this.configService.get<string>('S3_ACCESS_KEY_ID') ||
+      'minioadmin';
+    const secretAccessKey =
+      this.configService.get<string>('S3_SECRET_KEY') ||
+      this.configService.get<string>('S3_SECRET_ACCESS_KEY') ||
+      'minioadmin';
 
     this.s3Client = new S3Client({
       endpoint,
