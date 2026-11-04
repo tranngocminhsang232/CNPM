@@ -136,7 +136,7 @@ export function KeylessRemoteWidget({
           id="keyless-inspection-warning"
           className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900"
         >
-          <h4 className="text-sm font-semibold">Kiểm tra xe trước khi mở khóa</h4>
+          <h4 className="text-sm font-semibold">Yêu cầu bắt buộc trước khi mở khóa</h4>
           <p className="mt-2 text-sm">
             Chụp đủ 4 góc xe và ký biên bản nhận xe để bảo đảm quyền lợi của bạn.
           </p>

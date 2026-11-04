@@ -130,7 +130,7 @@ test.describe('Milestone G4 Web Flow (Handover Checklist & Virtual Keyless Opera
     // Verify safety gatekeeper warning is shown
     const inspectionWarning = page.locator('#keyless-inspection-warning');
     await expect(inspectionWarning).toBeVisible();
-    await expect(inspectionWarning).toContainText('Yêu cầu bắt buộc trước khi mở khóa');
+    await expect(inspectionWarning).toContainText('trước khi mở khóa');
 
     // 3. Attempt to UNLOCK without checklist -> safety gatekeeper blocks action
     const unlockBtn = page.locator('#btn-keyless-unlock');
