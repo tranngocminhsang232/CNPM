@@ -148,7 +148,7 @@ test.describe('Milestone G4 Web Flow (Handover Checklist & Virtual Keyless Opera
 
     const modal = page.locator('#inspection-checklist-modal');
     await expect(modal).toBeVisible();
-    await expect(modal.locator('h2')).toContainText('Biên Bản Bàn Giao & Kiểm Tra Xe');
+    await expect(modal.locator('h2')).toContainText('nhận xe');
 
     // 5. Upload 4 angle photos directly to MinIO S3
     const samplePngBuffer = Buffer.from(
