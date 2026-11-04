@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '../../components/Icon';
 import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -12,7 +13,7 @@ import {
 } from '../../lib/api';
 import type { VehicleDetail, Quote, Payment } from '../../lib/api';
 import { PaymentModal } from '../../components/PaymentModal';
-import { UserNav } from '../../components/UserNav';
+import { AuthModal } from '../../components/AuthModal';
 
 function CheckoutContent() {
   const router = useRouter();
@@ -35,6 +36,7 @@ function CheckoutContent() {
   const [paymentIntent, setPaymentIntent] = useState<Payment | null>(null);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [createdBookingId, setCreatedBookingId] = useState<string | null>(null);
+  const [authOpen, setAuthOpen] = useState(false);
 
   const formatVnd = (val?: number) => {
     if (val === undefined || val === null) return '0 ₫';
@@ -167,26 +169,33 @@ function CheckoutContent() {
 
   if (isAuthLoading || isLoading) {
     return (
-      <main className="mx-auto max-w-5xl px-4 py-12">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-4 py-12">
         <div className="flex flex-col items-center justify-center p-12 text-slate-500">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent" />
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-brand-600 border-t-transparent" />
           <p className="mt-4 text-sm font-semibold">Đang tổng hợp thông tin chuyến đi...</p>
         </div>
       </main>
     );
   }
 
-  if (error || !vehicle || !quote) {
+  if (!vehicle || !quote) {
     return (
-      <main className="mx-auto max-w-3xl px-4 py-12 text-center">
-        <div className="rounded-3xl border border-rose-200 bg-rose-50 p-8 text-rose-800 shadow-sm">
-          <div className="text-3xl mb-2">⚠️</div>
-          <h2 className="text-lg font-bold">Không thể tiếp tục thanh toán</h2>
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-3xl px-4 py-12 text-center">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-rose-800">
+          <div className="text-3xl mb-2">
+            <Icon name="alert" />
+          </div>
+          <h2 className="text-lg font-semibold">Không thể tiếp tục thanh toán</h2>
           <p className="mt-2 text-sm text-rose-700">{error || 'Xe không khả dụng.'}</p>
           <div className="mt-6 flex justify-center gap-3">
+            {vehicleId && startAt && endAt && (
+              <button type="button" className="button button-primary" onClick={loadData}>
+                Thử lại
+              </button>
+            )}
             <Link
               href={vehicleId ? `/vehicles/${vehicleId}` : '/'}
-              className="rounded-xl bg-white px-5 py-2.5 text-xs font-bold text-slate-700 shadow-sm border border-slate-200 hover:bg-slate-50"
+              className="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50"
             >
               ← Quay lại trang xe
             </Link>
@@ -198,28 +207,14 @@ function CheckoutContent() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 text-slate-900 font-bold">
-              <span className="text-blue-600 font-black">CARSHARE</span>
-            </Link>
-            <span className="text-slate-300">/</span>
-            <Link
-              href={`/vehicles/${vehicle.id}`}
-              className="text-xs font-semibold text-slate-600 hover:text-blue-600"
-            >
-              {vehicle.brand} {vehicle.model}
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-xs font-semibold text-slate-400">Đặt xe & Đặt cọc</span>
-          </div>
-          <UserNav />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl px-4 py-8 md:py-12">
-        <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight mb-8">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-4 py-8 md:py-12">
+        <Link
+          className="inline-flex min-h-11 items-center text-sm text-brand-700 mb-3"
+          href={`/vehicles/${vehicle.id}`}
+        >
+          ← Quay lại chọn thời gian thuê
+        </Link>
+        <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight mb-8">
           Xác nhận thông tin & Ký quỹ đặt xe
         </h1>
 
@@ -227,76 +222,83 @@ function CheckoutContent() {
           {/* Left Column: Trip Details & Policies */}
           <div className="lg:col-span-7 space-y-6">
             {/* Vehicle Summary Card */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm flex flex-col sm:flex-row gap-5 items-center">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 flex flex-col sm:flex-row gap-5 items-center">
               {vehicle.photoUrls && vehicle.photoUrls.length > 0 ? (
                 <img
                   src={vehicle.photoUrls[0]}
                   alt={`${vehicle.brand} ${vehicle.model}`}
-                  className="w-full sm:w-44 h-32 rounded-2xl object-cover bg-slate-100 shadow-inner"
+                  className="w-full sm:w-44 h-32 rounded-2xl object-cover bg-slate-100"
                 />
               ) : (
-                <div className="w-full sm:w-44 h-32 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-xs">
+                <div className="w-full sm:w-44 h-32 rounded-2xl bg-slate-100 flex items-center justify-center text-slate-400 text-sm">
                   Không có ảnh
                 </div>
               )}
 
               <div className="flex-1 w-full">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 uppercase">
+                  <span className="rounded-md bg-brand-50 px-2 py-0.5 text-sm font-semibold text-brand-700 uppercase">
                     {vehicle.carType}
                   </span>
                   {vehicle.keylessSupported && (
-                    <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700">
-                      ⚡ Khóa ảo Keyless
+                    <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-sm font-semibold text-emerald-700">
+                      <Icon name="key" /> Khóa ảo Keyless
                     </span>
                   )}
                 </div>
-                <h2 className="text-lg font-black text-slate-900 mt-1">
+                <h2 className="text-lg font-semibold text-slate-900 mt-1">
                   {vehicle.brand} {vehicle.model} ({vehicle.year})
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-sm text-slate-500 mt-0.5">
                   Chủ xe:{' '}
                   <span className="font-semibold text-slate-700">{vehicle.owner?.name}</span>
                 </p>
-                <div className="mt-3 flex items-center gap-3 text-xs text-slate-600 font-medium">
-                  <span>⚙️ {vehicle.transmission === 'AUTO' ? 'Tự động' : 'Số sàn'}</span>
+                <div className="mt-3 flex items-center gap-3 text-sm text-slate-600 font-medium">
+                  <span>
+                    <Icon name="settings" />{' '}
+                    {vehicle.transmission === 'AUTO' ? 'Tự động' : 'Số sàn'}
+                  </span>
                   <span>•</span>
-                  <span>👥 {vehicle.seats} chỗ ngồi</span>
+                  <span>
+                    <Icon name="seats" /> {vehicle.seats} chỗ ngồi
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Rental Duration Card */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 text-xs text-slate-400">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-4 text-sm text-slate-400">
                 Lịch trình nhận & trả xe
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-[11px] font-bold uppercase text-blue-600">
+                  <span className="text-sm font-semibold uppercase text-brand-600">
                     Thời gian nhận xe
                   </span>
-                  <p id="checkout-start-at" className="font-black text-slate-900 text-sm mt-1">
+                  <p id="checkout-start-at" className="font-semibold text-slate-900 text-sm mt-1">
                     {formatDate(startAt || undefined)}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-[11px] font-bold uppercase text-slate-500">
+                  <span className="text-sm font-semibold uppercase text-slate-500">
                     Thời gian trả xe
                   </span>
-                  <p id="checkout-end-at" className="font-black text-slate-900 text-sm mt-1">
+                  <p id="checkout-end-at" className="font-semibold text-slate-900 text-sm mt-1">
                     {formatDate(endAt || undefined)}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 rounded-2xl bg-blue-50/50 p-3.5 border border-blue-100 text-xs text-blue-900 flex items-start gap-2.5">
-                <span className="text-base">📍</span>
+              <div className="mt-4 rounded-2xl bg-brand-50/50 p-3.5 border border-brand-100 text-sm text-brand-900 flex items-start gap-2.5">
+                <span className="text-base">
+                  <Icon name="pin" />
+                </span>
                 <div>
-                  <p className="font-bold">Khu vực nhận xe: {vehicle.city}</p>
-                  <p className="text-[11px] text-blue-700/80 mt-0.5">
+                  <p className="font-semibold">Khu vực nhận xe: {vehicle.city}</p>
+                  <p className="text-sm text-brand-700/80 mt-0.5">
                     Địa chỉ số nhà và biển số xe sẽ tự động hiển thị ngay sau khi chủ xe bấm duyệt
                     đơn.
                   </p>
@@ -305,13 +307,13 @@ function CheckoutContent() {
             </div>
 
             {/* Insurance Package Card */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-xs text-slate-400">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-3 text-sm text-slate-400">
                 Gói bảo hiểm đã chọn
               </h3>
               <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
                 <div>
-                  <span className="font-extrabold text-slate-900 text-sm">
+                  <span className="font-semibold text-slate-900 text-sm">
                     Gói{' '}
                     {insurancePackage === 'BASIC'
                       ? 'Cơ bản (BASIC)'
@@ -319,7 +321,7 @@ function CheckoutContent() {
                         ? 'Tiêu chuẩn (STANDARD)'
                         : 'Toàn diện (PREMIUM)'}
                   </span>
-                  <p className="text-xs text-slate-500 mt-0.5">
+                  <p className="text-sm text-slate-500 mt-0.5">
                     {insurancePackage === 'BASIC'
                       ? 'Bảo hiểm trách nhiệm dân sự bắt buộc tiêu chuẩn'
                       : insurancePackage === 'STANDARD'
@@ -327,7 +329,7 @@ function CheckoutContent() {
                         : 'Bảo vệ toàn diện, miễn thường rủi ro va quẹt & thủy kích'}
                   </p>
                 </div>
-                <span className="text-xs font-bold text-slate-700">
+                <span className="text-sm font-semibold text-slate-700">
                   {insurancePackage === 'BASIC'
                     ? 'Đã gồm'
                     : formatVnd(quote.breakdown.insuranceFeeVnd)}
@@ -336,11 +338,11 @@ function CheckoutContent() {
             </div>
 
             {/* Escrow Deposit Policy */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-2 text-xs text-slate-400">
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-900 mb-2 text-sm text-slate-400">
                 Chính sách cọc & Ký quỹ an toàn
               </h3>
-              <p className="text-xs text-slate-600 leading-relaxed">
+              <p className="text-sm text-slate-600 leading-relaxed">
                 Nhằm đảm bảo an toàn cho cả hai bên, tiền cọc thế chấp (
                 {formatVnd(quote.breakdown.depositVnd)}) được phong tỏa trong tài khoản ký quỹ
                 (Escrow) của sàn Car Sharing. Tiền cọc sẽ được hoàn trả tự động về tài khoản của bạn
@@ -351,12 +353,12 @@ function CheckoutContent() {
 
           {/* Right Column: Pricing Breakdown & Checkout Action */}
           <div className="lg:col-span-5">
-            <div className="sticky top-24 rounded-3xl border border-slate-200 bg-white p-6 shadow-xl backdrop-blur-md">
-              <h3 className="text-base font-extrabold text-slate-900 border-b border-slate-100 pb-4">
+            <div className="sticky top-24 rounded-2xl border border-slate-200 bg-white p-6">
+              <h3 className="text-base font-semibold text-slate-900 border-b border-slate-100 pb-4">
                 Chi tiết biểu phí thanh toán
               </h3>
 
-              <div className="my-5 space-y-3 text-xs">
+              <div className="my-5 space-y-3 text-sm">
                 <div className="flex justify-between text-slate-600">
                   <span>Đơn giá thuê ({quote.rentalDays} ngày)</span>
                   <span className="font-semibold text-slate-800">
@@ -383,7 +385,7 @@ function CheckoutContent() {
                 )}
 
                 {quote.breakdown.discountVnd > 0 && (
-                  <div className="flex justify-between font-bold text-emerald-600">
+                  <div className="flex justify-between font-semibold text-emerald-600">
                     <span>Mã ưu đãi voucher {voucherCode ? `(${voucherCode})` : ''}</span>
                     <span>-{formatVnd(quote.breakdown.discountVnd)}</span>
                   </div>
@@ -412,10 +414,12 @@ function CheckoutContent() {
 
                 <div className="border-t border-slate-200 pt-4 flex items-baseline justify-between">
                   <div>
-                    <div className="text-xs font-bold text-slate-900">Tổng thanh toán dự kiến</div>
-                    <div className="text-[10px] text-slate-400">Đã bao gồm tiền cọc & thuế phí</div>
+                    <div className="text-sm font-semibold text-slate-900">
+                      Tổng thanh toán dự kiến
+                    </div>
+                    <div className="text-sm text-slate-400">Đã bao gồm tiền cọc & thuế phí</div>
                   </div>
-                  <div id="checkout-total-price" className="text-2xl font-black text-blue-600">
+                  <div id="checkout-total-price" className="text-2xl font-semibold text-brand-600">
                     {formatVnd(quote.totalVnd)}
                   </div>
                 </div>
@@ -424,18 +428,48 @@ function CheckoutContent() {
               {error && (
                 <div
                   id="checkout-error-alert"
-                  className="mb-4 rounded-xl bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700 font-medium"
+                  role="alert"
+                  className="mb-4 rounded-lg bg-rose-50 border border-rose-200 p-3 text-sm text-rose-700 font-medium"
                 >
                   {error}
                 </div>
               )}
 
+              {!quote.available && (
+                <p role="alert" className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
+                  {quote.unavailableReason ||
+                    'Xe không còn trống trong thời gian đã chọn. Quay lại trang xe để chọn thời gian khác.'}
+                </p>
+              )}
+              {!user ? (
+                <div className="mb-4 rounded-lg bg-brand-50 p-4">
+                  <p className="text-sm text-brand-900">Đăng nhập để xác nhận chuyến đi này.</p>
+                  <button
+                    type="button"
+                    onClick={() => setAuthOpen(true)}
+                    className="button button-primary mt-3"
+                  >
+                    Đăng nhập để tiếp tục
+                  </button>
+                </div>
+              ) : user.kycStatus !== 'VERIFIED' ? (
+                <div className="mb-4 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">
+                  <p>Bạn cần xác thực bằng lái trước khi đặt xe.</p>
+                  <Link href="/profile/kyc" className="button button-secondary mt-3">
+                    Xác thực bằng lái
+                  </Link>
+                </div>
+              ) : null}
+
               <button
                 id="confirm-booking-btn"
                 type="button"
-                disabled={isSubmitting}
+                disabled={
+                  isSubmitting || !user || user.kycStatus !== 'VERIFIED' || !quote.available
+                }
+                aria-busy={isSubmitting}
                 onClick={handleConfirmBooking}
-                className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-sm font-extrabold text-white shadow-lg shadow-blue-500/25 hover:from-blue-700 hover:to-indigo-700 active:scale-98 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                className="w-full rounded-2xl bg-brand-600 py-4 text-sm font-semibold text-white active:scale-98 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <span>Đang khởi tạo chuyến đi...</span>
@@ -447,7 +481,7 @@ function CheckoutContent() {
                 )}
               </button>
 
-              <p className="mt-3 text-center text-[11px] text-slate-400 leading-normal">
+              <p className="mt-3 text-center text-sm text-slate-400 leading-normal">
                 Bằng việc bấm xác nhận, bạn đồng ý với Điều khoản dịch vụ và Chính sách ký quỹ của
                 Car Sharing.
               </p>
@@ -456,6 +490,7 @@ function CheckoutContent() {
         </div>
 
         {/* Payment Gateway Sandbox Modal */}
+        <AuthModal isOpen={authOpen} onClose={() => setAuthOpen(false)} />
         <PaymentModal
           isOpen={isPaymentModalOpen}
           onClose={handlePaymentModalClose}
@@ -471,7 +506,11 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <main className="mx-auto max-w-5xl px-4 py-12 text-center text-slate-500 text-sm">
+        <main
+          id="main-content"
+          tabIndex={-1}
+          className="mx-auto max-w-5xl px-4 py-12 text-center text-slate-500 text-sm"
+        >
           Đang tải trang đặt xe...
         </main>
       }

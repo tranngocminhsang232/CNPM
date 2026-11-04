@@ -1,12 +1,13 @@
 'use client';
 
+import { Icon } from '../../components/Icon';
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../lib/auth-context';
 import { fetchBookingsApi, cancelBookingApi } from '../../lib/api';
 import type { Booking } from '../../lib/api';
 import { BookingStatusBadge } from '../../components/BookingStatusBadge';
-import { UserNav } from '../../components/UserNav';
+import { useDialog } from '../../lib/use-dialog';
 
 export default function RenterBookingsPage() {
   const { user, csrfToken, isLoading: isAuthLoading } = useAuth();
@@ -21,6 +22,16 @@ export default function RenterBookingsPage() {
   const [cancelReason, setCancelReason] = useState('');
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  useDialog(
+    !!cancelModalBooking,
+    () => {
+      if (!isCancelling) {
+        setCancelModalBooking(null);
+        setCancelReason('');
+      }
+    },
+    'cancel-booking-dialog',
+  );
 
   const formatVnd = (val?: number) => {
     if (val === undefined || val === null) return '0 ₫';
@@ -86,7 +97,11 @@ export default function RenterBookingsPage() {
 
   if (isAuthLoading) {
     return (
-      <main className="mx-auto max-w-5xl px-4 py-12 text-center text-slate-500 text-sm">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto max-w-5xl px-4 py-12 text-center text-slate-500 text-sm"
+      >
         Đang xác thực thông tin...
       </main>
     );
@@ -94,16 +109,18 @@ export default function RenterBookingsPage() {
 
   if (!user) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-sm">
-          <div className="text-4xl mb-3">🔒</div>
-          <h1 className="text-xl font-bold text-slate-900">Yêu cầu đăng nhập</h1>
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <div className="rounded-2xl border border-slate-200 bg-white p-10">
+          <div className="text-4xl mb-3">
+            <Icon name="lock" />
+          </div>
+          <h1 className="text-xl font-semibold text-slate-900">Yêu cầu đăng nhập</h1>
           <p className="mt-2 text-sm text-slate-500">
             Vui lòng đăng nhập để xem danh sách chuyến đi và lịch sử thuê xe của bạn.
           </p>
           <Link
             href="/"
-            className="mt-6 inline-block rounded-xl bg-blue-600 px-6 py-2.5 text-xs font-bold text-white shadow-md hover:bg-blue-700"
+            className="mt-6 inline-block rounded-lg bg-brand-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-brand-700"
           >
             Quay lại trang chủ
           </Link>
@@ -123,33 +140,20 @@ export default function RenterBookingsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 text-slate-900 font-bold">
-              <span className="text-blue-600 font-black">CARSHARE</span>
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-xs font-semibold text-slate-600">Chuyến đi của tôi</span>
-          </div>
-          <UserNav />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl px-4 py-8 md:py-12">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-5xl px-4 py-8 md:py-12">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">
               Chuyến đi của tôi
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 mt-1">
               Quản lý hành trình, trạng thái duyệt xe và giao dịch thanh toán
             </p>
           </div>
 
           <Link
             href="/"
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 transition-all"
+            className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors"
           >
             + Tìm thuê xe mới
           </Link>
@@ -161,11 +165,12 @@ export default function RenterBookingsPage() {
             <button
               key={tab.key}
               data-testid={`tab-${tab.key.toLowerCase()}`}
+              aria-pressed={activeTab === tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-lg text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 activeTab === tab.key
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-brand-600 text-white'
                   : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
               }`}
             >
@@ -177,25 +182,39 @@ export default function RenterBookingsPage() {
         {/* Content State */}
         {isLoading ? (
           <div className="flex flex-col items-center justify-center p-16 text-slate-400">
-            <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent" />
-            <p className="mt-3 text-xs font-medium">Đang tải danh sách chuyến đi...</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-3 border-brand-600 border-t-transparent" />
+            <p className="mt-3 text-sm font-medium">Đang tải danh sách chuyến đi...</p>
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-rose-800 text-xs">
+          <div
+            role="alert"
+            className="rounded-2xl border border-rose-200 bg-rose-50 p-6 text-center text-rose-800 text-sm"
+          >
             {error}
+            <div>
+              <button
+                type="button"
+                className="button button-secondary mt-3"
+                onClick={() => loadBookings()}
+              >
+                Thử tải lại chuyến đi
+              </button>
+            </div>
           </div>
         ) : bookings.length === 0 ? (
-          <div className="rounded-3xl border border-dashed border-slate-300 bg-slate-50/50 p-12 text-center">
-            <div className="text-3xl mb-2">🚗</div>
-            <h3 className="text-sm font-bold text-slate-800">Chưa có chuyến đi nào</h3>
-            <p className="mt-1 text-xs text-slate-500 max-w-sm mx-auto">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/50 p-12 text-center">
+            <div className="text-3xl mb-2">
+              <Icon name="car" />
+            </div>
+            <h3 className="text-sm font-semibold text-slate-800">Chưa có chuyến đi nào</h3>
+            <p className="mt-1 text-sm text-slate-500 max-w-sm mx-auto">
               {activeTab === 'ALL'
                 ? 'Bạn chưa tạo đơn thuê xe nào. Khám phá hàng trăm xe tự lái tiện nghi ngay!'
                 : `Không có chuyến đi nào trong mục ${tabs.find((t) => t.key === activeTab)?.label.toLowerCase()}.`}
             </p>
             <Link
               href="/"
-              className="mt-5 inline-block rounded-xl bg-blue-600 px-5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-blue-700"
+              className="mt-5 inline-block rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700"
             >
               Tìm kiếm xe ngay
             </Link>
@@ -206,7 +225,7 @@ export default function RenterBookingsPage() {
               <div
                 key={booking.id}
                 data-testid={`booking-card-${booking.id}`}
-                className="rounded-3xl border border-slate-200/90 bg-white p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row gap-5 items-start md:items-center justify-between"
+                className="rounded-2xl border border-slate-200/90 bg-white p-5 md:p-6 transition-shadow flex flex-col md:flex-row gap-5 items-start md:items-center justify-between"
               >
                 {/* Left Details */}
                 <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center w-full md:w-auto">
@@ -219,7 +238,7 @@ export default function RenterBookingsPage() {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
                         Không có ảnh
                       </div>
                     )}
@@ -230,23 +249,23 @@ export default function RenterBookingsPage() {
                       <BookingStatusBadge status={booking.status} />
                       {typeof booking.vehicle?.plateNormalized === 'string' &&
                       booking.vehicle.plateNormalized ? (
-                        <span className="font-mono text-xs font-bold bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">
+                        <span className="font-mono text-sm font-semibold bg-slate-100 text-slate-800 px-2 py-0.5 rounded-md border border-slate-200">
                           {booking.vehicle.plateNormalized}
                         </span>
                       ) : (
-                        <span className="text-[11px] text-slate-400 italic">
+                        <span className="text-sm text-slate-400 italic">
                           Biển số: ***-*** (Ẩn chờ duyệt)
                         </span>
                       )}
                     </div>
 
-                    <h3 className="text-base font-black text-slate-900">
+                    <h3 className="text-base font-semibold text-slate-900">
                       {booking.vehicle?.brand} {booking.vehicle?.model}
                     </h3>
 
-                    <div className="text-xs text-slate-500 flex flex-wrap gap-x-3 gap-y-1">
+                    <div className="text-sm text-slate-500 flex flex-wrap gap-x-3 gap-y-1">
                       <span>
-                        📅 Nhận:{' '}
+                        <Icon name="calendar" /> Nhận:{' '}
                         <strong className="text-slate-700">{formatDate(booking.startAt)}</strong>
                       </span>
                       <span>→</span>
@@ -255,7 +274,7 @@ export default function RenterBookingsPage() {
                       </span>
                     </div>
 
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-sm text-slate-400">
                       Mã đơn: <span className="font-mono">{booking.id.slice(0, 8)}...</span> • Chủ
                       xe: {booking.owner?.name}
                     </p>
@@ -265,10 +284,10 @@ export default function RenterBookingsPage() {
                 {/* Right Price & Actions */}
                 <div className="flex flex-row md:flex-col items-center md:items-end justify-between w-full md:w-auto pt-3 md:pt-0 border-t md:border-t-0 border-slate-100 gap-3">
                   <div className="text-left md:text-right">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                    <span className="text-sm uppercase font-semibold text-slate-400 block">
                       Tổng tiền
                     </span>
-                    <span className="text-lg font-black text-blue-600">
+                    <span className="text-lg font-semibold text-brand-600">
                       {formatVnd(booking.pricingSnapshot?.totalVnd)}
                     </span>
                   </div>
@@ -277,7 +296,7 @@ export default function RenterBookingsPage() {
                     <Link
                       href={`/bookings/${booking.id}`}
                       data-testid={`view-detail-btn-${booking.id}`}
-                      className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 transition-colors"
+                      className="rounded-lg bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 transition-colors"
                     >
                       Xem chi tiết
                     </Link>
@@ -287,7 +306,7 @@ export default function RenterBookingsPage() {
                         type="button"
                         data-testid={`cancel-booking-btn-${booking.id}`}
                         onClick={() => setCancelModalBooking(booking)}
-                        className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+                        className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
                       >
                         Hủy đơn
                       </button>
@@ -301,10 +320,17 @@ export default function RenterBookingsPage() {
 
         {/* Cancel Modal */}
         {cancelModalBooking && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in">
-            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
-              <h3 className="font-black text-slate-900 text-lg mb-2">Hủy đơn đặt xe</h3>
-              <p className="text-xs text-slate-500 mb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 animate-fade-in">
+            <div
+              id="cancel-booking-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Hủy đơn đặt xe"
+              tabIndex={-1}
+              className="dialog-surface w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6"
+            >
+              <h3 className="font-semibold text-slate-900 text-lg mb-2">Hủy đơn đặt xe</h3>
+              <p className="text-sm text-slate-500 mb-4">
                 Bạn có chắc chắn muốn hủy chuyến xe{' '}
                 <strong className="text-slate-800">
                   {cancelModalBooking.vehicle?.brand} {cancelModalBooking.vehicle?.model}
@@ -313,14 +339,14 @@ export default function RenterBookingsPage() {
               </p>
 
               {cancelError && (
-                <div className="mb-3 rounded-xl bg-rose-50 border border-rose-200 p-2.5 text-xs text-rose-700 font-medium">
+                <div className="mb-3 rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-sm text-rose-700 font-medium">
                   {cancelError}
                 </div>
               )}
 
               <form onSubmit={handleCancelSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
                     Lý do hủy đơn *
                   </label>
                   <textarea
@@ -330,7 +356,7 @@ export default function RenterBookingsPage() {
                     value={cancelReason}
                     onChange={(e) => setCancelReason(e.target.value)}
                     placeholder="Ví dụ: Thay đổi lịch trình công tác cá nhân..."
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full rounded-lg border border-slate-200 p-3 text-sm text-slate-800 focus:outline-none focus:border-brand-500"
                   />
                 </div>
 
@@ -342,7 +368,7 @@ export default function RenterBookingsPage() {
                       setCancelModalBooking(null);
                       setCancelReason('');
                     }}
-                    className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                    className="rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 cursor-pointer"
                   >
                     Đóng
                   </button>
@@ -350,7 +376,7 @@ export default function RenterBookingsPage() {
                     id="submit-cancel-btn"
                     type="submit"
                     disabled={isCancelling}
-                    className="rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-rose-700 cursor-pointer disabled:opacity-50"
+                    className="rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 cursor-pointer disabled:opacity-50"
                   >
                     {isCancelling ? 'Đang hủy...' : 'Xác nhận hủy đơn'}
                   </button>

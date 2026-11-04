@@ -1,5 +1,7 @@
 'use client';
 
+import { Icon } from './Icon';
+import { useDialog } from '../lib/use-dialog';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../lib/auth-context';
 import {
@@ -35,25 +37,25 @@ const ANGLES: AngleConfig[] = [
     angle: 'FRONT',
     label: '1. Đầu xe & Biển số',
     sub: 'Chụp chính diện góc trước xe',
-    icon: '🚗',
+    icon: 'car',
   },
   {
     angle: 'REAR',
     label: '2. Đuôi xe & Đèn hậu',
     sub: 'Chụp chính diện đuôi và biển số sau',
-    icon: '🚙',
+    icon: 'car',
   },
   {
     angle: 'LEFT',
     label: '3. Sườn trái xe',
     sub: 'Chụp toàn bộ hông và 2 lốp bên lái',
-    icon: '🚘',
+    icon: 'car',
   },
   {
     angle: 'RIGHT',
     label: '4. Sườn phải xe',
     sub: 'Chụp toàn bộ hông và 2 lốp bên phụ',
-    icon: '🚖',
+    icon: 'car',
   },
 ];
 
@@ -112,6 +114,8 @@ export function InspectionChecklistModal({
       setPhotos(initialPhotos);
     }
   }, [initialInspection]);
+
+  useDialog(isOpen, onClose, 'inspection-checklist-modal');
 
   if (!isOpen) return null;
 
@@ -235,56 +239,61 @@ export function InspectionChecklistModal({
   return (
     <div
       id="inspection-checklist-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 overflow-y-auto"
     >
       <div
         id="inspection-checklist-modal"
-        className="relative my-8 w-full max-w-3xl rounded-2xl bg-white shadow-2xl overflow-hidden border border-slate-200"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Kiểm tra và nhận xe"
+        tabIndex={-1}
+        className="dialog-surface relative my-8 w-full max-w-3xl rounded-2xl bg-white overflow-hidden border border-slate-200"
       >
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 bg-slate-900 px-6 py-4 text-white">
+        <div className="flex items-center justify-between border-b border-slate-100 bg-white px-6 py-4 text-slate-900">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-xl font-bold shadow-md shadow-blue-500/20">
-              📋
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-600 text-xl font-semibold">
+              <Icon name="clipboard" />
             </span>
             <div>
-              <h2 className="text-lg font-bold">Biên Bản Bàn Giao & Kiểm Tra Xe (CHECK_IN)</h2>
-              <p className="text-xs text-slate-400">
+              <h2 className="text-lg font-semibold">Kiểm tra và nhận xe</h2>
+              <p className="text-sm text-slate-400">
                 Chụp 4 góc xe, ghi nhận số km & mức pin/xăng để bảo đảm quyền lợi đôi bên
               </p>
             </div>
           </div>
           <button
+            aria-label="Đóng hộp thoại"
             id="btn-close-inspection-modal"
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition"
           >
-            ✕
+            ×
           </button>
         </div>
 
         {/* Modal Body */}
         <div className="max-h-[75vh] overflow-y-auto p-6 space-y-6">
           {/* Progress Banner */}
-          <div className="flex items-center justify-between rounded-xl bg-slate-50 p-4 border border-slate-200">
+          <div className="flex flex-wrap gap-3 items-center justify-between rounded-lg bg-slate-50 p-4 border border-slate-200">
             <div>
               <div className="text-sm font-semibold text-slate-800">
                 Tiến độ chụp ảnh checklist 4 góc xe
               </div>
-              <div className="text-xs text-slate-500 mt-0.5">
+              <div className="text-sm text-slate-500 mt-0.5">
                 Bắt buộc đủ 4 góc trước khi có thể mở khóa số Keyless nhận xe
               </div>
             </div>
             <div className="flex items-center gap-3">
               <span
                 id="inspection-progress-badge"
-                className={`rounded-full px-3 py-1 text-xs font-bold ${
+                className={`rounded-full whitespace-nowrap px-3 py-1 text-sm font-semibold ${
                   isComplete4Angles
                     ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
                     : 'bg-amber-100 text-amber-700 border border-amber-300'
                 }`}
               >
-                {uploadedCount}/4 góc ảnh {isComplete4Angles ? '✓ Đủ điều kiện' : '• Đang thiếu'}
+                {uploadedCount}/4 góc ảnh {isComplete4Angles ? 'Đủ điều kiện' : '• Đang thiếu'}
               </span>
             </div>
           </div>
@@ -292,9 +301,11 @@ export function InspectionChecklistModal({
           {error && (
             <div
               id="inspection-error-banner"
-              className="rounded-xl border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 flex items-start gap-2"
+              className="rounded-lg border border-red-200 bg-red-50 p-3.5 text-sm text-red-700 flex items-start gap-2"
             >
-              <span className="text-base font-bold">⚠</span>
+              <span className="text-base font-semibold">
+                <Icon name="alert" />
+              </span>
               <span>{error}</span>
             </div>
           )}
@@ -302,16 +313,16 @@ export function InspectionChecklistModal({
           {successMessage && (
             <div
               id="inspection-success-banner"
-              className="rounded-xl border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-700 flex items-start gap-2"
+              className="rounded-lg border border-emerald-200 bg-emerald-50 p-3.5 text-sm text-emerald-700 flex items-start gap-2"
             >
-              <span className="text-base font-bold">✓</span>
+              <span className="text-base font-semibold">OK</span>
               <span>{successMessage}</span>
             </div>
           )}
 
           {/* 4 Angles Photo Grid */}
           <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
+            <h3 className="text-sm font-semibold text-slate-600 mb-3">
               1. Ảnh chụp 4 góc xe (Bắt buộc)
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -324,7 +335,7 @@ export function InspectionChecklistModal({
                   <div
                     key={cfg.angle}
                     id={`inspection-card-${cfg.angle.toLowerCase()}`}
-                    className={`relative rounded-xl border p-4 transition ${
+                    className={`relative rounded-lg border p-4 transition ${
                       hasPhoto
                         ? 'border-emerald-300 bg-emerald-50/30'
                         : 'border-slate-200 bg-slate-50/50 hover:border-slate-300'
@@ -332,20 +343,22 @@ export function InspectionChecklistModal({
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-2xl">{cfg.icon}</span>
+                        <span className="text-2xl">
+                          <Icon name={cfg.icon} />
+                        </span>
                         <div>
-                          <div className="text-sm font-bold text-slate-800">{cfg.label}</div>
-                          <div className="text-xs text-slate-500">{cfg.sub}</div>
+                          <div className="text-sm font-semibold text-slate-800">{cfg.label}</div>
+                          <div className="text-sm text-slate-500">{cfg.sub}</div>
                         </div>
                       </div>
                       <span
-                        className={`rounded-md px-2 py-0.5 text-[11px] font-bold ${
+                        className={`rounded-md px-2 py-0.5 text-sm font-semibold ${
                           hasPhoto
                             ? 'bg-emerald-100 text-emerald-700'
                             : 'bg-slate-200 text-slate-600'
                         }`}
                       >
-                        {hasPhoto ? '✓ Đã chụp' : 'Chưa chụp'}
+                        {hasPhoto ? 'Đã chụp' : 'Chưa chụp'}
                       </span>
                     </div>
 
@@ -359,13 +372,15 @@ export function InspectionChecklistModal({
                         />
                       ) : (
                         <div className="text-center p-3">
-                          <span className="text-3xl text-slate-300">📷</span>
-                          <p className="mt-1 text-xs text-slate-400">Nhấn để chọn ảnh hoặc chụp</p>
+                          <span className="text-3xl text-slate-300">
+                            <Icon name="camera" />
+                          </span>
+                          <p className="mt-1 text-sm text-slate-400">Nhấn để chọn ảnh hoặc chụp</p>
                         </div>
                       )}
 
                       {isUploading && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/60 text-white text-xs font-semibold">
+                        <div className="absolute inset-0 flex items-center justify-center bg-slate-900/60 text-white text-sm font-semibold">
                           <div className="flex items-center gap-2">
                             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
                             Đang upload...
@@ -376,15 +391,15 @@ export function InspectionChecklistModal({
 
                     {/* Hidden input trigger */}
                     {!readOnly && !isFinalized && (
-                      <label className="mt-3 block text-center">
-                        <span className="inline-block cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-50 active:scale-95 transition">
+                      <label className="mt-3 block rounded-lg text-center focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-brand-600">
+                        <span className="inline-block cursor-pointer rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 active:scale-95 transition">
                           {hasPhoto ? 'Chụp lại ảnh khác' : 'Chọn ảnh / Chụp ảnh'}
                         </span>
                         <input
                           id={`input-photo-${cfg.angle.toLowerCase()}`}
                           type="file"
                           accept="image/jpeg,image/png"
-                          className="hidden"
+                          className="sr-only"
                           onChange={(e) => {
                             const file = e.target.files?.[0];
                             if (file) handleFileUpload(cfg.angle, file);
@@ -399,13 +414,13 @@ export function InspectionChecklistModal({
           </div>
 
           {/* Odometer & Fuel Input */}
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 mb-3">
+          <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+            <h3 className="text-sm font-semibold text-slate-600 mb-3">
               2. Chỉ số công tơ mét & Pin / Xăng
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Số km hiển thị trên ODO (km) *
                 </label>
                 <input
@@ -416,15 +431,15 @@ export function InspectionChecklistModal({
                   disabled={readOnly || isFinalized}
                   value={odometerKm}
                   onChange={(e) => setOdometerKm(Number(e.target.value))}
-                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:border-blue-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 focus:border-brand-500 focus:outline-none"
                   placeholder="Ví dụ: 15420"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Mức Pin / Nhiên liệu hiện tại:{' '}
-                  <span className="text-blue-600 font-extrabold">{fuelPercent}%</span> *
+                  <span className="text-brand-600 font-semibold">{fuelPercent}%</span> *
                 </label>
                 <input
                   id="input-inspection-fuel"
@@ -434,7 +449,7 @@ export function InspectionChecklistModal({
                   disabled={readOnly || isFinalized}
                   value={fuelPercent}
                   onChange={(e) => setFuelPercent(Number(e.target.value))}
-                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600 mt-2"
+                  className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-brand-600 mt-2"
                 />
               </div>
             </div>
@@ -442,7 +457,7 @@ export function InspectionChecklistModal({
 
           {/* Damage Notes */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">
+            <label className="block text-sm font-semibold text-slate-700 mb-1">
               3. Ghi chú tình trạng xe, vết xước sẵn có (Tùy chọn)
             </label>
             <textarea
@@ -452,7 +467,7 @@ export function InspectionChecklistModal({
               value={damageNotes}
               onChange={(e) => setDamageNotes(e.target.value)}
               placeholder="Ví dụ: Có vết xước nhỏ 2cm ở cản trước bên phụ, lốp xe đủ áp suất..."
-              className="w-full rounded-xl border border-slate-300 bg-white p-3 text-sm text-slate-900 focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-300 bg-white p-3 text-sm text-slate-900 focus:border-brand-500 focus:outline-none"
             />
           </div>
         </div>
@@ -460,9 +475,10 @@ export function InspectionChecklistModal({
         {/* Modal Footer */}
         <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-6 py-4">
           <button
+            aria-label="Đóng hộp thoại"
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition"
+            className="w-full sm:w-auto rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 transition"
           >
             Đóng
           </button>
@@ -474,7 +490,7 @@ export function InspectionChecklistModal({
                 type="button"
                 disabled={isSaving || isFinalizing}
                 onClick={handleSaveDraft}
-                className="w-full sm:w-auto rounded-xl border border-blue-600 bg-blue-50 px-4 py-2.5 text-sm font-semibold text-blue-700 hover:bg-blue-100 transition disabled:opacity-50"
+                className="w-full sm:w-auto rounded-lg border border-brand-600 bg-brand-50 px-4 py-2.5 text-sm font-semibold text-brand-700 hover:bg-brand-100 transition disabled:opacity-50"
               >
                 {isSaving ? 'Đang lưu...' : 'Lưu bản nháp'}
               </button>
@@ -484,16 +500,16 @@ export function InspectionChecklistModal({
                 type="button"
                 disabled={!isComplete4Angles || isFinalizing || isSaving}
                 onClick={handleFinalize}
-                className="w-full sm:w-auto rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-blue-500/25 hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                {isFinalizing ? 'Đang chốt...' : 'Ký xác nhận & Chốt biên bản ✓'}
+                {isFinalizing ? 'Đang chốt...' : 'Ký xác nhận & Chốt biên bản'}
               </button>
             </div>
           )}
 
           {isFinalized && (
-            <div className="flex items-center gap-2 text-sm font-bold text-emerald-600">
-              <span>✓ Biên bản đã được chốt và đóng dấu điện tử</span>
+            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+              <span>Biên bản đã được chốt và đóng dấu điện tử</span>
             </div>
           )}
         </div>

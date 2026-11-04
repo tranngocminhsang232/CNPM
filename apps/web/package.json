@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
-    "test:smoke": "playwright test"
+    "test:smoke": "playwright test",
+    "test:ui": "playwright test --config playwright.ui.config.ts"
   },
   "dependencies": {
     "@carsharing/contracts": "workspace:*",

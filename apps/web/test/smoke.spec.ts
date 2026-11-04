@@ -8,8 +8,8 @@ test.describe('Car Sharing Web Smoke Test', () => {
     await page.goto('/');
 
     // 1. Verify branding and header
-    await expect(page.locator('text=CARSHARE')).toBeVisible();
-    await expect(page.locator('text=Hệ thống trực tuyến')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CarShare — Trang chủ' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Xe dành cho bạn' })).toBeVisible();
 
     // 2. Verify vehicles grid is rendered with real seed data
     const grid = page.locator('[data-testid="vehicles-grid"]');
@@ -21,7 +21,8 @@ test.describe('Car Sharing Web Smoke Test', () => {
 
     // Verify first card displays price with VND unit and no sensitive private data
     const firstCard = vehicleCards.first();
-    await expect(firstCard).toContainText('₫/ngày');
+    await expect(firstCard).toContainText('₫');
+    await expect(firstCard).toContainText('/ngày');
 
     // Confirm privacy: license plate and exact street address are NEVER exposed
     const content = await page.content();

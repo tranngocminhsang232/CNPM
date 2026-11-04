@@ -6,7 +6,7 @@ test.describe('Milestone G1 Web Integration Flow (Auth, KYC & Owner Vehicles)', 
   }) => {
     // 1. Visit homepage
     await page.goto('/');
-    await expect(page.locator('text=CARSHARE')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CarShare — Trang chủ' })).toBeVisible();
 
     // 2. Open login modal
     const loginBtn = page.locator('#nav-login-btn');

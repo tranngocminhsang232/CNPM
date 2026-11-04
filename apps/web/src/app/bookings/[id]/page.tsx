@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from '../../../components/Icon';
 import React, { useState, useEffect, useCallback, use } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../../lib/auth-context';
@@ -16,12 +17,12 @@ import {
 } from '../../../lib/api';
 import { BookingStatusBadge } from '../../../components/BookingStatusBadge';
 import { PaymentModal } from '../../../components/PaymentModal';
-import { UserNav } from '../../../components/UserNav';
 import { InspectionChecklistModal } from '../../../components/InspectionChecklistModal';
 import { ReturnChecklistModal } from '../../../components/ReturnChecklistModal';
 import { DepositSettlementCard } from '../../../components/DepositSettlementCard';
 import { ReviewModal } from '../../../components/ReviewModal';
 import { KeylessRemoteWidget } from '../../../components/KeylessRemoteWidget';
+import { useDialog } from '../../../lib/use-dialog';
 
 interface BookingDetailPageProps {
   params: Promise<{ id: string }>;
@@ -46,6 +47,16 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
   const [cancelReason, setCancelReason] = useState('');
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  useDialog(
+    isCancelModalOpen,
+    () => {
+      if (!isCancelling) {
+        setIsCancelModalOpen(false);
+        setCancelReason('');
+      }
+    },
+    'cancel-booking-detail-dialog',
+  );
 
   // Payment Modal State
   const [paymentIntent, setPaymentIntent] = useState<Payment | null>(null);
@@ -146,8 +157,12 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
   if (isAuthLoading || isLoading) {
     return (
-      <main className="mx-auto max-w-4xl px-4 py-16 text-center text-slate-500 text-sm">
-        <div className="h-8 w-8 animate-spin rounded-full border-3 border-blue-600 border-t-transparent mx-auto mb-3" />
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto max-w-4xl px-4 py-16 text-center text-slate-500 text-sm"
+      >
+        <div className="h-8 w-8 animate-spin rounded-full border-3 border-brand-600 border-t-transparent mx-auto mb-3" />
         Đang tải thông tin chuyến đi...
       </main>
     );
@@ -155,17 +170,19 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
   if (error || !booking) {
     return (
-      <main className="mx-auto max-w-2xl px-4 py-16 text-center">
-        <div className="rounded-3xl border border-rose-200 bg-rose-50 p-8 text-rose-800 shadow-sm">
-          <div className="text-3xl mb-2">⚠️</div>
-          <h2 className="text-lg font-bold">Không tìm thấy chuyến đi</h2>
-          <p className="mt-2 text-xs text-rose-700">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-2xl px-4 py-16 text-center">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 p-8 text-rose-800">
+          <div className="text-3xl mb-2">
+            <Icon name="alert" />
+          </div>
+          <h2 className="text-lg font-semibold">Không tìm thấy chuyến đi</h2>
+          <p className="mt-2 text-sm text-rose-700">
             {error || 'Đơn đặt xe không tồn tại hoặc bạn không có quyền truy cập.'}
           </p>
           <div className="mt-6 flex justify-center gap-3">
             <Link
               href="/bookings"
-              className="rounded-xl bg-white px-5 py-2 text-xs font-bold text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm"
+              className="rounded-lg bg-white px-5 py-2 text-sm font-semibold text-slate-700 border border-slate-200 hover:bg-slate-50"
             >
               ← Quay lại danh sách chuyến đi
             </Link>
@@ -192,39 +209,17 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3.5 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2 text-slate-900 font-bold">
-              <span className="text-blue-600 font-black">CARSHARE</span>
-            </Link>
-            <span className="text-slate-300">/</span>
-            <Link
-              href={isOwner ? '/owner/bookings' : '/bookings'}
-              className="text-xs font-semibold text-slate-600 hover:text-blue-600"
-            >
-              {isOwner ? 'Quản lý yêu cầu thuê' : 'Chuyến đi của tôi'}
-            </Link>
-            <span className="text-slate-300">/</span>
-            <span className="text-xs font-semibold text-slate-400">
-              Đơn #{booking.id.slice(0, 8)}
-            </span>
-          </div>
-          <UserNav />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-4xl px-4 py-8 md:py-12">
+      <main id="main-content" tabIndex={-1} className="mx-auto max-w-4xl px-4 py-8 md:py-12">
         {/* Header Banner */}
-        <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-xl md:text-2xl font-semibold text-slate-900 tracking-tight">
                 Chi tiết chuyến đi #{booking.id.slice(0, 8)}
               </h1>
               <BookingStatusBadge status={booking.status} size="lg" />
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-sm text-slate-400 mt-1">
               Ngày khởi tạo: {formatDate(booking.createdAt)}
             </p>
           </div>
@@ -236,7 +231,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 id="cancel-booking-action-btn"
                 type="button"
                 onClick={() => setIsCancelModalOpen(true)}
-                className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs font-bold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+                className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
               >
                 Hủy chuyến
               </button>
@@ -248,7 +243,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 type="button"
                 disabled={isInitiatingPayment}
                 onClick={handleOpenPayment}
-                className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 cursor-pointer"
+                className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer"
               >
                 {isInitiatingPayment ? 'Đang tạo giao dịch...' : 'Thanh toán cọc (Sandbox)'}
               </button>
@@ -259,9 +254,9 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 id="btn-open-return-modal"
                 type="button"
                 onClick={() => setIsReturnModalOpen(true)}
-                className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700 cursor-pointer"
+                className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer"
               >
-                🏁 Trả xe & Hoàn tất chuyến
+                <Icon name="check" /> Trả xe & Hoàn tất chuyến
               </button>
             )}
 
@@ -270,9 +265,9 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 id="btn-open-review-modal"
                 type="button"
                 onClick={() => setIsReviewModalOpen(true)}
-                className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 cursor-pointer"
+                className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer"
               >
-                ⭐ Viết đánh giá
+                <Icon name="star" /> Viết đánh giá
               </button>
             )}
           </div>
@@ -280,10 +275,12 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
         {/* Status Notice if REQUESTED */}
         {booking.status === 'REQUESTED' && (
-          <div className="mb-6 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-xs text-amber-800 flex items-start gap-3 shadow-sm">
-            <span className="text-lg">⏳</span>
+          <div className="mb-6 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800 flex items-start gap-3">
+            <span className="text-lg">
+              <Icon name="clock" />
+            </span>
             <div>
-              <h4 className="font-bold text-amber-900">Đang chờ chủ xe phê duyệt yêu cầu</h4>
+              <h4 className="font-semibold text-amber-900">Đang chờ chủ xe phê duyệt yêu cầu</h4>
               <p className="mt-0.5 text-amber-700">
                 Chủ xe có tối đa 15 phút để phản hồi. Khi được duyệt, biển số và địa chỉ đón xe sẽ
                 tự động hiển thị.
@@ -294,11 +291,13 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
         {/* Status Notice if APPROVED */}
         {booking.status === 'APPROVED' && (
-          <div className="mb-6 rounded-2xl bg-sky-50 border border-sky-200 p-4 text-xs text-sky-800 flex items-start gap-3 shadow-sm">
-            <span className="text-lg">🎉</span>
+          <div className="mb-6 rounded-2xl bg-brand-50 border border-brand-200 p-4 text-sm text-brand-800 flex items-start gap-3">
+            <span className="text-lg">
+              <Icon name="check" />
+            </span>
             <div>
-              <h4 className="font-bold text-sky-900">Yêu cầu thuê xe đã được phê duyệt!</h4>
-              <p className="mt-0.5 text-sky-700">
+              <h4 className="font-semibold text-brand-900">Yêu cầu thuê xe đã được phê duyệt!</h4>
+              <p className="mt-0.5 text-brand-700">
                 Xe đã sẵn sàng cho chuyến đi. Vui lòng đến đúng địa chỉ và giờ hẹn để nhận xe.
               </p>
             </div>
@@ -309,10 +308,8 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
           {/* Left Column: Vehicle & Parties Details */}
           <div className="md:col-span-7 space-y-6">
             {/* Vehicle Info */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
-                Thông tin phương tiện
-              </h3>
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-400 mb-4">Thông tin phương tiện</h3>
 
               <div className="flex gap-4 items-center mb-5">
                 <div className="w-28 h-20 rounded-2xl bg-slate-100 overflow-hidden flex-shrink-0">
@@ -324,14 +321,14 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-xs">
+                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
                       Ảnh xe
                     </div>
                   )}
                 </div>
 
                 <div>
-                  <h2 className="text-lg font-black text-slate-900">
+                  <h2 className="text-lg font-semibold text-slate-900">
                     {booking.vehicle?.brand} {booking.vehicle?.model}
                   </h2>
                   <div className="mt-1 flex items-center gap-2">
@@ -339,14 +336,14 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     booking.vehicle.plateNormalized ? (
                       <span
                         id="booking-detail-plate"
-                        className="font-mono text-xs font-black bg-slate-900 text-white px-2.5 py-1 rounded-lg tracking-wider"
+                        className="font-mono text-sm font-semibold bg-slate-900 text-white px-2.5 py-1 rounded-lg tracking-wider"
                       >
                         {booking.vehicle.plateNormalized}
                       </span>
                     ) : (
                       <span
                         id="booking-detail-plate-hidden"
-                        className="text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md"
+                        className="text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-md"
                       >
                         Biển số: ***-*** (Ẩn chờ phê duyệt)
                       </span>
@@ -356,7 +353,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
               </div>
 
               {/* Address & Location */}
-              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 space-y-2 text-xs">
+              <div className="rounded-2xl bg-slate-50 p-4 border border-slate-100 space-y-2 text-sm">
                 <div className="flex justify-between items-start">
                   <span className="text-slate-500">Khu vực / Thành phố:</span>
                   <span className="font-semibold text-slate-800">{booking.vehicle?.city}</span>
@@ -368,9 +365,9 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                   booking.vehicle.pickupAddress ? (
                     <span
                       id="booking-detail-pickup-address"
-                      className="font-bold text-slate-900 text-right"
+                      className="font-semibold text-slate-900 text-right"
                     >
-                      📍 {booking.vehicle.pickupAddress}
+                      <Icon name="pin" /> {booking.vehicle.pickupAddress}
                     </span>
                   ) : (
                     <span className="text-slate-400 italic">
@@ -382,14 +379,12 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
             </div>
 
             {/* Schedule */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4">
-                Lịch trình chuyến đi
-              </h3>
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6">
+              <h3 className="text-sm font-semibold text-slate-400 mb-4">Lịch trình chuyến đi</h3>
 
-              <div className="grid grid-cols-2 gap-4 text-xs">
+              <div className="grid grid-cols-2 gap-4 text-sm">
                 <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-blue-600 block">
+                  <span className="text-sm uppercase font-semibold text-brand-600 block">
                     Thời gian nhận xe
                   </span>
                   <strong className="text-slate-900 text-sm mt-1 block">
@@ -398,7 +393,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 p-3.5 border border-slate-100">
-                  <span className="text-[10px] uppercase font-bold text-slate-500 block">
+                  <span className="text-sm uppercase font-semibold text-slate-500 block">
                     Thời gian trả xe
                   </span>
                   <strong className="text-slate-900 text-sm mt-1 block">
@@ -409,10 +404,8 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
             </div>
 
             {/* Contact Information */}
-            <div className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm text-xs">
-              <h3 className="font-bold uppercase tracking-wider text-slate-400 mb-3">
-                Thông tin liên hệ
-              </h3>
+            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 text-sm">
+              <h3 className="font-semibold text-slate-400 mb-3">Thông tin liên hệ</h3>
 
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -436,26 +429,26 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
               booking.status === 'COMPLETED') && (
               <div
                 id="booking-inspection-card"
-                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-slate-200/90 bg-white p-6"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <h3 className="text-sm font-semibold text-slate-400">
                         Biên bản bàn giao xe (Checklist 4 góc nhận)
                       </h3>
                       <span
                         id="inspection-status-pill"
-                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                        className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${
                           isInspectionFinalized
                             ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
                             : 'bg-amber-100 text-amber-700 border border-amber-300'
                         }`}
                       >
-                        {isInspectionFinalized ? '✓ Đã chốt biên bản' : '• Chưa hoàn tất'}
+                        {isInspectionFinalized ? 'Đã chốt biên bản' : '• Chưa hoàn tất'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    <p className="text-sm text-slate-600 mt-1.5 leading-relaxed">
                       {isInspectionFinalized
                         ? `Biên bản bàn giao nhận xe đã được chốt (Odo: ${checkInInspection?.odometerKm} km, Xăng/Pin: ${checkInInspection?.fuelPercent}%).`
                         : 'Vui lòng chụp ảnh 4 góc xe và ghi nhận số km trước khi nhận xe.'}
@@ -466,13 +459,13 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     id="btn-open-inspection-modal"
                     type="button"
                     onClick={() => setIsInspectionModalOpen(true)}
-                    className={`flex-shrink-0 rounded-xl px-4 py-2.5 text-xs font-bold shadow-sm transition active:scale-95 ${
+                    className={`flex-shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold  transition active:scale-95 ${
                       isInspectionFinalized
                         ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
-                        : 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-500/20'
+                        : 'bg-brand-600 text-white hover:bg-brand-700 '
                     }`}
                   >
-                    {isInspectionFinalized ? 'Xem biên bản đã ký' : '📷 Bắt đầu kiểm tra xe'}
+                    {isInspectionFinalized ? 'Xem biên bản đã ký' : 'Bắt đầu kiểm tra xe'}
                   </button>
                 </div>
               </div>
@@ -482,29 +475,29 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
             {(booking.status === 'IN_PROGRESS' || booking.status === 'COMPLETED') && (
               <div
                 id="booking-return-inspection-card"
-                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm"
+                className="rounded-2xl border border-slate-200/90 bg-white p-6"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      <h3 className="text-sm font-semibold text-slate-400">
                         Biên bản trả xe sau chuyến (Check-out)
                       </h3>
                       <span
                         id="return-inspection-status-pill"
-                        className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                        className={`rounded-full px-2.5 py-0.5 text-sm font-semibold ${
                           isCheckOutFinalized
                             ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
                             : 'bg-amber-100 text-amber-700 border border-amber-300'
                         }`}
                       >
-                        {isCheckOutFinalized ? '✓ Đã chốt trả xe' : '• Chưa hoàn tất'}
+                        {isCheckOutFinalized ? 'Đã chốt trả xe' : '• Chưa hoàn tất'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    <p className="text-sm text-slate-600 mt-1.5 leading-relaxed">
                       {isCheckOutFinalized
                         ? `Biên bản trả xe đã được chốt (Odo: ${checkOutInspection?.odometerKm} km, Xăng/Pin: ${checkOutInspection?.fuelPercent}%).`
-                        : 'Chụp 4 góc xe và ghi nhận ODO/nhiên liệu khi hoàn trả xe cho chủ xe (BR-10).'}
+                        : 'Chụp 4 góc xe và ghi nhận ODO/nhiên liệu khi hoàn trả xe cho chủ xe.'}
                     </p>
                   </div>
 
@@ -512,13 +505,13 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     id="btn-open-return-checklist"
                     type="button"
                     onClick={() => setIsReturnModalOpen(true)}
-                    className={`flex-shrink-0 rounded-xl px-4 py-2.5 text-xs font-bold shadow-sm transition active:scale-95 ${
+                    className={`flex-shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold  transition active:scale-95 ${
                       isCheckOutFinalized
                         ? 'bg-slate-100 text-slate-700 hover:bg-slate-200 border border-slate-300'
-                        : 'bg-emerald-600 text-white hover:bg-emerald-700 shadow-emerald-500/20'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700 '
                     }`}
                   >
-                    {isCheckOutFinalized ? 'Xem biên bản trả xe' : '🏁 Bắt đầu trả xe'}
+                    {isCheckOutFinalized ? 'Xem biên bản trả xe' : 'Bắt đầu trả xe'}
                   </button>
                 </div>
               </div>
@@ -543,15 +536,15 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
             {booking.status === 'COMPLETED' && (
               <div
                 id="booking-reviews-section"
-                className="rounded-3xl border border-slate-200/90 bg-white p-6 shadow-sm space-y-4"
+                className="rounded-2xl border border-slate-200/90 bg-white p-6 space-y-4"
               >
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
-                    <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                    <h3 className="text-sm font-semibold text-slate-900 tracking-tight">
                       Đánh giá chuyến đi (Two-Way Reviews)
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      Đánh giá minh bạch giữa khách thuê và chủ xe (Quy tắc BR-12).
+                    <p className="text-sm text-slate-500 mt-0.5">
+                      Đánh giá minh bạch giữa khách thuê và chủ xe.
                     </p>
                   </div>
                   {!hasReviewed && (
@@ -559,15 +552,15 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                       id="btn-open-review-modal-section"
                       type="button"
                       onClick={() => setIsReviewModalOpen(true)}
-                      className="rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-4 py-2 text-xs font-extrabold text-white shadow-md shadow-amber-500/20 hover:from-amber-600 hover:to-orange-600 cursor-pointer"
+                      className="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white cursor-pointer"
                     >
-                      ⭐ Viết đánh giá
+                      <Icon name="star" /> Viết đánh giá
                     </button>
                   )}
                 </div>
 
                 {reviews.length === 0 ? (
-                  <div className="text-center py-6 text-xs text-slate-400">
+                  <div className="text-center py-6 text-sm text-slate-400">
                     Chưa có đánh giá nào cho chuyến đi này.
                   </div>
                 ) : (
@@ -578,31 +571,35 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                         <div
                           key={rev.id}
                           id={`review-card-${rev.id}`}
-                          className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2 text-xs"
+                          className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 space-y-2 text-sm"
                         >
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <div className="h-7 w-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[11px]">
+                              <div className="h-7 w-7 rounded-full bg-brand-600 text-white font-semibold flex items-center justify-center text-sm">
                                 {rev.author?.name?.charAt(0) || 'U'}
                               </div>
                               <div>
                                 <strong className="text-slate-900">
                                   {rev.author?.name || 'Người dùng'}
                                 </strong>
-                                <span className="ml-2 text-[10px] px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-700">
+                                <span className="ml-2 text-sm px-2 py-0.5 rounded-full font-semibold bg-slate-200 text-slate-700">
                                   {isRenterRev ? 'Khách thuê' : 'Chủ xe'}
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1 text-amber-500 font-bold">
-                              <span>{'★'.repeat(rev.score)}</span>
-                              <span className="text-[11px] text-slate-600 ml-1 font-semibold">
+                            <div className="flex items-center gap-1 text-amber-700 font-semibold">
+                              <span>
+                                {Array.from({ length: rev.score }, (_, index) => (
+                                  <Icon key={index} name="star" />
+                                ))}
+                              </span>
+                              <span className="text-sm text-slate-600 ml-1 font-semibold">
                                 {rev.score}/5
                               </span>
                             </div>
                           </div>
-                          <p className="text-slate-700 leading-relaxed text-xs">{rev.comment}</p>
-                          <div className="text-[10px] text-slate-400 text-right">
+                          <p className="text-slate-700 leading-relaxed text-sm">{rev.comment}</p>
+                          <div className="text-sm text-slate-400 text-right">
                             {formatDate(rev.createdAt)}
                           </div>
                         </div>
@@ -631,13 +628,13 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
             <div
               id="booking-pricing-snapshot"
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-lg space-y-4"
+              className="rounded-2xl border border-slate-200 bg-white p-6 space-y-4"
             >
-              <h3 className="text-sm font-black text-slate-900 border-b border-slate-100 pb-3">
+              <h3 className="text-sm font-semibold text-slate-900 border-b border-slate-100 pb-3">
                 Biểu phí snapshot bất biến
               </h3>
 
-              <div className="space-y-2.5 text-xs">
+              <div className="space-y-2.5 text-sm">
                 <div className="flex justify-between text-slate-600">
                   <span>Đơn giá theo ngày</span>
                   <span className="font-semibold text-slate-800">
@@ -674,17 +671,17 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                 </div>
 
                 <div className="border-t border-slate-200 pt-3 flex items-baseline justify-between">
-                  <span className="font-bold text-slate-900 text-sm">Tổng chuyến đi</span>
+                  <span className="font-semibold text-slate-900 text-sm">Tổng chuyến đi</span>
                   <span
                     id="booking-detail-total-price"
-                    className="text-xl font-black text-blue-600"
+                    className="text-xl font-semibold text-brand-600"
                   >
                     {formatVnd(booking.pricingSnapshot?.totalVnd)}
                   </span>
                 </div>
               </div>
 
-              <div className="pt-2 text-[10px] text-slate-400">
+              <div className="pt-2 text-sm text-slate-400">
                 * Biểu phí được chốt cố định theo hợp đồng điện tử tại thời điểm khởi tạo đơn.
               </div>
             </div>
@@ -693,22 +690,29 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
 
         {/* Cancel Modal */}
         {isCancelModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm animate-fade-in">
-            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl">
-              <h3 className="font-black text-slate-900 text-lg mb-2">Hủy chuyến đi</h3>
-              <p className="text-xs text-slate-500 mb-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 p-4 animate-fade-in">
+            <div
+              id="cancel-booking-detail-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Hủy chuyến đi"
+              tabIndex={-1}
+              className="dialog-surface w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6"
+            >
+              <h3 className="font-semibold text-slate-900 text-lg mb-2">Hủy chuyến đi</h3>
+              <p className="text-sm text-slate-500 mb-4">
                 Bạn có chắc chắn muốn hủy chuyến xe này? Lịch xe sẽ được mở lại cho người dùng khác.
               </p>
 
               {cancelError && (
-                <div className="mb-3 rounded-xl bg-rose-50 border border-rose-200 p-2.5 text-xs text-rose-700 font-medium">
+                <div className="mb-3 rounded-lg bg-rose-50 border border-rose-200 p-2.5 text-sm text-rose-700 font-medium">
                   {cancelError}
                 </div>
               )}
 
               <form onSubmit={handleCancelSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                  <label className="block text-sm font-semibold text-slate-700 mb-1">
                     Lý do hủy chuyến *
                   </label>
                   <textarea
@@ -718,7 +722,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     value={cancelReason}
                     onChange={(e) => setCancelReason(e.target.value)}
                     placeholder="Nhập lý do hủy chuyến..."
-                    className="w-full rounded-xl border border-slate-200 p-3 text-xs text-slate-800 focus:outline-none focus:border-blue-500"
+                    className="w-full rounded-lg border border-slate-200 p-3 text-sm text-slate-800 focus:outline-none focus:border-brand-500"
                   />
                 </div>
 
@@ -730,7 +734,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                       setIsCancelModalOpen(false);
                       setCancelReason('');
                     }}
-                    className="rounded-xl bg-slate-100 px-4 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-200 cursor-pointer"
+                    className="rounded-lg bg-slate-100 px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 cursor-pointer"
                   >
                     Đóng
                   </button>
@@ -738,7 +742,7 @@ export default function BookingDetailPage({ params }: BookingDetailPageProps) {
                     id="detail-submit-cancel-btn"
                     type="submit"
                     disabled={isCancelling}
-                    className="rounded-xl bg-rose-600 px-4 py-2.5 text-xs font-extrabold text-white hover:bg-rose-700 cursor-pointer disabled:opacity-50"
+                    className="rounded-lg bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-rose-700 cursor-pointer disabled:opacity-50"
                   >
                     {isCancelling ? 'Đang hủy...' : 'Xác nhận hủy'}
                   </button>

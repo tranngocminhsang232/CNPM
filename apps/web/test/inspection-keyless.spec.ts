@@ -98,7 +98,7 @@ test.describe('Milestone G4 Web Flow (Handover Checklist & Virtual Keyless Opera
   }) => {
     // 1. Visit homepage & login as renter1
     await page.goto('/');
-    await expect(page.locator('text=CARSHARE')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CarShare — Trang chủ' })).toBeVisible();
 
     const loginBtn = page.locator('#nav-login-btn');
     await expect(loginBtn).toBeVisible();

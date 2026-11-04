@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../lib/auth-context';
 import { AuthModal } from './AuthModal';
@@ -50,6 +50,17 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
   const [quote, setQuote] = useState<Quote | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const quoteRequest = useRef(0);
+  const datesValid =
+    Number.isFinite(Date.parse(startDateStr)) &&
+    Number.isFinite(Date.parse(endDateStr)) &&
+    Date.parse(endDateStr) > Date.parse(startDateStr);
+  const dateError =
+    !startDateStr || !endDateStr
+      ? 'Chọn đầy đủ thời gian nhận và trả xe.'
+      : !datesValid
+        ? 'Thời gian trả xe phải sau thời gian nhận xe.'
+        : null;
 
   const formatVnd = (val?: number) => {
     if (val === undefined || val === null) return '0 ₫';
@@ -57,8 +68,14 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
   };
 
   const loadQuote = useCallback(async () => {
+    const current = ++quoteRequest.current;
     setIsLoading(true);
     setErrorMessage(null);
+    if (!datesValid) {
+      setQuote(null);
+      setIsLoading(false);
+      return;
+    }
     try {
       const startAtUtc = new Date(startDateStr).toISOString();
       const endAtUtc = new Date(endDateStr).toISOString();
@@ -71,18 +88,24 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
         voucherCode: appliedVoucher?.code || undefined,
       });
 
-      setQuote(quoteData);
+      if (quoteRequest.current === current) setQuote(quoteData);
     } catch (err: any) {
-      setErrorMessage(
-        err.message || 'Không thể tính toán báo giá. Vui lòng kiểm tra lại ngày thuê.',
-      );
+      if (quoteRequest.current === current) {
+        setQuote(null);
+        setErrorMessage(
+          err.message || 'Không thể tính toán báo giá. Vui lòng kiểm tra lại ngày thuê.',
+        );
+      }
     } finally {
-      setIsLoading(false);
+      if (quoteRequest.current === current) setIsLoading(false);
     }
-  }, [vehicleId, startDateStr, endDateStr, insurancePackage, appliedVoucher]);
+  }, [vehicleId, startDateStr, endDateStr, insurancePackage, appliedVoucher, datesValid]);
 
   useEffect(() => {
     loadQuote();
+    return () => {
+      quoteRequest.current++;
+    };
   }, [loadQuote]);
 
   const handleApplyVoucher = async () => {
@@ -146,32 +169,30 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
   return (
     <div
       id="pricing-calculator-widget"
-      className="sticky top-24 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-xl backdrop-blur-md"
+      className="sticky top-24 rounded-2xl border border-slate-200/90 bg-white p-6"
     >
       {/* Price Header */}
       <div className="flex items-baseline justify-between border-b border-slate-100 pb-4">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Đơn giá thuê
-          </span>
-          <div className="text-2xl font-black text-blue-600" id="calculator-daily-rate">
+          <span className="text-sm font-semibold text-slate-400">Đơn giá thuê</span>
+          <div className="text-2xl font-semibold text-brand-600" id="calculator-daily-rate">
             {formatVnd(quote?.pricePerDayVnd || defaultPricePerDayVnd)}{' '}
-            <span className="text-xs font-normal text-slate-500">/ngày</span>
+            <span className="text-sm font-normal text-slate-500">/ngày</span>
           </div>
         </div>
 
         {quote?.available ? (
           <span
             id="quote-available-badge"
-            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200"
+            className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-sm font-semibold text-emerald-700 border border-emerald-200"
           >
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
             Xe sẵn sàng
           </span>
         ) : quote?.available === false ? (
           <span
             id="quote-unavailable-badge"
-            className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 border border-amber-200"
+            className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-3 py-1 text-sm font-semibold text-amber-700 border border-amber-200"
           >
             <span className="h-2 w-2 rounded-full bg-amber-500" />
             Xe bận lịch
@@ -184,41 +205,56 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
         <div>
           <label
             htmlFor="start-date-input"
-            className="block text-xs font-semibold text-slate-700 mb-1"
+            className="block text-sm font-semibold text-slate-700 mb-1"
           >
             Nhận xe
           </label>
           <input
             id="start-date-input"
             type="datetime-local"
+            aria-invalid={!!dateError}
+            aria-describedby={dateError ? 'rental-date-error' : undefined}
             value={startDateStr}
             onChange={(e) => setStartDateStr(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm font-medium text-slate-800 transition-colors focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
           />
         </div>
         <div>
           <label
             htmlFor="end-date-input"
-            className="block text-xs font-semibold text-slate-700 mb-1"
+            className="block text-sm font-semibold text-slate-700 mb-1"
           >
             Trả xe
           </label>
           <input
             id="end-date-input"
             type="datetime-local"
+            min={startDateStr}
+            aria-invalid={!!dateError}
+            aria-describedby={dateError ? 'rental-date-error' : undefined}
             value={endDateStr}
             onChange={(e) => setEndDateStr(e.target.value)}
-            className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-medium text-slate-800 transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm font-medium text-slate-800 transition-colors focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20"
           />
         </div>
       </div>
 
+      {dateError && (
+        <p id="rental-date-error" role="alert" className="mt-2 text-sm text-red-700">
+          {dateError}
+        </p>
+      )}
+
       {/* Insurance Package Tier */}
       <div className="mt-5">
-        <label className="block text-xs font-semibold text-slate-700 mb-2">
+        <div id="insurance-group-label" className="block text-sm font-semibold text-slate-700 mb-2">
           Gói bảo hiểm chuyến đi
-        </label>
-        <div className="grid grid-cols-3 gap-2">
+        </div>
+        <div
+          role="group"
+          aria-labelledby="insurance-group-label"
+          className="grid grid-cols-3 gap-2"
+        >
           {[
             { id: 'BASIC', label: 'Cơ bản', sub: '0 ₫/ngày', desc: 'Trách nhiệm dân sự' },
             { id: 'STANDARD', label: 'Nâng cao', sub: '+100k/ngày', desc: 'Giảm 50% khấu trừ' },
@@ -228,19 +264,20 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
               key={pkg.id}
               type="button"
               id={`insurance-${pkg.id.toLowerCase()}-btn`}
+              aria-pressed={insurancePackage === pkg.id}
               onClick={() => setInsurancePackage(pkg.id as any)}
-              className={`flex flex-col items-center justify-center rounded-xl p-2.5 text-center transition-all cursor-pointer border ${
+              className={`flex flex-col items-center justify-center rounded-lg p-2.5 text-center transition-colors cursor-pointer border ${
                 insurancePackage === pkg.id
-                  ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-500/20'
+                  ? 'border-brand-600 bg-brand-50/60 ring-2 ring-brand-500/20'
                   : 'border-slate-200 bg-slate-50/40 hover:bg-slate-100/60'
               }`}
             >
               <span
-                className={`text-xs font-bold ${insurancePackage === pkg.id ? 'text-blue-700' : 'text-slate-700'}`}
+                className={`text-sm font-semibold ${insurancePackage === pkg.id ? 'text-brand-700' : 'text-slate-700'}`}
               >
                 {pkg.label}
               </span>
-              <span className="text-[10px] font-semibold text-blue-600 mt-0.5">{pkg.sub}</span>
+              <span className="text-sm font-semibold text-brand-600 mt-0.5">{pkg.sub}</span>
             </button>
           ))}
         </div>
@@ -250,26 +287,28 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
       <div className="mt-5">
         <label
           htmlFor="voucher-code-input"
-          className="block text-xs font-semibold text-slate-700 mb-1.5"
+          className="block text-sm font-semibold text-slate-700 mb-1.5"
         >
           Mã khuyến mãi (Voucher)
         </label>
         <div className="flex gap-2">
           <input
             id="voucher-code-input"
+            aria-invalid={!!voucherError}
+            aria-describedby={voucherError ? 'voucher-error-msg' : undefined}
             type="text"
             placeholder="Nhập mã e.g. WELCOME2026"
             value={voucherCodeInput}
             onChange={(e) => setVoucherCodeInput(e.target.value.toUpperCase())}
             disabled={!!appliedVoucher}
-            className="flex-1 rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-slate-800 transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 disabled:opacity-60"
+            className="flex-1 rounded-lg border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm font-semibold text-slate-800 transition-colors focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 disabled:opacity-60"
           />
           {appliedVoucher ? (
             <button
               id="remove-voucher-btn"
               type="button"
               onClick={handleRemoveVoucher}
-              className="rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-xs font-semibold text-red-600 transition-all hover:bg-red-100 cursor-pointer"
+              className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100 cursor-pointer"
             >
               Gỡ
             </button>
@@ -278,8 +317,10 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
               id="apply-voucher-btn"
               type="button"
               onClick={handleApplyVoucher}
-              disabled={isApplyingVoucher || !voucherCodeInput.trim()}
-              className="rounded-xl bg-slate-900 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-slate-800 disabled:opacity-50 cursor-pointer"
+              disabled={
+                isApplyingVoucher || isLoading || !quote || !!dateError || !voucherCodeInput.trim()
+              }
+              className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-50 cursor-pointer"
             >
               {isApplyingVoucher ? 'Đang kiểm tra...' : 'Áp dụng'}
             </button>
@@ -290,7 +331,7 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
         {appliedVoucher && (
           <div
             id="voucher-success-msg"
-            className="mt-2 flex items-center justify-between rounded-xl bg-emerald-50 border border-emerald-200/80 px-3 py-2 text-xs font-medium text-emerald-800"
+            className="mt-2 flex items-center justify-between rounded-lg bg-emerald-50 border border-emerald-200/80 px-3 py-2 text-sm font-medium text-emerald-800"
           >
             <span className="flex items-center gap-1.5">
               <svg
@@ -310,7 +351,7 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
                 Áp dụng mã <strong>{appliedVoucher.code}</strong>
               </span>
             </span>
-            <span className="font-bold text-emerald-700">
+            <span className="font-semibold text-emerald-700">
               -{formatVnd(appliedVoucher.discountVnd)}
             </span>
           </div>
@@ -318,7 +359,11 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
 
         {/* Voucher Error Message */}
         {voucherError && (
-          <p id="voucher-error-msg" className="mt-1.5 text-xs font-medium text-red-500">
+          <p
+            id="voucher-error-msg"
+            role="alert"
+            className="mt-1.5 text-sm font-medium text-red-500"
+          >
             {voucherError}
           </p>
         )}
@@ -328,9 +373,9 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
       {quote?.available === false && (
         <div
           id="quote-unavailable-alert"
-          className="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-3.5 text-xs text-amber-800"
+          className="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-3.5 text-sm text-amber-800"
         >
-          <div className="font-bold flex items-center gap-1.5 mb-1">
+          <div className="font-semibold flex items-center gap-1.5 mb-1">
             <svg
               className="h-4 w-4 text-amber-600"
               fill="none"
@@ -354,14 +399,20 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
 
       {/* Error Message */}
       {errorMessage && (
-        <div className="mt-4 rounded-2xl bg-red-50 border border-red-200 p-3.5 text-xs text-red-700 font-medium">
+        <div
+          role="alert"
+          className="mt-4 rounded-2xl bg-red-50 border border-red-200 p-3.5 text-sm text-red-700 font-medium"
+        >
           {errorMessage}
+          <button type="button" onClick={loadQuote} className="button button-secondary mt-3">
+            Thử tính giá lại
+          </button>
         </div>
       )}
 
       {/* Price Breakdown */}
       {quote && (
-        <div className="mt-6 space-y-2.5 border-t border-slate-100 pt-5 text-xs">
+        <div className="mt-6 space-y-2.5 border-t border-slate-100 pt-5 text-sm">
           <div className="flex justify-between text-slate-600">
             <span>
               Tiền thuê ({quote.breakdown.rentalDays} ngày × {formatVnd(quote.pricePerDayVnd)})
@@ -392,7 +443,7 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
           {quote.breakdown.discountVnd > 0 && (
             <div className="flex justify-between font-medium text-emerald-600">
               <span>Ưu đãi giảm giá voucher</span>
-              <span id="quote-discount" className="font-bold">
+              <span id="quote-discount" className="font-semibold">
                 -{formatVnd(quote.breakdown.discountVnd)}
               </span>
             </div>
@@ -421,10 +472,10 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
 
           <div className="border-t border-slate-200 pt-3 flex items-baseline justify-between">
             <div>
-              <div className="text-xs font-bold text-slate-900">Tổng thanh toán dự kiến</div>
-              <div className="text-[10px] text-slate-400">Đã bao gồm tiền cọc & thuế phí</div>
+              <div className="text-sm font-semibold text-slate-900">Tổng thanh toán dự kiến</div>
+              <div className="text-sm text-slate-400">Đã bao gồm tiền cọc & thuế phí</div>
             </div>
-            <div id="quote-total-price" className="text-xl font-black text-blue-600">
+            <div id="quote-total-price" className="text-xl font-semibold text-brand-600">
               {formatVnd(quote.totalVnd)}
             </div>
           </div>
@@ -433,14 +484,14 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
 
       {/* KYC Warning if user logged in but not verified */}
       {user && user.kycStatus !== 'VERIFIED' && (
-        <div className="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-3 text-xs text-amber-800">
+        <div className="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800">
           <p className="font-semibold mb-1">Chưa hoàn tất xác thực GPLX</p>
-          <p className="text-[11px] mb-2">
+          <p className="text-sm mb-2">
             Bạn cần xác minh bằng lái xe trước khi được nhận chìa khóa.
           </p>
           <Link
             href="/profile/kyc"
-            className="inline-block rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-amber-700"
+            className="inline-block rounded-lg bg-amber-600 px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-amber-700"
           >
             Xác thực ngay
           </Link>
@@ -451,18 +502,24 @@ export function PricingCalculator({ vehicleId, defaultPricePerDayVnd }: PricingC
       <button
         id="proceed-to-book-btn"
         type="button"
-        disabled={isLoading || quote?.available === false}
+        disabled={!datesValid || isLoading || !!errorMessage || !quote || quote.available === false}
         onClick={handleProceedBooking}
-        className="mt-6 w-full rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-3.5 text-sm font-extrabold text-white shadow-lg shadow-blue-500/25 transition-all hover:from-blue-700 hover:to-indigo-700 active:scale-98 disabled:opacity-50 cursor-pointer"
+        className="mt-6 w-full rounded-2xl bg-brand-600 py-3.5 text-sm font-semibold text-white transition-colors active:scale-98 disabled:opacity-50 cursor-pointer"
       >
         {isLoading
           ? 'Đang tính biểu phí...'
           : quote?.available === false
             ? 'Xe tạm thời không khả dụng'
-            : 'Tiến hành đặt xe ngay'}
+            : dateError
+              ? 'Kiểm tra lại thời gian thuê'
+              : errorMessage
+                ? 'Chưa thể tính giá'
+                : user && user.kycStatus !== 'VERIFIED'
+                  ? 'Xác thực bằng lái để tiếp tục'
+                  : 'Tiến hành đặt xe ngay'}
       </button>
 
-      <p className="mt-3 text-center text-[11px] text-slate-400">
+      <p className="mt-3 text-center text-sm text-slate-400">
         Bạn chưa bị trừ tiền cho đến khi chủ xe xác nhận chuyến đi.
       </p>
 

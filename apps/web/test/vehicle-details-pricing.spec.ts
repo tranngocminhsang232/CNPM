@@ -6,7 +6,7 @@ test.describe('Milestone G2 Web Flow (Vehicle Details & Pricing Calculator)', ()
   }) => {
     // 1. Visit homepage
     await page.goto('/');
-    await expect(page.locator('text=CARSHARE')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CarShare — Trang chủ' })).toBeVisible();
 
     // 2. Click "Xem chi tiết" on the first visible vehicle card
     const firstDetailBtn = page.locator('a:has-text("Xem chi tiết")').first();

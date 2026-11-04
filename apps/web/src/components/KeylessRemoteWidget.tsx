@@ -1,5 +1,6 @@
 'use client';
 
+import { Icon } from './Icon';
 import React, { useState } from 'react';
 import { useAuth } from '../lib/auth-context';
 import { triggerKeylessOperationApi, type Booking, type KeylessOperation } from '../lib/api';
@@ -66,10 +67,10 @@ export function KeylessRemoteWidget({
       if (res.status === 'SUCCESS') {
         if (action === 'UNLOCK') {
           setDoorLocked(false);
-          setStatusMessage('✓ Chốt cửa đã mở! Vui lòng vào xe và bắt đầu hành trình.');
+          setStatusMessage('Chốt cửa đã mở! Vui lòng vào xe và bắt đầu hành trình.');
         } else {
           setDoorLocked(true);
-          setStatusMessage('✓ Chốt cửa xe đã khóa an toàn!');
+          setStatusMessage('Chốt cửa xe đã khóa an toàn!');
         }
 
         // Notify parent if booking state transitioned to IN_PROGRESS
@@ -92,206 +93,125 @@ export function KeylessRemoteWidget({
   };
 
   return (
-    <div
+    <section
       id="keyless-remote-widget"
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950 p-6 text-white shadow-2xl border border-slate-700/60"
+      className="rounded-2xl border border-slate-200 bg-white p-6"
     >
-      {/* Decorative ambient glow */}
-      <div className="absolute -top-12 -right-12 h-44 w-44 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
-
-      {/* Widget Header */}
-      <div className="relative flex items-center justify-between border-b border-slate-800 pb-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 shadow-md shadow-blue-500/20">
-            <span className="text-xl">🔑</span>
-          </div>
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
+        <div className="flex items-start gap-3">
+          <span className="rounded-lg bg-brand-50 p-2 text-brand-600">
+            <Icon name="key" />
+          </span>
           <div>
-            <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white text-base tracking-wide">
-                Chìa Khóa Ảo (Digital Keyless)
-              </h3>
-              <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400 border border-emerald-500/30">
-                IoT Online
-              </span>
-            </div>
-            <p className="text-xs text-slate-400">
-              {vehicleName} • Biển số: <span className="font-semibold text-slate-200">{plate}</span>
+            <h3 className="text-lg font-semibold text-slate-900">Chìa khóa Keyless</h3>
+            <p className="mt-1 text-sm text-slate-500">
+              {vehicleName} · {plate}
             </p>
           </div>
         </div>
-
-        {/* Telemetry Indicator */}
-        <div className="flex items-center gap-2 rounded-full bg-slate-800/80 px-3 py-1 border border-slate-700">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="text-[11px] font-medium text-slate-300">GSM: Ổn định</span>
-        </div>
+        <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
+          Mô phỏng
+        </span>
       </div>
-
-      {/* Door Status Banner */}
-      <div className="relative my-5 rounded-xl bg-slate-800/50 p-4 border border-slate-700/50 flex items-center justify-between">
+      <div className="my-5 flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-50 p-4">
         <div className="flex items-center gap-3">
-          <div
-            className={`flex h-11 w-11 items-center justify-center rounded-full text-xl ${
-              doorLocked
-                ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-            }`}
-          >
-            {doorLocked ? '🔒' : '🔓'}
-          </div>
+          <Icon name={doorLocked ? 'lock' : 'unlock'} />
           <div>
-            <div className="text-xs text-slate-400 font-medium">Trạng thái chốt cửa</div>
-            <div id="keyless-door-status" className="text-sm font-bold tracking-wide">
-              {doorLocked ? (
-                <span className="text-amber-400">ĐÃ KHÓA CỬA</span>
-              ) : (
-                <span className="text-emerald-400">ĐÃ MỞ KHÓA</span>
-              )}
-            </div>
+            <p className="text-xs text-slate-500">Trạng thái chốt cửa</p>
+            <p id="keyless-door-status" className="text-sm font-semibold text-slate-900">
+              {doorLocked ? 'ĐÃ KHÓA CỬA' : 'ĐÃ MỞ KHÓA'}
+            </p>
           </div>
         </div>
-
-        {isApproved && (
-          <div className="text-right">
-            <span className="rounded-md bg-blue-500/20 px-2.5 py-1 text-xs font-bold text-blue-400 border border-blue-500/30">
-              Sẵn sàng nhận xe
-            </span>
-          </div>
-        )}
-
-        {isInProgress && (
-          <div className="text-right">
-            <span className="rounded-md bg-emerald-500/20 px-2.5 py-1 text-xs font-bold text-emerald-400 border border-emerald-500/30">
-              Chuyến đi đang diễn ra
-            </span>
-          </div>
-        )}
+        <span className="text-sm text-slate-600">
+          {isApproved
+            ? 'Sẵn sàng nhận xe'
+            : isInProgress
+              ? 'Chuyến đi đang diễn ra'
+              : 'Chưa thể điều khiển'}
+        </span>
       </div>
-
-      {/* Checklist Gatekeeper Warning if approved & not finalized */}
       {isApproved && !inspectionFinalized && (
         <div
           id="keyless-inspection-warning"
-          className="relative mb-5 rounded-xl border border-amber-500/40 bg-amber-950/30 p-4"
+          className="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900"
         >
-          <div className="flex items-start gap-3">
-            <span className="text-amber-400 text-xl font-bold">⚠</span>
-            <div className="flex-1">
-              <h4 className="text-xs font-bold text-amber-300 uppercase tracking-wider">
-                Yêu cầu bắt buộc trước khi mở khóa
-              </h4>
-              <p className="mt-1 text-xs text-amber-200/80 leading-relaxed">
-                Vui lòng chụp ảnh 4 góc xe và ký chốt biên bản bàn giao xe (CHECK_IN) tại bãi trước
-                khi điều khiển khóa ảo Keyless.
-              </p>
-              <button
-                id="btn-open-inspection"
-                type="button"
-                onClick={onOpenInspection}
-                className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 shadow-md hover:bg-amber-400 active:scale-95 transition"
-              >
-                <span>📷</span> Bắt đầu kiểm tra xe & chụp ảnh
-              </button>
-            </div>
-          </div>
+          <h4 className="text-sm font-semibold">Kiểm tra xe trước khi mở khóa</h4>
+          <p className="mt-2 text-sm">
+            Chụp đủ 4 góc xe và ký biên bản nhận xe để bảo đảm quyền lợi của bạn.
+          </p>
+          <button
+            id="btn-open-inspection"
+            type="button"
+            onClick={onOpenInspection}
+            className="button button-secondary mt-4"
+          >
+            <Icon name="camera" /> Bắt đầu kiểm tra xe
+          </button>
         </div>
       )}
-
-      {/* Checklist Complete Confirmation if approved & finalized */}
       {isApproved && inspectionFinalized && (
         <div
           id="keyless-inspection-passed"
-          className="relative mb-5 rounded-xl border border-emerald-500/40 bg-emerald-950/30 p-3.5 flex items-center justify-between"
+          className="mb-5 rounded-lg bg-brand-50 p-4 text-brand-800"
         >
-          <div className="flex items-center gap-2">
-            <span className="text-emerald-400 font-bold">✓</span>
-            <span className="text-xs font-semibold text-emerald-300">
-              Biên bản kiểm tra xe đã chốt. Bạn có thể mở khóa nhận xe!
-            </span>
-          </div>
+          <p className="text-sm">Biên bản đã chốt. Bạn có thể mở khóa nhận xe.</p>
           <button
             type="button"
             onClick={onOpenInspection}
-            className="text-xs text-slate-400 underline hover:text-white"
+            className="mt-2 min-h-11 text-sm underline underline-offset-4"
           >
             Xem lại biên bản
           </button>
         </div>
       )}
-
-      {/* Feedback Messages */}
       {statusMessage && (
         <div
           id="keyless-success-banner"
-          className="relative mb-4 rounded-xl border border-emerald-500/40 bg-emerald-950/40 p-3 text-xs text-emerald-300 flex items-center gap-2"
+          role="status"
+          className="mb-4 rounded-lg bg-brand-50 p-4 text-sm text-brand-800"
         >
-          <span>✓</span>
-          <span>{statusMessage}</span>
+          {statusMessage}
         </div>
       )}
-
       {errorMessage && (
         <div
           id="keyless-error-banner"
-          className="relative mb-4 rounded-xl border border-red-500/40 bg-red-950/40 p-3 text-xs text-red-300 flex items-start gap-2"
+          role="alert"
+          className="mb-4 rounded-lg bg-red-50 p-4 text-sm text-red-700"
         >
-          <span className="font-bold">✕</span>
-          <span>{errorMessage}</span>
+          {errorMessage}
         </div>
       )}
-
-      {/* Remote Buttons */}
-      <div className="relative grid grid-cols-2 gap-4">
-        {/* Unlock Button */}
+      <div className="grid grid-cols-2 gap-3">
         <button
           id="btn-keyless-unlock"
           type="button"
           disabled={!canOperate || isTransmitting}
           onClick={() => handleCommand('UNLOCK')}
-          className={`relative group flex flex-col items-center justify-center rounded-xl p-4 transition-all duration-200 border ${
-            isApproved && !inspectionFinalized
-              ? 'border-slate-800 bg-slate-900/60 text-slate-500 opacity-60 hover:opacity-100'
-              : 'border-blue-500/40 bg-gradient-to-b from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-600/30 hover:from-blue-500 hover:to-blue-600 active:scale-98'
-          }`}
+          className={`flex min-h-28 flex-col items-center justify-center gap-2 rounded-lg border p-4 text-sm font-semibold ${isApproved && !inspectionFinalized ? 'border-slate-200 bg-slate-50 text-slate-600' : 'border-brand-600 bg-brand-600 text-white hover:bg-brand-700'}`}
         >
-          <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">
-            {isTransmitting && activeAction === 'UNLOCK' ? '⏳' : '🔓'}
-          </span>
-          <span className="text-sm font-bold tracking-wide">
-            {isTransmitting && activeAction === 'UNLOCK' ? 'Đang gửi lệnh...' : 'MỞ KHÓA XE'}
-          </span>
-          <span className="mt-0.5 text-[10px] text-blue-200/80">
-            {isApproved ? 'Nhận xe & Bắt đầu' : 'Mở chốt toàn bộ cửa'}
+          <Icon name={isTransmitting && activeAction === 'UNLOCK' ? 'clock' : 'unlock'} />
+          <span>
+            {isTransmitting && activeAction === 'UNLOCK' ? 'Đang gửi lệnh…' : 'Mở khóa xe'}
           </span>
         </button>
-
-        {/* Lock Button */}
         <button
           id="btn-keyless-lock"
           type="button"
           disabled={!canOperate || isTransmitting}
           onClick={() => handleCommand('LOCK')}
-          className="relative group flex flex-col items-center justify-center rounded-xl border border-slate-700 bg-gradient-to-b from-slate-800 to-slate-900 p-4 text-white shadow-lg shadow-slate-900/40 hover:from-slate-750 hover:to-slate-850 active:scale-98 transition-all duration-200"
+          className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white p-4 text-sm font-semibold text-slate-800 hover:bg-slate-50"
         >
-          <span className="text-2xl mb-1 group-hover:scale-110 transition-transform">
-            {isTransmitting && activeAction === 'LOCK' ? '⏳' : '🔒'}
+          <Icon name={isTransmitting && activeAction === 'LOCK' ? 'clock' : 'lock'} />
+          <span>
+            {isTransmitting && activeAction === 'LOCK' ? 'Đang gửi lệnh…' : 'Khóa cửa xe'}
           </span>
-          <span className="text-sm font-bold tracking-wide">
-            {isTransmitting && activeAction === 'LOCK' ? 'Đang gửi lệnh...' : 'KHÓA CỬA XE'}
-          </span>
-          <span className="mt-0.5 text-[10px] text-slate-400">Chốt an toàn toàn bộ cửa</span>
         </button>
       </div>
-
-      {/* Footer Info */}
-      <div className="relative mt-4 flex items-center justify-between text-[11px] text-slate-500 border-t border-slate-800/80 pt-3">
-        <span>Giao thức: Keyless Telematics IoT v1.1</span>
-        <span>Mã hóa: SHA-256 + Idempotent</span>
-      </div>
-    </div>
+      <p className="mt-4 text-xs text-slate-500">
+        Lệnh điều khiển được xử lý trong môi trường mô phỏng.
+      </p>
+    </section>
   );
 }

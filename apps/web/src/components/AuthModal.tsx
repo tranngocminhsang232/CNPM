@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../lib/auth-context';
+import { useDialog } from '../lib/use-dialog';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -42,6 +43,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     setMounted(true);
   }, []);
 
+  useDialog(isOpen && mounted, onClose, 'auth-modal-content');
+
   if (!isOpen || !mounted) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,7 +81,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         position: 'fixed',
         inset: 0,
         backgroundColor: 'rgba(15, 23, 42, 0.75)',
-        backdropFilter: 'blur(8px)',
+
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -92,13 +95,18 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     >
       <div
         id="auth-modal-content"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="auth-modal-title"
+        tabIndex={-1}
+        className="dialog-surface"
         style={{
           background: '#ffffff',
           borderRadius: '16px',
           width: '100%',
           maxWidth: '460px',
           boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-          overflow: 'hidden',
+          overflowY: 'auto',
           animation: 'fadeIn 0.2s ease-out',
         }}
       >
@@ -106,29 +114,39 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
         <div
           style={{
             padding: '20px 24px',
-            borderBottom: '1px solid #f1f5f9',
+            borderBottom: '1px solid var(--color-slate-100)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+            background: 'var(--color-brand-50)',
           }}
         >
           <div>
-            <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0f172a', margin: 0 }}>
+            <h2
+              id="auth-modal-title"
+              style={{
+                fontSize: '1.25rem',
+                fontWeight: 600,
+                color: 'var(--foreground)',
+                margin: 0,
+              }}
+            >
               Đăng nhập tài khoản
             </h2>
-            <p style={{ fontSize: '0.85rem', color: '#64748b', margin: '4px 0 0 0' }}>
+            <p style={{ fontSize: '0.85rem', color: 'var(--muted)', margin: '4px 0 0 0' }}>
               Trải nghiệm nền tảng thuê & chia sẻ xe tự lái
             </p>
           </div>
           <button
             id="auth-modal-close-btn"
+            type="button"
+            aria-label="Đóng đăng nhập"
             onClick={onClose}
             style={{
               background: 'transparent',
               border: 'none',
               fontSize: '1.5rem',
-              color: '#94a3b8',
+              color: 'var(--color-slate-400)',
               cursor: 'pointer',
               padding: '4px 8px',
               borderRadius: '8px',
@@ -163,9 +181,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 display: 'block',
                 fontSize: '0.75rem',
                 fontWeight: 700,
-                textTransform: 'uppercase',
-                letterSpacing: '0.05em',
-                color: '#64748b',
+
+                color: 'var(--muted)',
                 marginBottom: '8px',
               }}
             >
@@ -185,35 +202,37 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                     justifyContent: 'space-between',
                     padding: '10px 14px',
                     borderRadius: '10px',
-                    border: '1px solid #e2e8f0',
-                    background: '#f8fafc',
+                    border: '1px solid var(--border)',
+                    background: 'var(--background)',
                     cursor: loading ? 'not-allowed' : 'pointer',
                     textAlign: 'left',
                     transition: 'all 0.15s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#0284c7';
-                    e.currentTarget.style.background = '#f0f9ff';
+                    e.currentTarget.style.borderColor = 'var(--primary)';
+                    e.currentTarget.style.background = 'var(--color-brand-50)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#e2e8f0';
-                    e.currentTarget.style.background = '#f8fafc';
+                    e.currentTarget.style.borderColor = 'var(--border)';
+                    e.currentTarget.style.background = 'var(--background)';
                   }}
                 >
                   <div>
-                    <div style={{ fontSize: '0.875rem', fontWeight: 600, color: '#0f172a' }}>
+                    <div
+                      style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--foreground)' }}
+                    >
                       {acc.name}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{acc.email}</div>
+                    <div style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{acc.email}</div>
                   </div>
                   <span
                     style={{
-                      fontSize: '0.7rem',
+                      fontSize: '0.75rem',
                       fontWeight: 600,
                       padding: '4px 8px',
                       borderRadius: '6px',
-                      background: acc.badge === 'Chủ xe' ? '#e0f2fe' : '#f0fdf4',
-                      color: acc.badge === 'Chủ xe' ? '#0369a1' : '#15803d',
+                      background: acc.badge === 'Chủ xe' ? 'var(--color-brand-100)' : '#f0fdf4',
+                      color: acc.badge === 'Chủ xe' ? 'var(--primary-hover)' : '#15803d',
                     }}
                   >
                     {acc.badge}
@@ -228,13 +247,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               display: 'flex',
               alignItems: 'center',
               margin: '20px 0',
-              color: '#94a3b8',
+              color: 'var(--color-slate-400)',
               fontSize: '0.75rem',
             }}
           >
-            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
-            <span style={{ padding: '0 10px' }}>HOẶC ĐĂNG NHẬP THỦ CÔNG</span>
-            <div style={{ flex: 1, height: '1px', background: '#e2e8f0' }} />
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
+            <span style={{ padding: '0 10px' }}>Hoặc đăng nhập bằng email</span>
+            <div style={{ flex: 1, height: '1px', background: 'var(--border)' }} />
           </div>
 
           {/* Form */}
@@ -246,7 +265,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   display: 'block',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  color: '#334155',
+                  color: 'var(--color-slate-700)',
                   marginBottom: '6px',
                 }}
               >
@@ -255,17 +274,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <input
                 id="auth-email-input"
                 type="email"
+                autoComplete="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@example.com"
+                placeholder="ban@tenmien.vn"
                 style={{
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid var(--color-slate-300)',
                   fontSize: '0.875rem',
-                  outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
@@ -278,7 +297,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   display: 'block',
                   fontSize: '0.85rem',
                   fontWeight: 600,
-                  color: '#334155',
+                  color: 'var(--color-slate-700)',
                   marginBottom: '6px',
                 }}
               >
@@ -287,6 +306,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <input
                 id="auth-password-input"
                 type="password"
+                autoComplete="current-password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -294,9 +314,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   width: '100%',
                   padding: '10px 14px',
                   borderRadius: '8px',
-                  border: '1px solid #cbd5e1',
+                  border: '1px solid var(--color-slate-300)',
                   fontSize: '0.875rem',
-                  outline: 'none',
                   boxSizing: 'border-box',
                 }}
               />
@@ -310,7 +329,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                 width: '100%',
                 padding: '12px',
                 borderRadius: '8px',
-                background: '#0284c7',
+                background: 'var(--primary)',
                 color: '#ffffff',
                 border: 'none',
                 fontSize: '0.95rem',

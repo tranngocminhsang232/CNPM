@@ -35,7 +35,7 @@ test.describe('Milestone G3 Web Flow (Checkout, Escrow Payment & Trip Management
   }) => {
     // 1. Visit homepage & login as renter1
     await page.goto('/');
-    await expect(page.locator('text=CARSHARE')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'CarShare — Trang chủ' })).toBeVisible();
 
     const loginBtn = page.locator('#nav-login-btn');
     await expect(loginBtn).toBeVisible();

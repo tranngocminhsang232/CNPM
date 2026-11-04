@@ -1,5 +1,7 @@
 'use client';
 
+import { Icon } from './Icon';
+import { useDialog } from '../lib/use-dialog';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../lib/auth-context';
 import {
@@ -39,25 +41,25 @@ const ANGLES: AngleConfig[] = [
     angle: 'FRONT',
     label: '1. Đầu xe trả',
     sub: 'Chụp chính diện góc trước khi hoàn trả',
-    icon: '🚗',
+    icon: 'car',
   },
   {
     angle: 'REAR',
     label: '2. Đuôi xe trả',
     sub: 'Chụp chính diện đuôi & cản sau xe',
-    icon: '🚙',
+    icon: 'car',
   },
   {
     angle: 'LEFT',
     label: '3. Sườn trái trả',
     sub: 'Chụp toàn bộ hông và bánh xe bên lái',
-    icon: '🚘',
+    icon: 'car',
   },
   {
     angle: 'RIGHT',
     label: '4. Sườn phải trả',
     sub: 'Chụp toàn bộ hông và bánh xe bên phụ',
-    icon: '🚖',
+    icon: 'car',
   },
 ];
 
@@ -126,6 +128,8 @@ export function ReturnChecklistModal({
     }
   }, [initialInspection, initialOdo]);
 
+  useDialog(isOpen, onClose, 'return-dialog-content');
+
   if (!isOpen) return null;
 
   const isFinalized = currentInspection?.acknowledged || false;
@@ -170,7 +174,7 @@ export function ReturnChecklistModal({
   const validateOdometer = () => {
     if (minOdometer > 0 && odometerKm < minOdometer) {
       setError(
-        `Số km trả xe (${odometerKm} km) không được nhỏ hơn số km nhận xe (${minOdometer} km). (Quy tắc BR-10)`,
+        `Số km trả xe (${odometerKm} km) không được nhỏ hơn số km nhận xe (${minOdometer} km).`,
       );
       return false;
     }
@@ -277,31 +281,39 @@ export function ReturnChecklistModal({
   return (
     <div
       id="modal-return-checklist"
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm animate-fade-in overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 animate-fade-in overflow-y-auto"
     >
-      <div className="relative w-full max-w-2xl rounded-3xl border border-slate-200 bg-white shadow-2xl overflow-hidden my-8">
+      <div
+        id="return-dialog-content"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Kiểm tra và trả xe"
+        tabIndex={-1}
+        className="dialog-surface relative w-full max-w-2xl rounded-2xl border border-slate-200 bg-white overflow-hidden my-8"
+      >
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-700 p-6 text-white">
+        <div className="bg-brand-600 p-6 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">🏁</span>
+              <span className="text-2xl">
+                <Icon name="check" />
+              </span>
               <div>
-                <h2 className="text-lg font-black tracking-tight">
-                  Biên bản trả xe (Check-out Checklist)
-                </h2>
-                <p className="text-xs text-emerald-100">
+                <h2 className="text-lg font-semibold tracking-tight">Kiểm tra và trả xe</h2>
+                <p className="text-sm text-emerald-100">
                   {isFinalized
                     ? 'Biên bản đã được ký chốt an toàn và lưu trữ bất biến.'
-                    : 'Ghi nhận hiện trạng xe sau khi sử dụng để phục vụ quyết toán hoàn cọc (BR-10).'}
+                    : 'Ghi nhận hiện trạng xe sau khi sử dụng để phục vụ quyết toán hoàn cọc.'}
                 </p>
               </div>
             </div>
             <button
+              aria-label="Đóng hộp thoại"
               type="button"
               onClick={onClose}
               className="rounded-full bg-white/20 p-2 text-white hover:bg-white/30 transition-colors"
             >
-              ✕
+              ×
             </button>
           </div>
         </div>
@@ -311,9 +323,11 @@ export function ReturnChecklistModal({
           {error && (
             <div
               id="return-inspection-error"
-              className="rounded-2xl bg-rose-50 border border-rose-200 p-4 text-xs text-rose-700 flex items-center gap-3"
+              className="rounded-2xl bg-rose-50 border border-rose-200 p-4 text-sm text-rose-700 flex items-center gap-3"
             >
-              <span className="text-lg">⚠️</span>
+              <span className="text-lg">
+                <Icon name="alert" />
+              </span>
               <p className="font-medium">{error}</p>
             </div>
           )}
@@ -321,9 +335,9 @@ export function ReturnChecklistModal({
           {successMessage && (
             <div
               id="return-inspection-success"
-              className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-700 flex items-center gap-3"
+              className="rounded-2xl bg-emerald-50 border border-emerald-200 p-4 text-sm text-emerald-700 flex items-center gap-3"
             >
-              <span className="text-lg">✓</span>
+              <span className="text-lg">OK</span>
               <p className="font-semibold">{successMessage}</p>
             </div>
           )}
@@ -331,18 +345,18 @@ export function ReturnChecklistModal({
           {/* Checklist 4 Góc Xe */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+              <h3 className="text-sm font-semibold text-slate-700">
                 1. Ảnh hiện trạng 4 góc sau chuyến (Bắt buộc đủ 4 góc)
               </h3>
               <span
                 id="return-photo-completion-badge"
-                className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
                   isComplete4Angles
                     ? 'bg-emerald-100 text-emerald-700 border border-emerald-300'
                     : 'bg-amber-100 text-amber-700 border border-amber-300'
                 }`}
               >
-                {isComplete4Angles ? '✓ Đã chụp đủ 4 góc' : '• Thiếu ảnh'}
+                {isComplete4Angles ? 'Đã chụp đủ 4 góc' : '• Thiếu ảnh'}
               </span>
             </div>
 
@@ -358,13 +372,15 @@ export function ReturnChecklistModal({
                   >
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span>{cfg.icon}</span>
-                        <h4 className="text-xs font-black text-slate-800">{cfg.label}</h4>
+                        <span>
+                          <Icon name={cfg.icon} />
+                        </span>
+                        <h4 className="text-sm font-semibold text-slate-800">{cfg.label}</h4>
                       </div>
-                      <p className="text-[10px] text-slate-500 mb-2.5">{cfg.sub}</p>
+                      <p className="text-sm text-slate-500 mb-2.5">{cfg.sub}</p>
                     </div>
 
-                    <div className="relative aspect-video rounded-xl bg-slate-200/80 border border-slate-300 overflow-hidden flex items-center justify-center group">
+                    <div className="relative aspect-video rounded-lg bg-slate-200/80 border border-slate-300 overflow-hidden flex items-center justify-center group">
                       {photo.previewUrl ? (
                         <img
                           src={photo.previewUrl}
@@ -373,10 +389,10 @@ export function ReturnChecklistModal({
                         />
                       ) : (
                         <div className="text-center p-2">
-                          <span className="text-2xl text-slate-400 block mb-1">📷</span>
-                          <span className="text-[10px] text-slate-500 font-medium">
-                            Chưa có ảnh
+                          <span className="text-2xl text-slate-400 block mb-1">
+                            <Icon name="camera" />
                           </span>
+                          <span className="text-sm text-slate-500 font-medium">Chưa có ảnh</span>
                         </div>
                       )}
 
@@ -384,16 +400,14 @@ export function ReturnChecklistModal({
                       {!isFinalized && !readOnly && (
                         <label
                           htmlFor={`return-photo-upload-${cfg.angle}`}
-                          className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer text-white text-xs font-semibold"
+                          className="absolute inset-0 bg-slate-900/60 flex flex-col items-center justify-center cursor-pointer text-white text-sm font-semibold focus-within:outline-2 focus-within:outline-white"
                         >
                           {isUploading ? (
                             <span>Đang upload...</span>
                           ) : (
                             <>
                               <span>{photo.previewUrl ? 'Thay đổi ảnh' : 'Tải ảnh lên'}</span>
-                              <span className="text-[10px] text-slate-300 mt-1">
-                                JPEG/PNG ≤ 5MB
-                              </span>
+                              <span className="text-sm text-slate-300 mt-1">JPEG/PNG ≤ 5MB</span>
                             </>
                           )}
                           <input
@@ -401,7 +415,7 @@ export function ReturnChecklistModal({
                             type="file"
                             accept="image/jpeg,image/png"
                             disabled={isUploading}
-                            className="hidden"
+                            className="sr-only"
                             onChange={(e) => {
                               const f = e.target.files?.[0];
                               if (f) handleFileUpload(cfg.angle, f);
@@ -418,13 +432,13 @@ export function ReturnChecklistModal({
 
           {/* Odometer & Fuel Reading */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">
+            <h3 className="text-sm font-semibold text-slate-700 mb-3">
               2. Chỉ số đồng hồ ODO & Mức pin/xăng khi trả xe
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50/50">
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Số km hiển thị trên ODO (km) *
                 </label>
                 <div className="relative">
@@ -435,14 +449,14 @@ export function ReturnChecklistModal({
                     disabled={isFinalized || readOnly}
                     value={odometerKm}
                     onChange={(e) => setOdometerKm(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
+                    className="w-full rounded-lg border border-slate-300 p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
                   />
-                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-semibold">
+                  <span className="absolute right-3 top-2.5 text-sm text-slate-400 font-semibold">
                     km
                   </span>
                 </div>
                 {minOdometer > 0 && (
-                  <p className="text-[10px] text-slate-500 mt-1.5">
+                  <p className="text-sm text-slate-500 mt-1.5">
                     Số km lúc nhận xe:{' '}
                     <strong className="text-slate-700">{minOdometer.toLocaleString()} km</strong>.
                     Chỉ số trả phải ≥ {minOdometer.toLocaleString()} km.
@@ -451,7 +465,7 @@ export function ReturnChecklistModal({
               </div>
 
               <div className="rounded-2xl border border-slate-200 p-4 bg-slate-50/50">
-                <label className="block text-xs font-bold text-slate-700 mb-1">
+                <label className="block text-sm font-semibold text-slate-700 mb-1">
                   Mức nhiên liệu / Pin (%) *
                 </label>
                 <div className="relative">
@@ -463,13 +477,13 @@ export function ReturnChecklistModal({
                     disabled={isFinalized || readOnly}
                     value={fuelPercent}
                     onChange={(e) => setFuelPercent(Number(e.target.value))}
-                    className="w-full rounded-xl border border-slate-300 p-2.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
+                    className="w-full rounded-lg border border-slate-300 p-2.5 text-sm font-semibold text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
                   />
-                  <span className="absolute right-3 top-2.5 text-xs text-slate-400 font-semibold">
+                  <span className="absolute right-3 top-2.5 text-sm text-slate-400 font-semibold">
                     %
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-500 mt-1.5">
+                <p className="text-sm text-slate-500 mt-1.5">
                   Mức lúc nhận:{' '}
                   <strong className="text-slate-700">
                     {checkInInspection?.fuelPercent ?? 100}%
@@ -482,10 +496,10 @@ export function ReturnChecklistModal({
 
           {/* Damage & Condition Notes */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
+            <h3 className="text-sm font-semibold text-slate-700 mb-1">
               3. Ghi chú hiện trạng trả xe
             </h3>
-            <p className="text-[11px] text-slate-500 mb-2">
+            <p className="text-sm text-slate-500 mb-2">
               Ghi chú lại tình trạng xe khi hoàn trả (sạch sẽ, xước dăm nếu có, tài sản để quên...).
             </p>
             <textarea
@@ -495,17 +509,17 @@ export function ReturnChecklistModal({
               value={damageNotes}
               onChange={(e) => setDamageNotes(e.target.value)}
               placeholder="Nhập ghi chú hiện trạng khi hoàn trả (không bắt buộc)..."
-              className="w-full rounded-xl border border-slate-300 p-3 text-xs text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
+              className="w-full rounded-lg border border-slate-300 p-3 text-sm text-slate-800 focus:outline-none focus:border-emerald-500 disabled:bg-slate-100"
             />
           </div>
         </div>
 
         {/* Footer Actions */}
         <div className="bg-slate-50 border-t border-slate-200 p-4 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-slate-500">
+          <div className="text-sm text-slate-500">
             {isFinalized ? (
-              <span className="text-emerald-700 font-bold flex items-center gap-1.5">
-                <span>✓</span> Biên bản trả xe đã ký chốt.
+              <span className="text-emerald-700 font-semibold flex items-center gap-1.5">
+                <span>OK</span> Biên bản trả xe đã ký chốt.
               </span>
             ) : (
               <span>* Hãy kiểm tra kỹ 4 góc trước khi ký chốt biên bản.</span>
@@ -514,9 +528,10 @@ export function ReturnChecklistModal({
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <button
+              aria-label="Đóng hộp thoại"
               type="button"
               onClick={onClose}
-              className="rounded-xl bg-slate-200 px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-300 transition-colors"
+              className="rounded-lg bg-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-300 transition-colors"
             >
               Đóng
             </button>
@@ -528,7 +543,7 @@ export function ReturnChecklistModal({
                   type="button"
                   disabled={isSaving || isFinalizing}
                   onClick={handleSaveDraft}
-                  className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
+                  className="rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50"
                 >
                   {isSaving ? 'Đang lưu...' : 'Lưu bản nháp'}
                 </button>
@@ -538,7 +553,7 @@ export function ReturnChecklistModal({
                   type="button"
                   disabled={!isComplete4Angles || isSaving || isFinalizing}
                   onClick={handleFinalize}
-                  className="rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-md shadow-emerald-500/20 hover:from-emerald-700 hover:to-teal-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isFinalizing ? 'Đang chốt...' : 'Ký chốt biên bản trả'}
                 </button>
@@ -551,9 +566,9 @@ export function ReturnChecklistModal({
                 type="button"
                 disabled={isCompleting}
                 onClick={handleCompleteTrip}
-                className="rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-5 py-2.5 text-xs font-extrabold text-white shadow-md shadow-blue-500/20 hover:from-blue-700 hover:to-indigo-700 transition-all disabled:opacity-50"
+                className="rounded-lg bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-50"
               >
-                {isCompleting ? 'Đang xử lý...' : '🏁 Hoàn tất chuyến đi'}
+                {isCompleting ? 'Đang xử lý...' : 'Hoàn tất chuyến đi'}
               </button>
             )}
           </div>

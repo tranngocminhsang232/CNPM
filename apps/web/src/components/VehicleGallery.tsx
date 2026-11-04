@@ -36,12 +36,12 @@ export function VehicleGallery({
   return (
     <div className="flex flex-col gap-3">
       {/* Main Large Hero Image */}
-      <div className="relative h-80 sm:h-96 md:h-[440px] w-full overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 shadow-lg">
+      <div className="relative h-64 sm:h-80 md:h-[420px] w-full overflow-hidden rounded-2xl bg-slate-100">
         {currentPhoto && !photoError ? (
           <img
             src={currentPhoto}
             alt={`${brand} ${model} - Ảnh ${activeIndex + 1}`}
-            className="h-full w-full object-cover transition-all duration-500 hover:scale-105"
+            className="h-full w-full object-cover transition-colors duration-200 hover:scale-[1.02]"
             id="main-vehicle-photo"
             onError={() => setPhotoError(true)}
           />
@@ -63,19 +63,19 @@ export function VehicleGallery({
             <p className="text-sm font-medium text-slate-300">
               {brand} {model} ({year})
             </p>
-            <p className="text-xs text-slate-500 mt-1">Hình ảnh thực tế chuẩn bị cập nhật</p>
+            <p className="text-sm text-slate-500 mt-1">Hình ảnh thực tế chuẩn bị cập nhật</p>
           </div>
         )}
 
         {/* Top Badges Overlay */}
         <div className="absolute top-4 left-4 flex flex-wrap gap-2">
-          <span className="inline-flex items-center rounded-full bg-slate-900/85 px-3 py-1 text-xs font-semibold text-white shadow-md backdrop-blur-md">
+          <span className="inline-flex items-center rounded-full bg-slate-900/85 px-3 py-1 text-sm font-semibold text-white">
             {carTypeLabels[carType] || carType}
           </span>
           {keylessSupported && (
             <span
               id="gallery-keyless-badge"
-              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/90 px-3 py-1 text-xs font-semibold text-white shadow-md backdrop-blur-md"
+              className="inline-flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-1 text-sm font-semibold text-white"
             >
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -92,7 +92,7 @@ export function VehicleGallery({
 
         {/* Photo Counter */}
         {hasPhotos && (
-          <div className="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">
+          <div className="absolute bottom-4 right-4 rounded-full bg-black/60 px-3 py-1 text-sm font-semibold text-white">
             {activeIndex + 1} / {photos.length}
           </div>
         )}
@@ -105,10 +105,15 @@ export function VehicleGallery({
             <button
               key={idx}
               type="button"
-              onClick={() => setActiveIndex(idx)}
-              className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all cursor-pointer ${
+              onClick={() => {
+                setActiveIndex(idx);
+                setPhotoError(false);
+              }}
+              aria-label={`Xem ảnh ${idx + 1} của ${brand} ${model}`}
+              aria-pressed={activeIndex === idx}
+              className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-colors cursor-pointer ${
                 activeIndex === idx
-                  ? 'border-blue-600 ring-2 ring-blue-500/30 scale-95'
+                  ? 'border-brand-600 ring-2 ring-brand-500/30 scale-95'
                   : 'border-slate-200 opacity-70 hover:opacity-100 hover:border-slate-400'
               }`}
             >
