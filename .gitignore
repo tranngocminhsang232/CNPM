@@ -25,6 +25,8 @@ test-results/
 
 # Internal reviews & tools cache
 .document-review/
+.taste-skill/
+.agents/
 __pycache__/
 *.pyc
 

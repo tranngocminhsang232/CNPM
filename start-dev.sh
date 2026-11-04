@@ -66,7 +66,7 @@ echo ""
 # 5. Mở trình duyệt và khởi động song song Backend + Frontend
 echo "[5/5] Khởi động Backend API (Port 4000) và Web Frontend (Port 3000)..."
 (
-  sleep 6
+  node tools/wait-dev-ready.mjs || exit 1
   if [[ "$OSTYPE" == "darwin"* ]]; then
     open http://localhost:3000
   elif command -v xdg-open >/dev/null 2>&1; then

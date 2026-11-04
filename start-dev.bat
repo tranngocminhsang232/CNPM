@@ -77,7 +77,11 @@ powershell -NoProfile -Command "try { $tcp = New-Object System.Net.Sockets.TcpCl
 if %errorlevel% equ 0 goto pg_is_ready
 ping 127.0.0.1 -n 2 >nul
 set /a pg_wait+=1
-if !pg_wait! geq 15 goto pg_is_ready
+if !pg_wait! geq 60 (
+    echo   [!] PostgreSQL chua san sang. Kiem tra Docker logs va chay lai.
+    pause
+    exit /b 1
+)
 goto wait_pg_loop
 
 :pg_is_ready
@@ -103,7 +107,12 @@ start "CarSharing - Frontend Web (Port 3000)" /D "%~dp0" cmd /k "chcp 65001 > nu
 
 :: 5. Cho server san sang va mo trinh duyet
 echo [5/5] Dang cho server khoi dong va mo trinh duyet...
-ping 127.0.0.1 -n 6 >nul
+node tools/wait-dev-ready.mjs
+if %errorlevel% neq 0 (
+    echo   [!] Server chua san sang. Kiem tra cua so Backend va Frontend.
+    pause
+    exit /b 1
+)
 start http://localhost:3000
 
 echo.
